@@ -1501,6 +1501,7 @@ void print_genpaf_match
 			case genpafEnd1Blast:
 				if (strand2 == strand1) fprintf (f, unsposFmt, start1-1 + length);
 				                   else fprintf (f, unsposFmt, start1);
+				break;  // (see github issue 3)
 			case genpafLength1:
 				fprintf (f, unsposFmt, length);
 				break;
