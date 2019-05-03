@@ -1745,9 +1745,9 @@ unspos count_position_table
 //	postable*	pt:			The position table to modify.
 //	u32			limit:		Words occurring more often than this are removed
 //							.. from the table.
-//	u32			maxChasm:	The maximum length of an interval of discarded
+//	unspos		maxChasm:	The maximum length of an interval of discarded
 //							.. seed word positions that will be tolerated.
-//							.. Some seed word positions may be preotected from
+//							.. Some seed word positions may be protected from
 //							.. removal so that no interval will exceed this.
 //							.. The value zero indicates that there is no such
 //							.. limit.

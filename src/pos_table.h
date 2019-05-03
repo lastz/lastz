@@ -245,7 +245,7 @@ u32       fetch_resolving_bits      (postable* pt, unspos pos1);
 void      dump_position_table       (FILE* f, postable* pt, seed* hitSeed,
                                      int showPositions, int showCounts);
 unspos    count_position_table      (postable* pt);
-void      limit_position_table      (postable* pt, u32 limit, u32 maxChasm);
+void      limit_position_table      (postable* pt, u32 limit, unspos maxChasm);
 poscount* position_table_count_distribution (postable* pt);
 u32       find_position_table_limit (postable* pt, float keep);
 
