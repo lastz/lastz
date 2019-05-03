@@ -10,8 +10,6 @@ char* programVersionMinor    = VERSION_MINOR;
 char* programVersionSubMinor = VERSION_SUBMINOR;
 char* programRevisionDate    = REVISION_DATE;
 
-char* svnRevisionNumber      = SUBVERSION_REV;
-
 //----------
 //
 // lastz-- Local Alignment Search Tool, blastZ-like
@@ -5258,16 +5256,6 @@ static void parse_options_loop
 
 		//if (argStr == NULL) fprintf (stderr, "arg=\"%s\"\n", arg);
 		//               else fprintf (stderr, "arg=\"%s\" argStr=\"%s\"\n", arg, argStr);
-
-		// --svn (unadvertised)
-		// $$$ This needs to be improved so that it shows the *latest* revision
-		// $$$ .. number of any module in the build path
-
-		if (strcmp (arg, "--svn") == 0)
-			{
-			printf ("SVN revision: %s\n", svnRevisionNumber);
-			exit (EXIT_FAILURE);
-			}
 
 		// --self and (unadvertised) --debug=clonedquery;  the latter uses the
 		// same sequence file (as a cloned structure) but otherwise should
