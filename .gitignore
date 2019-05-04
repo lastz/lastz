@@ -1,0 +1,17 @@
+# Compiled source #
+###################
+*.o
+src/lastz
+src/lastz_D
+
+# Makefile variants #
+###################
+Makefile.*
+
+# Test results #
+###################
+test_results/base_test.*
+
+# OS generated files #
+######################
+.DS_Store

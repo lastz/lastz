@@ -24,10 +24,10 @@ builds = lastz lastz_D lastz_32
 #---------
 # build-time options (presently only one)
 #
-# This will enable certain options within the compiled program.  To build with
-# one of these option, you would do "make lastz <option_name>=ON".  The result
+# This will enable certain options within the compiled program. To build with
+# one of these option, you would do "make lastz <option_name>=ON". The result
 # will be an executable named lastz, i.e. mostly indistinguishable from the
-# executable without this option.  The only place the executable will report
+# executable without this option. The only place the executable will report
 # the option is in response to "lastz --version".
 #
 # So, for example,
@@ -111,7 +111,7 @@ lastz_32: $(foreach part,${srcFiles},${part}_32.o)
 
 # cleanup
 
-clean: cleano clean_builds clean_test
+clean: cleano clean_builds clean_tests
 
 cleano:
 	rm -f *.o
@@ -143,21 +143,13 @@ install_32: lastz_32
 #---------
 # testing
 #
-# A small test to give some comfort level that the program has built properly,
-# or that changes you've made to the source code haven't broken it.  If the
-# test succeeds, there will be no output from the diff.
-#---------
-
-#---------
-# testing
-#
 # Small tests to give some comfort level that the program has built properly,
-# or that changes you've made to the source code haven't broken it.  The
+# or that changes you've made to the source code haven't broken it. The
 # results of lav_compare should be of this form:
 #	SUCCESS: ../test_data/xxx and ../test_results/yyy are equivalent
 #
 # Note that a simple diff could be used in most cases, except that there will
-# be some mismatches due to version number differences.  For the overweight
+# be some mismatches due to version number differences. For the overweight
 # seed test, diff is useless since the files being compared will have seed hits
 # in different orders.
 #
@@ -195,10 +187,10 @@ gfaCompare = ../tools/gfa_compare.py
 axtCompare = ../tools/axt_compare.py
 mafSort    = ../tools/maf_sort.py
 
-clean_test:
-	rm -f ../test_results/base_test*.*
+clean_test: clean_tests
 
-clean_tests: clean_test
+clean_tests:
+	rm -f ../test_results/base_test*.*
 
 test: lastz
 	@rm -f ../test_results/base_test.default.lav
