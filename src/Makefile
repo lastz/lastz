@@ -148,8 +148,57 @@ install_32: lastz_32
 # test succeeds, there will be no output from the diff.
 #---------
 
+#---------
+# testing
+#
+# Small tests to give some comfort level that the program has built properly,
+# or that changes you've made to the source code haven't broken it.  The
+# results of lav_compare should be of this form:
+#	SUCCESS: ../test_data/xxx and ../test_results/yyy are equivalent
+#
+# Note that a simple diff could be used in most cases, except that there will
+# be some mismatches due to version number differences.  For the overweight
+# seed test, diff is useless since the files being compared will have seed hits
+# in different orders.
+#
+# The tests:
+#   test                        Same as base_test_default, but success is silent
+#                               (this is included for backward compatibility)
+#	base_test_hits				Seed hits only
+#	base_test_hsp				HSP alignments only
+#	base_test_adaptive_k		HSP alignments only, adaptive-K
+#	base_test_default			Default alignment (gapped without chaining)
+#	base_test_axt				AXT output format
+#	base_test_chained			chained HSPs
+#	base_test_extended			gapped alignments
+#	base_test_interpolated		interpolated alignments
+#	base_test_segments			reading and writing anchor segments
+#	base_test_stdin2			sequence2 comes from stdin
+#	base_test_2bit1				sequence1 comes from .2bit file
+#	base_test_2bit2				sequence2 comes from .2bit file
+#	base_test_float				floating point scoring
+#	base_test_seeded			non-standard seed pattern
+#	base_test_hw_seeded			half weight seed pattern
+#	base_test_ow_seeded			overweight seed pattern
+#	base_test_masking			dynamic masking
+#	base_test_anchors			external anchors
+#	base_test_anchors_multi		external anchors with multi-sequence file
+#	base_test_subrange			sequence subranges
+#	base_test_mask				sequence masking
+#	base_test_coi				contigs-of-interest file
+#	base_test_multi				multi-sequence file
+#	base_test_multi_subrange	multi-sequence file with subranges
+#---------
+
+lavCompare = ../tools/lav_compare.py
+gfaCompare = ../tools/gfa_compare.py
+axtCompare = ../tools/axt_compare.py
+mafSort    = ../tools/maf_sort.py
+
 clean_test:
 	rm -f ../test_results/base_test*.*
+
+clean_tests: clean_test
 
 test: lastz
 	@rm -f ../test_results/base_test.default.lav
@@ -161,4 +210,377 @@ test: lastz
 	@diff                                        \
 	  ../test_data/base_test.default.lav         \
 	  ../test_results/base_test.default.lav
+
+base_tests: lastz lastz_D                               \
+	base_test_hits                                      \
+	base_test_hsp                                       \
+	base_test_adaptive_k                                \
+	base_test_default                                   \
+	base_test_axt                                       \
+	base_test_chained                                   \
+	base_test_extended                                  \
+	base_test_interpolated                              \
+	base_test_segments                                  \
+	base_test_stdin2                                    \
+	base_test_2bit1                                     \
+	base_test_2bit2                                     \
+	base_test_float                                     \
+	base_test_seeded                                    \
+	base_test_hw_seeded                                 \
+	base_test_ow_seeded                                 \
+	base_test_masking                                   \
+	base_test_anchors                                   \
+	base_test_anchors_multi                             \
+	base_test_subrange                                  \
+	base_test_mask                                      \
+	base_test_coi                                       \
+	base_test_multi                                     \
+	base_test_multi_subrange
+
+base_tests_non_float: lastz                             \
+	base_test_hits                                      \
+	base_test_hsp                                       \
+	base_test_adaptive_k                                \
+	base_test_default                                   \
+	base_test_axt                                       \
+	base_test_chained                                   \
+	base_test_extended                                  \
+	base_test_interpolated                              \
+	base_test_segments                                  \
+	base_test_stdin2                                    \
+	base_test_2bit1                                     \
+	base_test_2bit2                                     \
+	base_test_seeded                                    \
+	base_test_hw_seeded                                 \
+	base_test_ow_seeded                                 \
+	base_test_masking                                   \
+	base_test_anchors                                   \
+	base_test_anchors_multi                             \
+	base_test_subrange                                  \
+	base_test_mask                                      \
+	base_test_coi                                       \
+	base_test_multi                                     \
+	base_test_multi_subrange
+
+base_tests_no_stdin2: lastz lastz_D                     \
+	base_test_hits                                      \
+	base_test_hsp                                       \
+	base_test_adaptive_k                                \
+	base_test_default                                   \
+	base_test_axt                                       \
+	base_test_chained                                   \
+	base_test_extended                                  \
+	base_test_interpolated                              \
+	base_test_segments                                  \
+	base_test_2bit1                                     \
+	base_test_2bit2                                     \
+	base_test_float                                     \
+	base_test_seeded                                    \
+	base_test_hw_seeded                                 \
+	base_test_ow_seeded                                 \
+	base_test_masking                                   \
+	base_test_anchors                                   \
+	base_test_anchors_multi                             \
+	base_test_subrange                                  \
+	base_test_mask                                      \
+	base_test_coi                                       \
+	base_test_multi                                     \
+	base_test_multi_subrange
+
+base_test_hits:
+	@rm -f ../test_results/base_test.hits.lav
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+	  W=8 T=0 --plus --nogfextend --nogapped            \
+	  > ../test_results/base_test.hits.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.hits.lav                   \
+	  ../test_results/base_test.hits.lav
+
+base_test_hsp:
+	@rm -f ../test_results/base_test.hsp.lav
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+	  C=3 W=8 T=0                                       \
+	  > ../test_results/base_test.hsp.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.hsp.lav                    \
+	  ../test_results/base_test.hsp.lav
+
+base_test_adaptive_k:
+	@rm -f ../test_results/base_test.adaptive_k.gfa
+	@./lastz                                            \
+	  ../test_data/aglobin.2bit/human                   \
+	  ../test_data/aglobin.2bit/cow                     \
+	  C=3 W=8 T=0 --noentropy K=top50% --gfa            \
+	  | grep "^a" | sort -rn -k 4                       \
+	  > ../test_results/base_test.adaptive_k.gfa
+	@${gfaCompare}                                      \
+	  ../test_data/base_test.adaptive_k.gfa             \
+	  ../test_results/base_test.adaptive_k.gfa
+
+base_test_default:
+	@rm -f ../test_results/base_test.default.lav
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+	  | sed "s/\"lastz\.[^ ]* //g"                      \
+	  > ../test_results/base_test.default.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.default.lav                \
+	  ../test_results/base_test.default.lav
+
+base_test_axt:
+	@rm -f ../test_results/base_test.default.axt
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+	  --format=axt                                      \
+	  > ../test_results/base_test.default.axt
+	@${axtCompare}                                      \
+	  ../test_data/base_test.default.axt                \
+	  ../test_results/base_test.default.axt
+
+base_test_chained:
+	@rm -f ../test_results/base_test.chained.lav
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+	  C=1 W=8 T=0                                       \
+	  > ../test_results/base_test.chained.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.chained.lav                \
+	  ../test_results/base_test.chained.lav
+
+base_test_extended:
+	@rm -f ../test_results/base_test.extended.lav
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+	  C=2 W=8 T=0                                       \
+	  > ../test_results/base_test.extended.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.extended.lav               \
+	  ../test_results/base_test.extended.lav
+
+base_test_interpolated:
+	@rm -f ../test_results/base_test.interpolated.lav
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+	  C=2 W=8 T=0 H=2200                                \
+	  > ../test_results/base_test.interpolated.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.interpolated.lav           \
+	  ../test_results/base_test.interpolated.lav
+
+base_test_segments:
+	@rm -f ../test_results/base_test.segments.hsps
+	@rm -f ../test_results/base_test.segments.lav
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+	  --nogapped --format=segments                      \
+      > ../test_results/base_test.segments.hsps
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+      --segments=../test_results/base_test.segments.hsps \
+	  | sed "s/\"lastz\.[^ ]* //g"                      \
+	  > ../test_results/base_test.segments.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.default.lav                \
+	  ../test_results/base_test.segments.lav
+
+base_test_stdin2:
+	@rm -f ../test_results/base_test.stdin2.lav
+	@cat ../test_data/pseudopig.fa                      \
+	  | ./lastz                                         \
+	    ../test_data/pseudocat.fa                       \
+	    C=3 W=8 T=0                                     \
+	  | sed "s/(stdin)/..\/test_data\/pseudopig.fa/g"   \
+	  > ../test_results/base_test.stdin2.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.hsp.lav                    \
+	  ../test_results/base_test.stdin2.lav
+
+base_test_nib1:
+	@rm -f ../test_results/base_test.nib1.lav
+	@./lastz                                            \
+	  ../test_data/pseudopig2.nib                       \
+	  ../test_data/pseudocat.fa                         \
+	  C=2 W=8 T=0                                       \
+    | sed "s/\.\..*\.nib:.*\"/> pig2\"/g"               \
+    | sed "s/\.nib/.fa/g"                               \
+	  > ../test_results/base_test.nib1.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.pig_cat.lav                \
+	  ../test_results/base_test.nib1.lav
+
+base_test_2bit1:
+	@rm -f ../test_results/base_test.2bit1.lav
+	@./lastz                                            \
+	  ../test_data/pseudopig.2bit/pig2                  \
+	  ../test_data/pseudocat.fa                         \
+	  C=2 W=8 T=0                                       \
+    | sed "s/pig/> pig/g"                               \
+    | sed "s/do> pig.2bit/dopig2.fa/g"                  \
+    | sed "s/\(dopig2.*\) 0 2/\1 0 1/g"                 \
+	  > ../test_results/base_test.2bit1.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.pig_cat.lav                \
+	  ../test_results/base_test.2bit1.lav
+
+base_test_2bit2:
+	@rm -f ../test_results/base_test.2bit2.lav
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.2bit                       \
+	  C=2 W=8 T=0                                       \
+    | sed "s/pig/> pig/g"                               \
+    | sed "s/do> pig.2bit/dopig.fa/g"                   \
+	  > ../test_results/base_test.2bit2.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.extended.lav               \
+	  ../test_results/base_test.2bit2.lav
+
+base_test_float:
+	@rm -f ../test_results/base_test.float.lav
+	@./lastz_D                                          \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+	  C=2 W=8 T=0                                       \
+	  > ../test_results/base_test.float.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.float.lav                  \
+	  ../test_results/base_test.float.lav
+
+base_test_seeded:
+	@rm -f ../test_results/base_test.seeded.lav
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+	  C=3 --seed=111010011101                           \
+	  > ../test_results/base_test.seeded.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.seeded.lav                 \
+	  ../test_results/base_test.seeded.lav
+
+base_test_hw_seeded:
+	@rm -f ../test_results/base_test.hwseeded.lav
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+	  C=3 --seed=TTT0T0T0TTT00T0T                       \
+	  > ../test_results/base_test.hwseeded.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.hwseeded.lav               \
+	  ../test_results/base_test.hwseeded.lav
+
+base_test_ow_seeded:
+	@rm -f ../test_results/base_test.owseeded.gfa
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa                         \
+	  --justhits --seed=111010011101 --word=12          \
+	  --gfa                                             \
+	  > ../test_results/base_test.owseeded.gfa
+	@${gfaCompare} --sort                               \
+	  ../test_data/base_test.owseeded.gfa               \
+      ../test_results/base_test.owseeded.gfa
+
+base_test_masking:
+	@rm -f ../test_results/base_test.masking.lav
+	@./lastz                                            \
+	  ../test_data/fake_apple.fa                        \
+	  ../test_data/fake_orange_reads.fa                 \
+	  --masking=3                                       \
+	  > ../test_results/base_test.masking.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.masking.lav                \
+      ../test_results/base_test.masking.lav
+
+base_test_anchors:
+	@rm -f ../test_results/base_test.anchors.maf
+	@./lastz                                            \
+	  ../test_data/aglobin.2bit/human                   \
+      ../test_data/aglobin.2bit/cow                     \
+      C=0 --format=maf-                                 \
+      --anchors=../test_data/base_test.anchors.anchors  \
+	  > ../test_results/base_test.anchors.maf
+	@diff                                               \
+	  ../test_data/base_test.anchors.maf                \
+      ../test_results/base_test.anchors.maf
+
+base_test_anchors_multi:
+	@rm -f ../test_results/base_test.anchors_multi.maf
+	@./lastz                                            \
+	  ../test_data/aglobin.2bit/human                   \
+	  ../test_data/shorties.fa[subset=../test_data/shorties.names] \
+      C=0 --format=maf-                                 \
+      --anchors=../test_data/base_test.anchors_multi.anchors  \
+	  > ../test_results/base_test.anchors_multi.maf
+	@diff                                               \
+	  ../test_data/base_test.anchors_multi.maf          \
+      ../test_results/base_test.anchors_multi.maf
+
+base_test_subrange:
+	@./lastz                                            \
+	  ../test_data/aglobin.2bit/human[10000,60000]      \
+	  ../test_data/aglobin.2bit/cow[15000#40000]        \
+	  > ../test_results/base_test.subrange.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.subrange.lav               \
+      ../test_results/base_test.subrange.lav
+
+base_test_mask:
+	@./lastz                                            \
+	  ../test_data/pseudocat.fa                         \
+	  ../test_data/pseudopig.fa[nmask=../test_data/pseudopig.n.mask] \
+	  --ambiguous=n,60                                  \
+	  > ../test_results/base_test.mask.lav
+	@${lavCompare}                                      \
+	  ../test_data/base_test.mask.lav                   \
+      ../test_results/base_test.mask.lav
+
+base_test_coi:
+	@./lastz                                            \
+	  ../test_data/aglobin.2bit/human                   \
+	  ../test_data/shorties.fa[subset=../test_data/shorties.names] \
+	  K=3000 --maf-                                     \
+	  > ../test_results/base_test.coi_fa.maf
+	@diff                                               \
+	  ../test_data/base_test.coi.maf                    \
+      ../test_results/base_test.coi_fa.maf
+	@./lastz                                            \
+	  ../test_data/aglobin.2bit/human                   \
+	  ../test_data/shorties.2bit[subset=../test_data/shorties.names] \
+	  K=3000 --maf-                                     \
+	  > ../test_results/base_test.coi_2bit.maf
+	@diff                                               \
+	  ../test_data/base_test.coi.maf                    \
+      ../test_results/base_test.coi_2bit.maf
+
+base_test_multi:
+	@./lastz                                            \
+	  ../test_data/aglobin.2bit/human                   \
+	  ../test_data/shorties.2bit[multi,@../test_data/shorties.names] \
+	  K=3000 --maf-                                     \
+	  | ${mafSort} --key=pos1                           \
+	  > ../test_results/base_test.multi.maf
+	@diff                                               \
+	  ../test_data/base_test.multi.maf                  \
+      ../test_results/base_test.multi.maf
+
+base_test_multi_subrange:
+	@./lastz                                            \
+	  ../test_data/aglobin.2bit/human                   \
+	  ../test_data/shorties.2bit[multi,51..200]         \
+	  K=3000 --maf-                                     \
+	  > ../test_results/base_test.multi_subrange.maf
+	@diff                                               \
+	  ../test_data/base_test.multi_subrange.maf         \
+      ../test_results/base_test.multi_subrange.maf
 
