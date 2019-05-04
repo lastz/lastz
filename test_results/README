@@ -1,0 +1,3 @@
+This directory is where the results of the lastz base tests are written.
+
+See the src/Makefile for test targets.
