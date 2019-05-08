@@ -15,7 +15,7 @@ For information about installation and use, see https://lastz.github.io/lastz
 (equivalent to README.lastz.html in this repository).
 
 The UCSC genome browser group has included lastz and lastz_D in their prebuilt
-binaries:
+binaries (the version there might lag behind the latest version here):
 ```bash  
     http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/
     http://hgdownload.soe.ucsc.edu/admin/exe/macOSX.x86_64/

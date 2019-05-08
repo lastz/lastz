@@ -89,6 +89,7 @@ TABLE OF CONTENTS
 <li><a href="#intro">Introduction</a>
 <li><a href="#avail">Availability</a>
 <li><a href="#install">Installation</a>
+<li><a href="#self_tests">Self-Tests</a>
 <li><a href="#build_options">Build Options</a>
 <li><a href="#overview">Overview of Processing Stages and Terminology</a>
 <li><a href="#examples">Examples</a>
@@ -238,8 +239,12 @@ available in typical python installations.
 <h2>Availability</h2>
 
 <p>
-LASTZ is available from github at
+LASTZ is available from github; Official <em>releases</em> are tagged, and can
+be found at
+<a href="https://github.com/lastz/lastz/releases/">https://github.com/lastz/lastz/releases</a>.
+The working branch, which may not be stable, is at
 <a href="https://github.com/lastz/lastz/">https://github.com/lastz/lastz</a>.
+<em>Users are encouraged to use a tagged release.</em>
 
 <p>
 A packed archive containing source code for LASTZ is available from the
@@ -257,9 +262,11 @@ A packed archive containing source code for LASTZ is available from the
 <p>
 If you have received the distribution as a packed archive, unpack it
 by whatever means are appropriate for your computer. The result should be
-a directory <code>&lt;somepath&gt;/lastz&#8209;distrib&#8209;X.XX.XX</code> that contains
+a directory <code>&lt;somepath&gt;/lastz&#8209;distrib&#8209;X.XX.XX</code>
+(or possibly <code>&lt;somepath&gt;/lastz&#8209;X.XX.XX</code>) that contains
 a <code>src</code> subdirectory (and some others). You may find it convenient
-to remove the revision number (<code>&#8209;X.XX.XX</code>) from the directory name.
+to remove the revision number (<code>&#8209;X.XX.XX</code>) from the directory
+name.
 
 <p>
 Before building or installing any of the programs, you will need to tell the
@@ -292,18 +299,59 @@ complete, while still reporting the warnings. You'll need to decide whether
 the warnings indicate something is really wrong. Usually they don't, but please
 report them to the author regardless.
 
+
+<!---->
+<!-- Self-Tests -->
+<!---->
+
+<hr class=hdr>
+<div><a name="self_tests"></a></div>
+<h2>Self-Tests</h2>
+
 <p>
 A simple self test is included so you can test whether the build succeeded.
 To run it, enter the following command:
 <pre>
     make test
 </pre>
-If the test is successful, you will see no output from this command.
-Otherwise, you will see the differences between the expected output and the
-output of your build, plus a line that looks like this:
+If the test is successful, you will see no output from this command. (However,
+if you haven't already completed the build process, you will see a series of
+commands completing the build before the test is run). Otherwise, you will see
+the differences between the expected output and the output of your build, plus
+a line that looks like this:
 <pre>
     make: *** [test] Error 1
 </pre>
+
+<p>
+Beginning with release 1.04.02, a more extensive battery of tests can be
+performed with the following command:
+<pre>
+    make base_tests
+</pre>
+After making sure that both the <code>lastz</code> and <code>lastz_D</code>
+build have been completed, this runs about 20 tests. It compares the files
+output by your version of lastz with expected output included in the
+distribution. If everything is fine, each test will report a line that looks
+like this:
+<pre>
+    SUCCESS: ../test_data/&lt;some_file&gt; and ../test_results/&lt;some_file&gt; are equivalent
+</pre>
+If a test fails, the output will look like this:
+<pre>
+    FAILURE: ../test_data/&lt;some_file&gt; and ../test_results/&lt;some_file&gt; are different
+    make: *** [&lt;some_test_name&gt;] Error 1
+</pre>
+The test process will stop with the first failure.
+
+<p>
+Note that none of these tests verifies that you have set up your
+<code>$PATH</code> correctly. The easiest way to test this is to run
+<pre>
+    lastz --version
+</pre>
+and make sure the version reported matches the version number of the
+distribution.
 
 <!---->
 <!-- Build Options -->
