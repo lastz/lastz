@@ -3,6 +3,7 @@
 *.o
 src/lastz
 src/lastz_D
+src/lastz_32
 
 # Makefile variants #
 ###################

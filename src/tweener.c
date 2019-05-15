@@ -378,8 +378,8 @@ alignel* tweener_interpolate
 			b     = c->align;
 			b1    = b->end1;
 			b2    = b->end2;
-			distD = abs((((sgnpos)b2) - ((sgnpos)b1)) 	// (distance between
-                      - (((sgnpos)a2) - ((sgnpos)a1)));	//  .. diagonals) 
+			distD = (unspos) llabs((((sgnpos)b2) - ((sgnpos)b1)) 	// (distance between
+                                 - (((sgnpos)a2) - ((sgnpos)a1)));	//  .. diagonals) 
 
 			debugTweener_3A
 
