@@ -1812,9 +1812,12 @@ u32 hassock_hash
 	switch (len)
 		{
 		case 3: h ^= *(--data) << 16;
+		        // (intentional fall thru)
 		case 2: h ^= *(--data) << 8;
+		        // (intentional fall thru)
 		case 1: h ^= *(--data);
 		        h *= m;
+		// (case 0 intentionally ignored)
 		};
 
 	h ^= h >> 13;
