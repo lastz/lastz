@@ -1813,8 +1813,10 @@ u32 hassock_hash
 		{
 		case 3: h ^= *(--data) << 16;
 		        // (intentional fall thru)
+				/* FALLTHRU */
 		case 2: h ^= *(--data) << 8;
 		        // (intentional fall thru)
+				/* FALLTHRU */
 		case 1: h ^= *(--data);
 		        h *= m;
 		// (case 0 intentionally ignored)
