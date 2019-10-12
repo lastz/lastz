@@ -7557,6 +7557,10 @@ static void parse_options_loop
 			fprintf (helpout, "  built with gcc-%d.%d.%d \"%s\"\n",
 			                  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, __VERSION__);
 #endif
+#ifdef __CLANG__
+			fprintf (helpout, "  built with clang-%d.%d.%d \"%s\"\n",
+			                  __CLANG__, __CLANG_MINOR__, __CLANG_PATCHLEVEL__, __VERSION__);
+#endif
 			exit (exitVal);
 			}
 

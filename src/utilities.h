@@ -131,6 +131,16 @@ typedef struct char3 { char s[4]; } char3;
 #define arg_dont_complain(arg) arg
 #endif // __GNUC__
 
+// macro to convince gnu c compiler not to complain about intentional
+// fall-thrus in switch statements; see
+//   https://stackoverflow.com/questions/45349079/how-to-use-attribute-fallthrough-correctly-in-gcc
+
+#if ((defined(__GNUC__)) && (__GNUC__ >= 7))
+#define intentional_fall_thru __attribute__ ((fallthrough))
+#else
+#define intentional_fall_thru
+#endif // __GNUC__ && version
+
 // printf macros for sized integers
 
 #ifdef override_inttypes

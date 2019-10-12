@@ -852,8 +852,7 @@ void print_genpaf_align
 					fprintf (f, unsposFmt, seq2True + 2 - start2 - len2);
 					break;
 					}
-				// (intentional fall thru)
-				/* FALLTHRU */
+				intentional_fall_thru;
 			case genpafStart2:
 				fprintf (f, unsposFmt, start2);
 				break;
@@ -863,8 +862,7 @@ void print_genpaf_align
 					fprintf (f, unsposFmt, seq2True + 1 - start2 - len2);
 					break;
 					}
-				// (intentional fall thru)
-				/* FALLTHRU */
+				intentional_fall_thru;
 			case genpafStart2Zero:
 				fprintf (f, unsposFmt, start2-1);
 				break;
@@ -877,8 +875,7 @@ void print_genpaf_align
 					fprintf (f, unsposFmt, seq2True + 1 - start2);
 					break;
 					}
-				// (intentional fall thru)
-				/* FALLTHRU */
+				intentional_fall_thru;
 			case genpafEnd2:
 				fprintf (f, unsposFmt, start2+len2-1);
 				break;
@@ -1540,8 +1537,7 @@ void print_genpaf_match
 					fprintf (f, unsposFmt, seq2True + 2 - (start2+length));
 					break;
 					}
-				// (intentional fall thru)
-				/* FALLTHRU */
+				intentional_fall_thru;
 			case genpafStart2:
 				fprintf (f, unsposFmt, start2);
 				break;
@@ -1551,8 +1547,7 @@ void print_genpaf_match
 					fprintf (f, unsposFmt, seq2True + 1 - (start2+length));
 					break;
 					}
-				// (intentional fall thru)
-				/* FALLTHRU */
+				intentional_fall_thru;
 			case genpafStart2Zero:
 				fprintf (f, unsposFmt, start2-1);
 				break;
@@ -1565,8 +1560,7 @@ void print_genpaf_match
 					fprintf (f, unsposFmt, seq2True + 1 - start2);
 					break;
 					}
-				// (intentional fall thru)
-				/* FALLTHRU */
+				intentional_fall_thru;
 			case genpafEnd2:
 				fprintf (f, unsposFmt, start2-1 + length);
 				break;
