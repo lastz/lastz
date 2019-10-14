@@ -1188,21 +1188,21 @@ static double infer_gap_scores
 
 	if (avgSeg < 0)
 		suicide ("internal error in infer_gap_scores: average segment doesn't exist");
-	else
-		pOpen = 1 / (2*avgSeg);
-		sOpen = (log(pOpen) - log(1-2*pOpen) + log(1-pExtend) - log(pExtend))
-		      * overLog2;
 
-		if (sOpen + sExtend >= 0)
-			suicidef ("internal inconsistency, gap open \"reward\" in infer_gap_scores\n"
-		              "(avgGap=%f pExtend=%f sExtend=%f avgSeg=%f pOpen=%f)\n"
-		              "(+log(pOpen)=%f -log(1-2*pOpen)=%f +log(1-pExtend)=%f -log(pExtend)=%f)",
-		              avgGap,pExtend,sExtend,avgSeg,pOpen,
-		              log(pOpen)/log(2),-log(1-2*pOpen)/log(2),
-		              log(1-pExtend)/log(2),-log(pExtend)/log(2));
+	pOpen = 1 / (2*avgSeg);
+	sOpen = (log(pOpen) - log(1-2*pOpen) + log(1-pExtend) - log(pExtend))
+	      * overLog2;
 
-		infer_scores_set_stat (pOpen, pOpen);
-		infer_scores_set_stat (sOpen, sOpen);
+	if (sOpen + sExtend >= 0)
+		suicidef ("internal inconsistency, gap open \"reward\" in infer_gap_scores\n"
+	              "(avgGap=%f pExtend=%f sExtend=%f avgSeg=%f pOpen=%f)\n"
+	              "(+log(pOpen)=%f -log(1-2*pOpen)=%f +log(1-pExtend)=%f -log(pExtend)=%f)",
+	              avgGap,pExtend,sExtend,avgSeg,pOpen,
+	              log(pOpen)/log(2),-log(1-2*pOpen)/log(2),
+	              log(1-pExtend)/log(2),-log(pExtend)/log(2));
+
+	infer_scores_set_stat (pOpen, pOpen);
+	infer_scores_set_stat (sOpen, sOpen);
 
 	// recompute log odds substitution scores now that we have pOpen, and
 	// rescale them
