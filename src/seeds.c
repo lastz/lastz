@@ -1254,7 +1254,8 @@ char* seed_packed_to_string2
 			case 1: if (twoWordBits < 2)
 						*(ss++) = bitToChar[twoWordBits];
 					else
-						*(ss++) = '?';                      break;
+						*(ss++) = '?';
+				break;
 			case 2:     *(ss++) = '?';                      break;
 			case 3:     *(ss++) = bitsToChar[twoWordBits];  break;
 			}
