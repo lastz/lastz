@@ -1786,14 +1786,14 @@ void free_sequence
 	if (_seq->vOwner)           free_if_valid ("free_sequence (v)",                _seq->v);
 	if (_seq->vcOwner)          free_if_valid ("free_sequence (vc)",               _seq->vc);
 	if (_seq->vqOwner)          free_if_valid ("free_sequence (vq)",               _seq->vq);
-	                            free_if_valid ("free_sequence (pendingChars)",     _seq->pendingChars);
-	                            free_if_valid ("free_sequence (filename)",         _seq->filename);
+	/* */                       free_if_valid ("free_sequence (pendingChars)",     _seq->pendingChars);
+	/* */                       free_if_valid ("free_sequence (filename)",         _seq->filename);
 	if (_seq->headerOwner)      free_if_valid ("free_sequence (header)",           _seq->header);
 	if (_seq->shortHeaderOwner) free_if_valid ("free_sequence (shortHeader)",      _seq->shortHeader);
 	if (_seq->trueHeaderOwner)  free_if_valid ("free_sequence (trueHeader)",       _seq->trueHeader);
-	                            free_if_valid ("free_sequence (qCoding)",          _seq->qCoding);
+	/* */                       free_if_valid ("free_sequence (qCoding)",          _seq->qCoding);
 
-	                            free_if_valid ("free_sequence (contigOfInterest)", _seq->contigOfInterest);
+	/* */                       free_if_valid ("free_sequence (contigOfInterest)", _seq->contigOfInterest);
 
 	if (_seq->fileType != seq_type_nofile)
 		{
