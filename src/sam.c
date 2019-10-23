@@ -601,7 +601,7 @@ void print_sam_match
 		{ tmp = preMask;  preMask = postMask;  postMask = tmp; }
 
 	if (preMask  != 0) fprintf (f, unsposFmt "%c", preMask, maskCh);
-	                   fprintf (f, unsposFmt "M",  length);
+	/* */              fprintf (f, unsposFmt "M",  length);
 	if (postMask != 0) fprintf (f, unsposFmt "%c", postMask, maskCh);
 
 	// print mrnm, mpos, and isize
