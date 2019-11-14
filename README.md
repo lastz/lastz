@@ -7,7 +7,7 @@ https://github.com/lastz/lastz/releases.
 Users are encouraged to use a tagged release, as this working branch may not
 be stable.
 
-As of this writing, the latest official release is version 1.04.00.
+As of this writing, the latest official release is version 1.04.03.
 Additional LASTZ releases, including all releases prior to March 2017, can be
 found at http://www.bx.psu.edu/~rsharris/lastz (in the form of tarballs).
 
