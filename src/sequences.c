@@ -4190,7 +4190,6 @@ static void read_hsx_header
 			          sequence_filename(_seq), fileInfoOffset[fileNum], err);
 
 		s = read_hsx_string (_seq, _seq->f);
-		strncpy (/*to*/ extension, /*from*/ s, sizeof(extension));
 		s[sizeof(extension)-1] = 0;            // avoid strncpy(), which generates a
 		strcpy(/*to*/ extension, /*from*/ s);  // .. stringop-truncation warning in
 		                                       // .. some compilers
