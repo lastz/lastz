@@ -4165,7 +4165,9 @@ static void read_hsx_header
 		 && (strcmp (s, "fasta") != 0))
 			suicidef ("in read_hsx_header for %s, unsupported file type: %s",
 					  sequence_filename(_seq), s);
-		strncpy (/*to*/ extension, /*from*/ s, sizeof(extension));
+		s[sizeof(extension)-1] = '\0';         // avoid strncpy(), which generates a
+		strcpy(/*to*/ extension, /*from*/ s);  // .. stringop-truncation warning in
+		                                       // .. some compilers
 
 		s = read_hsx_string (_seq, _seq->f);
 		if (s[0] != 0)
@@ -4189,6 +4191,9 @@ static void read_hsx_header
 
 		s = read_hsx_string (_seq, _seq->f);
 		strncpy (/*to*/ extension, /*from*/ s, sizeof(extension));
+		s[sizeof(extension)-1] = 0;            // avoid strncpy(), which generates a
+		strcpy(/*to*/ extension, /*from*/ s);  // .. stringop-truncation warning in
+		                                       // .. some compilers
 
 		s = read_hsx_string (_seq, _seq->f);
 		if (s[0] != 0)
