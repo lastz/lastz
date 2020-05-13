@@ -4592,7 +4592,9 @@ static char* read_hsx_string
    (seq*			_seq,
 	FILE*			f)
 	{
-	static char		s[256];
+	static char		s[256];          // WARNING: this has to be at least as
+	                                 // big as the extension[] local variable
+	                                 // in read_hsx_header()
 	unsigned int	stringSize;
 	size_t			bytesRead;
 
