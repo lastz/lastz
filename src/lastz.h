@@ -262,7 +262,10 @@ typedef struct control
 	u32			searchLimit;	//     maximum number of "HSPs" allowed for a
 								//     .. given query/strand;  zero indicates
 								//     .. "no limit";  "HSPs" means gapped
-								//     .. alignments if hspImmediate is true
+								//     .. alignments if hspImmediate is true;
+								//     .. even though this is a u32, it cannot
+								//     .. have a value greater than the max
+								//     .. positive value in an s32
 	int			searchLimitWarn;//     true => warn user about reads that
 								//             .. exceed searchLimit
 	int			searchLimitKeep;//     true => report alignments for reads that

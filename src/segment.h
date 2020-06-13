@@ -75,8 +75,8 @@ typedef struct segment
 
 typedef struct segtable
 	{
-	u32		size;				// the number of entries allocated for seq[]
-	u32		len;				// the number of entries in seq[] that are
+	u32		size;				// the number of entries allocated for seg[]
+	u32		len;				// the number of entries in seg[] that are
 								// .. actually used
 	int		haveScores;			// true  => the segments have been scored
 								// false => they have not been scored

@@ -1743,8 +1743,11 @@ next_target:
 	if ((seed_search_dbgSearchLimitExceeded > 0)
 	 && ((currParams->searchLimitWarn) || (hitProcInfo->reporter != gappily_extend_hsps)))
 		{
-		// nota bene: this report is diaabled for gappily_extend_hsps because
-		//            the reported count would be incorrect
+		// nota bene:  this report is disabled for gappily_extend_hsps because
+		//             the reported count would be incorrect
+		// nota bene2: this report is often too high for queries exceeding the
+		//             HSP limit, because seed_hit_search() will increment the
+		//             count for each *strand* that exceeds the limit
 		if (seed_search_dbgSearchLimitExceeded == 1)
 			fprintf (stderr, "1 query exceeded the");
 		else
@@ -2788,7 +2791,8 @@ void set_up_hit_processor
 
 	if ((anchors == NULL)
 	 || ((params->hspThreshold.t =='S')	// (non-adaptive HSP score threshold)
-	  && (params->searchLimit == 0)		// (no limit on number of HSPs)
+	  && (params->searchLimit == 0)		// (no limit on
+	  && (params->numBestHsps == 0)		//        .. number of HSPs)
 	  && (!params->chain)				// (not chaining)
 	  && (!params->gappedExtend)		// (not doing gapped extension)
 	  && (!params->mergeAnchors)
@@ -5807,7 +5811,7 @@ static void parse_options_loop
 			if (tempInt <= 0)
 				suicidef ("limit for --limitperquery must be positive");
 			lzParams->hspImmediate    = true;
-			lzParams->searchLimit     = tempInt;
+			lzParams->searchLimit     = tempInt; // note: this is limited to max(s32)
 			lzParams->searchLimitWarn = false;
 			lzParams->searchLimitKeep = false;
 			goto next_arg;
@@ -5869,7 +5873,7 @@ static void parse_options_loop
 		check_search_limit:
 			if (tempInt <= 0)
 				suicidef ("--queryhsplimit must be positive");
-			lzParams->searchLimit = tempInt;
+			lzParams->searchLimit = tempInt; // note: this is limited to max(s32)
 			if (lzParams->numBestHsps != 0)
 				chastise ("can't use %s with --queryhspbest\n", arg);
 			goto next_arg;
