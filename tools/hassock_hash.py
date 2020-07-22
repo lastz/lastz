@@ -77,8 +77,8 @@ def main():
 			demonstrate_hash(line,m)
 
 def demonstrate_hash(s,m):
-	if (m == None): print "%08X: %s" % (hassock_hash(s),s)
-	else:           print "%d: %s"   % (hassock_hash(s)%m,s)
+	if (m == None): print ("%08X: %s" % (hassock_hash(s),s))
+	else:           print ("%d: %s"   % (hassock_hash(s)%m,s))
 
 
 if __name__ == "__main__": main()

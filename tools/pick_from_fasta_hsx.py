@@ -43,7 +43,9 @@ def main():
 			if (val == ""):
 				usage("missing a value in %s=" % arg)
 
-		if (arg == "--names") and (val != None):
+		if (arg in ["--help","-h","--h","-help"]) and (val == None):
+			usage()
+		elif (arg == "--names") and (val != None):
 			f = file(val)
 			seqNames += [line.strip() for line in f]
 			f.close()
@@ -75,7 +77,7 @@ def main():
 	for name in seqNames:
 		seq = hsx.get_sequence(name)
 		if (seq != None):
-			print seq
+			print (seq)
 			if (showProgress):
 				print >>sys.stderr, name
 		elif (warnOnMissing):

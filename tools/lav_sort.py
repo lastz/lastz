@@ -55,15 +55,15 @@ def main():
 			blocks.sort()
 			if (keyReverse): blocks.reverse()
 			for (key,s) in blocks:
-				print "\n".join(s)
+				print ("\n".join(s))
 			blocks = []
-		print "\n".join(stanza)
+		print ("\n".join(stanza))
 
 	if (len(blocks) > 0):
 		blocks.sort()
 		if (keyReverse): blocks.reverse()
 		for (key,s) in blocks:
-			print "\n".join(s)
+			print ("\n".join(s))
 
 # read_stanzas--
 #	Collect the lines that belong to the next stanza.  A stanza has the form

@@ -42,7 +42,9 @@ def main():
 		if ("=" in arg):
 			argVal = arg.split("=",1)[1]
 
-		if (arg.startswith("--chrom=")) or (arg.startswith("--chroms=")):
+		if (arg in ["--help","-h","--h","-help"]):
+			usage()
+		elif (arg.startswith("--chrom=")) or (arg.startswith("--chroms=")):
 			if (chromsOfInterest == None):
 				chromsOfInterest = []
 			chromsOfInterest += argVal.split(",")
@@ -130,12 +132,12 @@ def main():
 			prevEnd = end
 		if (prevEnd < len(seq)):   newSeq += [seq[prevEnd:]]
 
-		print ">%s" % chrom
+		print (">%s" % chrom)
 		newSeq = "".join(newSeq)
 		assert (len(newSeq) == len(seq)), "internal error"
 
 		for i in range(0,len(newSeq),wrapLength):
-			print "".join(newSeq[i:i+wrapLength])
+			print ("".join(newSeq[i:i+wrapLength]))
 
 	# make sure all sequences were given
 

@@ -68,14 +68,14 @@ def main():
 		if (start == None):
 			(start,end) = (s,e)
 		elif (s > end):
-			print "%d\t%d" % (start+1,end)
+			print ("%d\t%d" % (start+1,end))
 			(start,end) = (s,e)
 			continue
 		elif (e > end):
 			end = e
 
 	if (start != None):
-		print "%d\t%d" % (start+1,end)
+		print ("%d\t%d" % (start+1,end))
 
 
 if __name__ == "__main__": main()

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# this file has no shebang, this is intentional
 """
 "Hashed sequence index" (hsx) file reader (for a fasta file)
 -------------------------------------------------------------------
@@ -87,9 +87,9 @@ class HsxFile(object):
 		else:               self.debug = debug
 		self.open()
 
-	magicBig    = 0xD2527095L
-	magicLittle = 0x957052D2L
-	version     = 0x00000100L
+	magicBig    = 0xD2527095
+	magicLittle = 0x957052D2
+	version     = 0x00000100
 	msBit5      = 0x80 << (4*8)
 
 	def open(self):
@@ -274,7 +274,4 @@ class HsxFile(object):
 	def hash(name):
 		return hassock_hash.hassock_hash(name)
 	hash = staticmethod(hash)
-
-
-if __name__ == "__main__": main()
 

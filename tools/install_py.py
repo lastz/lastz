@@ -2,17 +2,20 @@
 
 import sys
 import string
-import commands
-true  = 1
-false = 0
+
+try:
+	from subprocess import getoutput
+except ImportError:
+	from commands import getoutput
+
 
 def do (command):
-	print command
-	output = commands.getoutput(command)
-	if (len(output) > 0): print output
+	print (command)
+	output = getoutput(command)
+	if (len(output) > 0): print (output)
 
 binDir     = "~/py/bin"
-currentDir = commands.getoutput("pwd").strip()
+currentDir = getoutput("pwd").strip()
 
 args = sys.argv[1:]
 remove = False

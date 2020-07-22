@@ -55,9 +55,9 @@ def main():
 		if (keyReverse): blocks.reverse()
 		for (key,block,comments) in blocks:
 			if (comments != []):
-				print "\n".join([line for line in comments])
-			print "\n".join([line for line in block])
-			print
+				print ("\n".join([line for line in comments]))
+			print ("\n".join([line for line in block]))
+			print ("")
 
 
 # read_blocks--

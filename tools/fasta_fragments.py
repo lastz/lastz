@@ -49,7 +49,9 @@ def main():
 		if ("=" in arg):
 			argVal = arg.split("=",1)[1]
 
-		if (arg.startswith("--fragment=")):
+		if (arg in ["--help","-h","--h","-help"]):
+			usage()
+		elif (arg.startswith("--fragment=")):
 			fragmentLength = int_with_unit(argVal)
 		elif (arg.startswith("--step=")):
 			stepLength = int_with_unit(argVal)
@@ -96,14 +98,14 @@ def main():
 			if (shuffleEm):
 				fragments += [(header,frag)]
 			else:
-				print header
-				print frag
+				print (header)
+				print (frag)
 
 	if (shuffleEm):
 		shuffle(fragments)
 		for (header,frag) in fragments:
-			print header
-			print frag
+			print (header)
+			print (frag)
 
 
 # fasta_sequences--

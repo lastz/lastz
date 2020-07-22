@@ -65,7 +65,9 @@ def main():
 			if (val == ""):
 				usage("missing a value in %s=" % arg)
 
-		if (arg == "--bucketsize") and (val != None):
+		if (arg in ["--help","-h","--h","-help"]) and (val == None):
+			usage()
+		elif (arg == "--bucketsize") and (val != None):
 			try:
 				avgBucket = int(val)
 				if (avgBucket < 1): raise ValueError
@@ -492,7 +494,8 @@ def sequence_name(s,nameParse=None):
 	else:         return s.split()[0]
 
 
-def line_reference((fileName,lineNum)):
+def line_reference(arg):
+	(fileName,lineNum) = arg
 	if (fileName == ""): return "line %d" % lineNum
 	else:                return "line %s:%d" % (fileName,lineNum)
 

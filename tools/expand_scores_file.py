@@ -38,10 +38,12 @@ def main():
 	overrideGaps = False
 
 	for arg in sys.argv[1:]:
-		if (arg == "--overridegaps"):
+		if (arg in ["--help","-h","--h","-help"]):
+			usage()
+		elif (arg == "--overridegaps"):
 				overrideGaps = True
 				continue
-		raise "unrecognized argument: %s" % arg
+		usage ("unrecognized argument: %s" % arg)
 
 	# read the scores file
 
@@ -153,22 +155,22 @@ def main():
 	blankLine = False
 
 	for ix in range(numValueLines):
-		print lines[ix]
+		print (lines[ix])
 		blankLine = (lines[ix] == "")
 
 	if (addedNames != []):
-		if (not blankLine): print ""
-		print "# (score parameters added by expand_scores_file)"
-		print ""
+		if (not blankLine): print ("")
+		print ("# (score parameters added by expand_scores_file)")
+		print ("")
 
 		for name in addedNames:
-			print "%s=%s" % (name,nameToVal[name])
+			print ("%s=%s" % (name,nameToVal[name]))
 
 		blankLine = (lines[numValueLines] == "")
-		if (not blankLine): print ""
+		if (not blankLine): print ("")
 
 	for ix in range(numValueLines,len(lines)):
-		print lines[ix]
+		print (lines[ix])
 
 
 def int_or_float(s):
