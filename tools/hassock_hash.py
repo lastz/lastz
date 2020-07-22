@@ -35,7 +35,7 @@ def hassock_hash(s):
 		k |= ord(s[ix-4]) << 24				# k |= *(--data) << 24;
 
 		k = (k * mult) & 0xFFFFFFFF			# k *= m; 
-		k ^= k >> 24 						# k ^= k >> r;
+		k ^= k >> 24						# k ^= k >> r;
 		k = (k * mult) & 0xFFFFFFFF			# k *= m; 
 
 		h = (h * mult) & 0xFFFFFFFF			# h *= m; 

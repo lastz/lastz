@@ -49,9 +49,9 @@ def main():
 		line2 = line2.rstrip()
 
 		if (stanza != None):
- 			if (line1 == "}") != (line2 == "}"): break
- 			if (line1 == "}") and (line2 == "}"):
-	 			stanza = None
+			if (line1 == "}") != (line2 == "}"): break
+			if (line1 == "}") and (line2 == "}"):
+				stanza = None
 				continue
 			stanzaIx += 1
 

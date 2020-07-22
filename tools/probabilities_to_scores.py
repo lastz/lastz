@@ -134,7 +134,7 @@ def main():
 		elif (arg in ["--dnacols","--dnacolumns"]) and (val == None):
 			colsAreDNA = True
 		elif (arg in ["--hoxd70","--HOXD70"]) and (val == None):
- 			symmetric = True
+			symmetric = True
 			for (s,p) in hoxd70:
 				assert (s not in prob), "duplicate DNA event: %s" % s
 				prob[s] = p
