@@ -211,7 +211,9 @@ def main():
 	numSequences = len(sequences)
 	assert (numSequences > 0), "input file contains no sequences!"
 	if (numBuckets == None):
-		numBuckets = int(ceil(numSequences / avgBucket))
+		numBuckets = (numSequences+avgBucket-1) // avgBucket
+	if (numBuckets == 0):
+		numBuckets += 1
 	if (oddBuckets) and (numBuckets % 1 == 0):
 		numBuckets += 1
 
