@@ -1,4 +1,9 @@
-# this file has no shebang, this is intentional
+#!/usr/bin/env python
+
+if __name__ == "__main__":
+	from sys import exit
+	exit ("This script, "+__file__+", is not intended to be launched from a command line")
+
 """
 "Hashed sequence index" (hsx) file reader (for a fasta file)
 -------------------------------------------------------------------

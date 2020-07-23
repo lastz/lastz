@@ -30,13 +30,14 @@ We consider adjoining intervals to be overlapping.
 __author__ = "Bob Harris (rsharris@bx.psu.edu)"
 
 
-from sys import argv,stdin
+from sys import argv,stdin,exit
 
 
 def main():
 	global origin,adjoining
 
-	assert (len(argv) == 1), "give me no arguments"
+	if (len(argv) != 1):
+		exit ("give me no arguments")
 
 	# collect the intervals
 	# nota bene: internally we work with them as origin-zero, half-open
