@@ -4276,10 +4276,10 @@ A segment file describes a list of segments representing gap-free alignments.
 This list is either produced internally by LASTZ as a result of the
 gap-free extension stage (see <a href="#overview">Overview</a>), or read from
 a user-supplied file via the
-<code><a href="#option_segments">&#8209;&#8209;segments</a></code> option. The latter
-causes LASTZ to skip the indexing, seeding, and gap-free extension stages and
-begin with the chaining stage (or the next specified stage, if chaining is not
-requested).
+<code><a href="#option_segments">&#8209;&#8209;segments</a></code> option. The
+latter causes LASTZ to skip the indexing, seeding, gap-free extension, and
+chaining stages and begin with the ungapped extension stage (or the next
+specified stage, if ungapped extension is not requested).
 
 <p>
 The file contains two intervals per line, one from the

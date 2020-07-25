@@ -95,7 +95,7 @@ char* programRevisionDate    = REVISION_DATE;
 // Dynamic masking is (optionally) performed during the ALIGN stage.  We keep a
 // count of how many times each target base has been in an alignment.  When a
 // base reaches a threshold, it is assumed to be a repeat and is masked from the
-// sequence (by chaing it to an 'x').  This only affects subsequent queries in
+// sequence (by changing it to an 'x').  This only affects subsequent queries in
 // the same run.  See masking.c.
 //
 // The INTERP stage repeats all of the previous steps in the regions between
