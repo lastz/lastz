@@ -662,7 +662,7 @@ static kdnode* build_kd_tree
 		p->loIx = lo;
 		p->hiIx = hi;
 		}
-	else							// the range is two big for one node, split
+	else							// the range is too big for one node, split
 		{							// .. it into two subtrees
 		p->isBucket = false;
 		m = partition_segments (lo, hi, axis, kdi);
