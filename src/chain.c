@@ -102,7 +102,7 @@ typedef struct kdnode
 										// ..   hiIx is index corresponding to
 										// ..   cutVal
 
-	// the following fields are onlyl valid if isBucket is false
+	// the following fields are only valid if isBucket is false
 
 	sgnpos		cutVal;					// value (along appropriate axis) which
 										// .. separates lower and upper children
