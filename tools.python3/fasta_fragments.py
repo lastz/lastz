@@ -84,7 +84,7 @@ def main():
 		if (headLimit != None) and (fragNum > headLimit): break
 
 		seq = seq.upper()
-		for ix in xrange(0,len(seq)-fragmentLength,stepLength):
+		for ix in range(0,len(seq)-fragmentLength,stepLength):
 			frag = seq[ix:ix+fragmentLength]
 			if (frag == allN): continue
 
