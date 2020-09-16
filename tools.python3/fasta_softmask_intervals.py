@@ -14,8 +14,11 @@ def usage(s=None):
     <intervals_file>          file containing a list of intervals to be masked,
                               in the form <chrom> <start> <end>;  --origin
                               determines whether these are origin one or zero
-    --chrom=<sequence_names>  copy (and mask) only the specified sequence(s)
-                              <sequence_names> is a comma-separated list
+    --complement              mask the intervals *not* in the intervals file
+                              (not to be confused with reverse-complementation)
+    --chrom=<sequence_names>  (cumulative) copy (and mask) only the specified
+                              sequence(s) <sequence_names> is a comma-separated
+                              list
                               (default is to copy and mask all sequences)
     --origin=one              intervals are origin-one, closed
                               (default is origin-zero, half-open)
@@ -33,6 +36,7 @@ def main():
 	# parse args
 
 	chromsOfInterest = None
+	doComplement     = False
 	origin           = "zero"
 	wrapLength       = 100
 	maskChar         = None
@@ -48,6 +52,8 @@ def main():
 			if (chromsOfInterest == None):
 				chromsOfInterest = []
 			chromsOfInterest += argVal.split(",")
+		elif (arg == "--complement"):
+			doComplement = True
 		elif (arg.startswith("--origin=")):
 			origin = argVal
 			if (origin == "0"): origin = "zero"
@@ -122,10 +128,13 @@ def main():
 		seq = seq.upper()
 		if (chrom not in chromToIntervals): chromToIntervals[chrom] = []
 
+		intervals = chromToIntervals[chrom]
+		if (doComplement): intervals = complement_intervals(intervals,len(seq))
+
 		newSeq = []
 
 		prevEnd = 0
-		for (start,end) in chromToIntervals[chrom]:
+		for (start,end) in intervals:
 			if (prevEnd < start):  newSeq += [seq[prevEnd:start]]
 			if (maskChar == None): newSeq += [seq[start:end].lower()]
 			else:                  newSeq += [maskChar*(end-start)]
@@ -170,7 +179,7 @@ def fasta_sequences(f):
 
 
 # merge_and_sort--
-#	Marge a set of intervals (union of sets) and sort them by increasing
+#	Merge a set of intervals (union of sets) and sort them by increasing
 #	position
 
 def merge_and_sort(intervals):
@@ -189,6 +198,20 @@ def merge_and_sort(intervals):
 
 	if (start != None):
 		yield (start,end)
+
+
+# complement_intervals--
+#	Produce the set-wise complement of a set of intervals. We assume the
+#	intervals are sorted by increasing position, and that there are no overlaps.
+
+def complement_intervals(intervals,seqLen):
+	prevEnd = 0
+	for (start,end) in intervals:
+		if (start != prevEnd):
+			yield (prevEnd,start)
+		prevEnd = end
+	if (seqLen != prevEnd):
+		yield (prevEnd,seqLen)
 
 
 if __name__ == "__main__": main()
