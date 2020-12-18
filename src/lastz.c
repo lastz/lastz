@@ -8976,23 +8976,27 @@ threshold_check_done:
 	// both DNA
 
 	if ((lzParams->nIsAmbiguous)
+	 && (lzParams->scoring != NULL)
 	 && (!lzParams->scoring->rowsAreDna)
 	 && (!lzParams->scoring->colsAreDna))
 		suicidef ("can't use --ambiguous if both target and query are quantum");
 
-	if (lzParams->allowAmbiDNA)
+	if ((lzParams->allowAmbiDNA)
+	 && (lzParams->scoring != NULL))
 		{
 		ambiguate_iupac (lzParams->scoring,       lzParams->ambiMatch, -lzParams->ambiMismatch);
 		ambiguate_iupac (lzParams->maskedScoring, lzParams->ambiMatch, -lzParams->ambiMismatch);
 		}
 
-	if (lzParams->nIsAmbiguous)
+	if ((lzParams->nIsAmbiguous)
+	 && (lzParams->scoring != NULL))
 		{
 		ambiguate_n     (lzParams->scoring,       lzParams->ambiMatch, -lzParams->ambiMismatch);
 		ambiguate_n     (lzParams->maskedScoring, lzParams->ambiMatch, -lzParams->ambiMismatch);
 		}
 
-	if (dbgShowMatrix)
+	if ((dbgShowMatrix)
+	 && (lzParams->scoring != NULL))
 		{
 		// nota bene:  Bb is representative of iupac ambiggies;  F represents "fill"
 		fprintf        (stderr, "lzParams->scoring:\n");
@@ -9004,6 +9008,8 @@ threshold_check_done:
 
 	if (lzParams->inferScores)
 		maxScore = 0;  // (maxScore is not needed)
+	else if (lzParams->scoring == NULL)
+		suicidef ("internal error, lzParams->scoring is NULL");
 	else
 		maxScore = max_in_score_matrix (lzParams->scoring);
 
