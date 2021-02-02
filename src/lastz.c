@@ -150,6 +150,7 @@ char* programRevisionDate    = REVISION_DATE;
 #include "continuity_dist.h"	// query continuity distribution stuff
 #include "output.h"				// alignment outout format stuff
 #include "maf.h"				// maf alignment format stuff
+#include "paf.h"				// paf alignment format stuff
 #include "sam.h"				// sam alignment format stuff
 #include "genpaf.h"				// genpaf alignment format stuff
 #include "text_align.h"			// textual alignment format stuff
@@ -6868,6 +6869,16 @@ static void parse_options_loop
 			lzParams->outputFormat = fmtMaf;
 			maf_distinguishNames   = false;
 			goto next_arg;
+			}
+
+    if ((strcmp (arg, "--format=paf") == 0)
+        || (strcmp (arg, "--format=PAF") == 0)
+        || (strcmp (arg, "--paf")        == 0)
+        || (strcmp (arg, "--PAF")        == 0))
+			{
+        lzParams->outputFormat = fmtPaf;
+        paf_distinguishNames   = false;
+        goto next_arg;
 			}
 
 		if ((strcmp (arg, "--format=~maf") == 0)

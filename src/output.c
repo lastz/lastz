@@ -28,6 +28,7 @@
 #include "lav.h"				// lav alignment format stuff
 #include "axt.h"				// axt alignment format stuff
 #include "maf.h"				// maf alignment format stuff
+#include "paf.h"				// paf alignment format stuff
 #include "sam.h"				// sam alignment format stuff
 #include "cigar.h"				// cigar alignment format stuff
 #include "genpaf.h"				// genpaf alignment format stuff
@@ -218,6 +219,14 @@ void print_job_header (void)
 		        currParams->xDrop, currParams->yDrop,
 		        (outputFormat != fmtMafNoComment));
 			break;
+		case fmtPaf:
+			print_maf_job_header
+        (currParams->outputFile, program_name(), currParams->args,
+		        currParams->scoring,
+		        &currParams->hspThreshold, &currParams->gappedThreshold,
+		        currParams->xDrop, currParams->yDrop,
+		        (outputFormat != fmtMafNoComment));
+			break;
 		case fmtSoftSam:
 		case fmtHardSam:
 			print_sam_job_header (currParams->outputFile,currParams->readGroup);
@@ -309,6 +318,9 @@ void print_job_footer (void)
 		case fmtMafComment:
 		case fmtMafNoComment:
 			print_maf_job_footer (currParams->outputFile);
+			break;
+		case fmtPaf:
+			print_paf_job_footer (currParams->outputFile);
 			break;
 		case fmtSoftSam:
 		case fmtSoftSamNoHeader:
@@ -407,6 +419,10 @@ void print_header (void)
 		case fmtMafComment:
 		case fmtMafNoComment:
 			print_maf_header (currParams->outputFile,
+			                  currParams->seq1, currParams->seq2);
+			break;
+		case fmtPaf:
+			print_paf_header (currParams->outputFile,
 			                  currParams->seq1, currParams->seq2);
 			break;
 		case fmtSoftSam:
@@ -598,6 +614,11 @@ void print_align_list (alignel* alignList)
 			                      alignList, currParams->seq1, currParams->seq2,
 			                      /* comments */ false);
 			break;
+		case fmtPaf:
+			print_paf_align_list (currParams->outputFile,
+			                      alignList, currParams->seq1, currParams->seq2,
+			                      /* comments */ false);
+			break;
 		case fmtMafComment:
 			print_maf_align_list (currParams->outputFile,
 			                      alignList, currParams->seq1, currParams->seq2,
@@ -757,6 +778,12 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 		case fmtMaf:
 		case fmtMafNoComment:
 			print_maf_match (currParams->outputFile,
+			                 currParams->seq1, pos1,
+			                 currParams->seq2, pos2, length,
+			                 s, /* comments */ false);
+			break;
+		case fmtPaf:
+			print_paf_match (currParams->outputFile,
 			                 currParams->seq1, pos1,
 			                 currParams->seq2, pos2, length,
 			                 s, /* comments */ false);
@@ -1029,6 +1056,7 @@ void print_m_stanza (census* cen)
 		case fmtAxtComment:
 		case fmtAxtGeneral:
 		case fmtMaf:
+		case fmtPaf:
 		case fmtMafComment:
 		case fmtMafNoComment:
 		case fmtSoftSam:
@@ -1220,6 +1248,7 @@ void print_generic
 		case fmtAxt:
 		case fmtAxtGeneral:
 		case fmtMaf:
+		case fmtPaf:
 		case fmtMafNoComment:
 		case fmtSoftSam:
 		case fmtSoftSamNoHeader:

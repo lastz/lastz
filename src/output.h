@@ -45,6 +45,7 @@ enum
 	fmtAxtComment,				// .. in AXT format with comments
 	fmtAxtGeneral,				// .. in AXT format with extra (general) fields
 	fmtMaf,						// .. in MAF format
+	fmtPaf,						// .. in PAF format
 	fmtMafComment,				// .. in MAF format with comments
 	fmtMafNoComment,			// .. in MAF format with no comments at all
 	fmtSoftSam,					// .. in SAM format, soft masking
@@ -75,7 +76,7 @@ enum
 #ifdef output_owner
 char* formatNames[] = {"GFA","GFANOSCORE",
                        "LAV","lav+","LAVSCORE","lav+text",
-                       "AXT","axt+",NULL,"MAF","maf+","maf-",
+                       "AXT","axt+",NULL,"MAF","maf+","maf-","paf",
                        "sam","sam-","hardsam","hardsam-","cigar",
                        "general","general-",NULL,"blastn","blastn-",
                        "text", "ztext", "comp", "diffs", "diffs-",
