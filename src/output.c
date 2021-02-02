@@ -220,12 +220,6 @@ void print_job_header (void)
 		        (outputFormat != fmtMafNoComment));
 			break;
 		case fmtPaf:
-			print_maf_job_header
-        (currParams->outputFile, program_name(), currParams->args,
-		        currParams->scoring,
-		        &currParams->hspThreshold, &currParams->gappedThreshold,
-		        currParams->xDrop, currParams->yDrop,
-		        (outputFormat != fmtMafNoComment));
 			break;
 		case fmtSoftSam:
 		case fmtHardSam:
@@ -320,7 +314,6 @@ void print_job_footer (void)
 			print_maf_job_footer (currParams->outputFile);
 			break;
 		case fmtPaf:
-			print_paf_job_footer (currParams->outputFile);
 			break;
 		case fmtSoftSam:
 		case fmtSoftSamNoHeader:
@@ -422,8 +415,6 @@ void print_header (void)
 			                  currParams->seq1, currParams->seq2);
 			break;
 		case fmtPaf:
-			print_paf_header (currParams->outputFile,
-			                  currParams->seq1, currParams->seq2);
 			break;
 		case fmtSoftSam:
 		case fmtHardSam:
@@ -783,10 +774,6 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 			                 s, /* comments */ false);
 			break;
 		case fmtPaf:
-			print_paf_match (currParams->outputFile,
-			                 currParams->seq1, pos1,
-			                 currParams->seq2, pos2, length,
-			                 s, /* comments */ false);
 			break;
 		case fmtMafComment:
 			print_maf_match (currParams->outputFile,
