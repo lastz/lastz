@@ -156,7 +156,7 @@ void print_paf_align_list
 		print_paf_align (f,
 		                 seq1, a->beg1-1, a->end1,
 		                 seq2, a->beg2-1, a->end2,
-		                 a->script, a->s);
+		                 a->script);
 		}
 	}
 
@@ -192,8 +192,7 @@ void print_paf_align
 	seq*			seq2,
 	unspos			beg2,
 	unspos			end2,
-	editscript*		script,
-	score			s)
+	editscript*		script)
 	{
 	seqpartition*	sp1 = &seq1->partition;
 	seqpartition*	sp2 = &seq2->partition;
@@ -271,7 +270,7 @@ void print_paf_align
 	// print summary line
 	//////////
 
-	fprintf (f, "a score=" scoreFmt "\n", s);
+	// fprintf (f, "a score=" scoreFmt "\n", s);
 
 	//////////
 	// print aligning path in sequence 1
@@ -312,9 +311,77 @@ void print_paf_align
 	endW   = max_digits (end1+1-beg1, end2+1-beg2);
 	lenW   = max_digits (seq1True, seq2True);
 
+  char paf_strand = '+';
+  if (strand1 != strand2) {
+    paf_strand = '-';
+  }
+
+
+  
+  int mapping_quality = 255; // 0-255; 255 for missing
+  int seqPafLen1 = seq1True+1; // to include a terminating zero
+  int seqPafLen2 = seq2True+1; // to include a terminating zero
+
+  int residue_matches = 0; // number of sequence matches
+
+  // total number of sequence matches, mismatches, insertions and deletions in
+  // the alignment
+  int alignment_block_length = seqPafLen1+seqPafLen2;
+
 	// print aligning path in sequence 1 (non-printables are printed as '*'
 	// but such should never be seen unless there is a problem elsewhere)
 
+  //  printf("%s %d %d %d %c", name1, end1+1-beg1, start1, end1+1, strand1);
+
+
+
+
+  opIx = 0;
+  for (i=j=0 ; (i<height)||(j<width) ;) {
+    run = edit_script_run_of_subs (script, &opIx);
+
+    p = seq1->v+beg1+i-1;
+		q = seq2->v+beg2+j-1;
+
+    
+    for (ix=0 ; ix<run ; ix++) {
+      if (*p == *q) {
+        residue_matches++;
+      }
+      p++; q++;
+    }
+
+    i += run; j += run;
+
+    if ((i < height) || (j < width))
+			{
+        startI = i;  p = seq1->v+beg1+i-1;
+        startJ = j;  q = seq2->v+beg2+j-1;
+
+        edit_script_indel_len (script, &opIx, &i, &j);
+
+        if (i != startI)
+          {
+            for ( ; startI<i ; startI++)
+              {  p++; }
+          }
+
+        if (j != startJ)
+          {
+            for ( ; startJ<j ; startJ++)
+              {  q++; }
+          }
+			}
+  }
+
+
+  printf("%s %d %d %d %c %s %d %d %d %d %d %d\n",
+         name1, seqPafLen1, start1, end1+1, paf_strand,
+         name2, seqPafLen2, start2, end2+1,
+         residue_matches, alignment_block_length, mapping_quality
+         );
+
+  /*
 	fprintf (f, "s %s%s%*s" unsposStarFmt " " unsposStarFmt " %c " unsposStarFmt " ",
 	            name1, suff1, nameW+1-len1, " ",
 	            startW, start1-1, endW, end1+1-beg1, strand1, lenW, seq1True);
@@ -358,13 +425,17 @@ void print_paf_align
 
 	fprintf (f, "\n");
 
+
 	//////////
 	// print aligning path in sequence 2
 	//////////
 
+
+
 	fprintf (f, "s %s%s%s%*s" unsposStarFmt " " unsposStarFmt " %c " unsposStarFmt " ",
 	            pref2, name2, suff2, nameW+1-len2, " ",
 	            startW, start2-1, endW, end2+1-beg2, strand2, lenW, seq2True);
+
 
 	opIx = 0;
 	for (i=j=0 ; (i<height)||(j<width) ; )
@@ -403,7 +474,9 @@ void print_paf_align
 			}
 		}
 
+
 	fprintf (f, "\n\n");
+  */
 	}
 
 //----------

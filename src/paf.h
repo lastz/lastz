@@ -45,7 +45,7 @@ void print_paf_align_list (FILE* f, alignel* alignList, seq* seq1, seq* seq2,
 void print_paf_align      (FILE* f,
                            seq* seq1, unspos beg1, unspos end1,
                            seq* seq2, unspos beg2, unspos end2,
-                           editscript* script, score s);
+                           editscript* script);
 
 #undef global
 #endif // paf_H
