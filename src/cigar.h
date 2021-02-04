@@ -47,6 +47,10 @@ void print_cigar_match      (FILE* f,
                              score s,
                              int withInfo, int markMismatches, int letterAfter,
                              int hideSingles, int lowercase, int withNewLine);
+void print_cigar_mismatchy_run (FILE* f,
+                                u8* s1, u8* s2,
+                                unspos length,
+                                int letterAfter, int hideSingles, int lowercase);
 
 #undef global
 #endif // maf_H

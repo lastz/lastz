@@ -69,15 +69,6 @@
 
 //----------
 //
-// prototypes for private functions
-//
-//----------
-
-static void print_cigar_mismatchy_run (FILE* f, u8* s1, u8* s2, unspos length,
-                                       int letterAfter, int hideSingles, int lowercase);
-
-//----------
-//
 // print_cigar_job_header--
 //	Print cigar format job header.
 //
@@ -527,7 +518,7 @@ void print_cigar_match
 //
 //----------
 
-static void print_cigar_mismatchy_run
+void print_cigar_mismatchy_run
    (FILE*	f,
 	u8*  	s1,
 	u8*  	s2,

@@ -317,8 +317,6 @@ void print_paf_align
     paf_strand = '-';
   }
 
-
-  
   int mapping_quality = 255; // 0-255; 255 for missing
   int seqPafLen1 = seq1True; // to include a terminating zero
   int seqPafLen2 = seq2True; // to include a terminating zero
@@ -385,12 +383,17 @@ void print_paf_align
          residue_matches, alignment_block_length, mapping_quality
          );
 
-  char			chM = 'M';
-	char			chD = 'D';
-	char			chI = 'I';
-  int				letterAfter = 1;
-  int				hideSingles = 0;
-  int				withNewLine = 1;
+  char chM = 'M';
+	char chD = 'D';
+	char chI = 'I';
+  int	 letterAfter = 1;
+  int	 hideSingles = 0;
+  int	 withNewLine = 1;
+  int	 markMismatches = 1;
+  int	 lowercase = 0;
+
+  u8*	 s1 = seq1->v + beg1;
+	u8*	 s2 = seq2->v + beg2;
 
 
   opIx = 0;
@@ -399,9 +402,14 @@ void print_paf_align
 		run = edit_script_run_of_subs (script, &opIx);
 		if (run > 0)
 			{
-        if (letterAfter) fprintf (f, unsposFmt "%c",   run, chM);
-				            else fprintf (f, " %c" unsposFmt, chM, run);
-
+        if (markMismatches)
+          print_cigar_mismatchy_run (f, s1+i, s2+j, run,
+                                     letterAfter, hideSingles, lowercase);
+        else
+          {
+            if (letterAfter) fprintf (f, unsposFmt "%c",   run, chM);
+            else fprintf (f, " %c " unsposFmt, chM, run);
+          }
         i += run; j += run;
 			}
 
