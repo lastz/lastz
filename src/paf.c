@@ -26,7 +26,8 @@
 #include <stdarg.h>				// standard C variable argument list stuff
 #include "build_options.h"		// build options
 #include "utilities.h"			// utility stuff
-#include "dna_utilities.h"		// dna/scoring stuff
+#include "cigar.h"			    // cigar stuff
+#include "dna_utilities.h"  	// dna/scoring stuff
 #include "sequences.h"			// sequence stuff
 #include "edit_script.h"		// alignment edit script stuff
 #include "diag_hash.h"			// diagonals hashing stuff
@@ -197,7 +198,7 @@ void print_paf_align
 	seqpartition*	sp1 = &seq1->partition;
 	seqpartition*	sp2 = &seq2->partition;
 	partition*		part;
-	unspos			height, width, i, j, run;
+  unspos			height, width, i, j, prevI, prevJ, run;
 	u32				opIx;
 	u8*				p, *q;
 	unspos			ix;
@@ -319,8 +320,8 @@ void print_paf_align
 
   
   int mapping_quality = 255; // 0-255; 255 for missing
-  int seqPafLen1 = seq1True+1; // to include a terminating zero
-  int seqPafLen2 = seq2True+1; // to include a terminating zero
+  int seqPafLen1 = seq1True; // to include a terminating zero
+  int seqPafLen2 = seq2True; // to include a terminating zero
 
   int residue_matches = 0; // number of sequence matches
 
@@ -343,14 +344,13 @@ void print_paf_align
     p = seq1->v+beg1+i-1;
 		q = seq2->v+beg2+j-1;
 
-    
     for (ix=0 ; ix<run ; ix++) {
       if (*p == *q) {
         residue_matches++;
       }
       p++; q++;
     }
-
+    // fprintf (f, unsposFmt "M", run);
     i += run; j += run;
 
     if ((i < height) || (j < width))
@@ -364,23 +364,74 @@ void print_paf_align
           {
             for ( ; startI<i ; startI++)
               {  p++; }
+            // fprintf (f, unsposFmt "D", i - startI);
           }
 
         if (j != startJ)
           {
             for ( ; startJ<j ; startJ++)
               {  q++; }
+            //fprintf (f, unsposFmt "I", j - startJ);
           }
 			}
   }
 
 
-  printf("%s %d %d %d %c %s %d %d %d %d %d %d\n",
+
+
+  printf("%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d\tcg:Z:",
          name1, seqPafLen1, start1, end1+1, paf_strand,
          name2, seqPafLen2, start2, end2+1,
          residue_matches, alignment_block_length, mapping_quality
          );
 
+  char			chM = 'M';
+	char			chD = 'D';
+	char			chI = 'I';
+  int				letterAfter = 1;
+  int				hideSingles = 1;
+  int				withNewLine = 1;
+
+
+  opIx = 0;
+	for (i=j=0 ; (i< height)||(j<width) ; )
+		{
+		run = edit_script_run_of_subs (script, &opIx);
+		if (run > 0)
+			{
+        if (letterAfter) fprintf (f, unsposFmt "%c",   run, chM);
+				            else fprintf (f, " %c" unsposFmt, chM, run);
+
+        i += run; j += run;
+			}
+
+		if ((i < height) || (j < width))
+			{
+			prevI = i;  prevJ = j;
+			edit_script_indel_len (script, &opIx, &i, &j);
+			if (i > prevI)
+				{
+				if (!letterAfter)
+					fprintf (f, " %c" unsposFmt, chD, i - prevI);
+				else if ((hideSingles) && (i - prevI == 1))
+					fprintf (f, "%c", chD);
+				else
+					fprintf (f, unsposFmt "%c", i - prevI, chD);
+				}
+			if (j > prevJ)
+				{
+				if (!letterAfter)
+					fprintf (f, " %c" unsposFmt, chI, j - prevJ);
+				else if ((hideSingles) && (j - prevJ == 1))
+					fprintf (f, "%c", chI);
+				else
+					fprintf (f, unsposFmt "%c", j - prevJ, chI);
+				}
+			}
+		}
+
+	if (withNewLine)
+		fprintf (f, "\n");
   /*
 	fprintf (f, "s %s%s%*s" unsposStarFmt " " unsposStarFmt " %c " unsposStarFmt " ",
 	            name1, suff1, nameW+1-len1, " ",
@@ -406,6 +457,7 @@ void print_paf_align
 			{
 			startI = i;  p = seq1->v+beg1+i-1;
 			startJ = j;  q = seq2->v+beg2+j-1;
+
 
 			edit_script_indel_len (script, &opIx, &i, &j);
 
