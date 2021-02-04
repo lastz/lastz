@@ -4772,6 +4772,14 @@ static void format_options (void)
 	fprintf (helpout, "    The option --format=maf- inhibits the maf header and any comments.  This\n");
 	fprintf (helpout, "    makes it suitable for catenating output from multiple runs.\n");
 	fprintf (helpout, "\n");
+  fprintf (helpout, "PAF\n");
+	fprintf (helpout, "    PAF format is a Pairwise mApping Format.  As of Feb/2021, a spec for PAF\n");
+	fprintf (helpout, "    files can be found at\n");
+	fprintf (helpout, "        https://github.com/lh3/miniasm/blob/master/PAF.md\n");
+	fprintf (helpout, "    The PAF files produced by lastz have exactly two sequences per block.  The\n");
+	fprintf (helpout, "    first sequence always comes from the target sequence file, the second from\n");
+	fprintf (helpout, "    the query.\n");
+	fprintf (helpout, "\n");
 	fprintf (helpout, "SAM\n");
 	fprintf (helpout, "    SAM format is a pairwise alignment format used primarily for short-read\n");
 	fprintf (helpout, "    mapping.  It is imperative that the query sequence(s) be short reads.  By\n");
