@@ -380,8 +380,8 @@ void print_paf_align
 
 
   printf("%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d\tcg:Z:",
-         name1, seqPafLen1, start1, end1+1, paf_strand,
-         name2, seqPafLen2, start2, end2+1,
+         name1, seqPafLen1, start1-1, end1, paf_strand,
+         name2, seqPafLen2, start2-1, end2,
          residue_matches, alignment_block_length, mapping_quality
          );
 
@@ -389,7 +389,7 @@ void print_paf_align
 	char			chD = 'D';
 	char			chI = 'I';
   int				letterAfter = 1;
-  int				hideSingles = 1;
+  int				hideSingles = 0;
   int				withNewLine = 1;
 
 
