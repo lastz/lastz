@@ -214,11 +214,8 @@ void print_paf_align
 	if ((beg1 < debugSeq1Beg) || (end1 > debugSeq1End)) return;
 #endif // debugSeq1Beg
 
-	beg1++; // (internally, we want origin 1, inclusive)
-	beg2++;
-
-	height = end1 - beg1 + 1;
-	width  = end2 - beg2 + 1;
+	height = end1 - beg1;
+	width  = end2 - beg2;
 
 	// report diagonal
 
@@ -290,7 +287,8 @@ void print_paf_align
 		}
 	else
 		{
-		start1  = beg1-1 - offset1 + seq1True+2 - (startLoc1 + seq1Len);
+		start1  = beg1-1 - offset1 + seq1True+2 - (startLoc1 + seq1Len) - beg1;
+    end1 = seq1True - beg1;
 		strand1 = '-';
 		}
 	if ((seq2->revCompFlags & rcf_rev) == 0)
@@ -300,9 +298,12 @@ void print_paf_align
 		}
 	else
 		{
-		start2  = beg2-1 - offset2 + seq2True+2 - (startLoc2 + seq2Len);
-		strand2 = '-';
+    start2  = beg2-1 - offset2 + seq2True+2 - (startLoc2 + seq2Len) - beg2;
+    end2 = seq2True - beg2;
+    strand2 = '-';
 		}
+
+  //printf("%d %d %d %d %d\n", beg2, offset2, seq2True, startLoc2, seq2Len);
 
 	len1  =                  strlen (name1) + strlen (suff1);
 	len2  = strlen (pref2) + strlen (name2) + strlen (suff2);
@@ -312,14 +313,9 @@ void print_paf_align
 	endW   = max_digits (end1+1-beg1, end2+1-beg2);
 	lenW   = max_digits (seq1True, seq2True);
 
-  char paf_strand = '+';
-  if (strand1 != strand2) {
-    paf_strand = '-';
-  }
-
   int mapping_quality = 255; // 0-255; 255 for missing
-  int seqPafLen1 = seq1True; // to include a terminating zero
-  int seqPafLen2 = seq2True; // to include a terminating zero
+  int seqPafLen1 = seq1True+1; // to include a terminating zero
+  int seqPafLen2 = seq2True+1; // to include a terminating zero
 
   int residue_matches = 0; // number of sequence matches
 
@@ -333,14 +329,12 @@ void print_paf_align
   //  printf("%s %d %d %d %c", name1, end1+1-beg1, start1, end1+1, strand1);
 
 
-
-
   opIx = 0;
   for (i=j=0 ; (i<height)||(j<width) ;) {
     run = edit_script_run_of_subs (script, &opIx);
 
-    p = seq1->v+beg1+i-1;
-		q = seq2->v+beg2+j-1;
+    p = seq1->v+beg1+i;
+		q = seq2->v+beg2+j;
 
     for (ix=0 ; ix<run ; ix++) {
       if (*p == *q) {
@@ -353,8 +347,8 @@ void print_paf_align
 
     if ((i < height) || (j < width))
 			{
-        startI = i;  p = seq1->v+beg1+i-1;
-        startJ = j;  q = seq2->v+beg2+j-1;
+        startI = i;  p = seq1->v+beg1+i;
+        startJ = j;  q = seq2->v+beg2+j;
 
         edit_script_indel_len (script, &opIx, &i, &j);
 
@@ -374,12 +368,17 @@ void print_paf_align
 			}
   }
 
-
+  // ‘+’ if query & target sequence are on the same strand; else ‘-’
+  char relative_strand = '+';
+    if (strand1 != strand2) {
+      relative_strand = '-';
+    }
 
 
   printf("%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d\tcg:Z:",
-         name1, seqPafLen1, start1-1, end1, paf_strand,
-         name2, seqPafLen2, start2-1, end2,
+         name2, seqPafLen2, start2, end2,
+         relative_strand,
+         name1, seqPafLen1, start1, end1,
          residue_matches, alignment_block_length, mapping_quality
          );
 
@@ -397,7 +396,7 @@ void print_paf_align
 
 
   opIx = 0;
-	for (i=j=0 ; (i< height)||(j<width) ; )
+	for (i=j=0 ; (i<height)||(j<width) ; )
 		{
 		run = edit_script_run_of_subs (script, &opIx);
 		if (run > 0)
