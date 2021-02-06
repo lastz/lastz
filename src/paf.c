@@ -264,21 +264,63 @@ void print_paf_align
 		seq2True  = part->trueLen;
 		}
 
-	//////////
-	// print summary line
-	//////////
-
-	// fprintf (f, "a score=" scoreFmt "\n", s);
-
-	//////////
-	// print aligning path in sequence 1
-	//////////
-
 	// figure out fields and widths
 
 	pref2 = ((paf_distinguishNames) && (strcmp (name1, name2) == 0))? "~" : "";
 	suff1 = rcfSuffix[seq1->revCompFlags];
 	suff2 = rcfSuffix[seq2->revCompFlags];
+
+  int residue_matches = 0; // number of sequence matches
+  int exact_matches = 0;
+  int insertions = 0;
+  int deletions = 0;
+
+  int aln_s = 0;
+
+  opIx = 0;
+  for (i=j=0 ; (i<height)||(j<width) ;) {
+    run = edit_script_run_of_subs (script, &opIx);
+
+    p = seq1->v+beg1+i;
+		q = seq2->v+beg2+j;
+
+    for (ix=0 ; ix<run ; ix++) {
+      if (*p == *q) {
+        residue_matches++;
+        exact_matches++;
+      }
+      p++; q++;
+    }
+    // fprintf (f, unsposFmt "M", run);
+    i += run; j += run;
+
+    aln_s = j;
+
+
+
+    if ((i < height) || (j < width))
+			{
+        startI = i;  p = seq1->v+beg1+i;
+        startJ = j;  q = seq2->v+beg2+j;
+
+        edit_script_indel_len (script, &opIx, &i, &j);
+
+        if (i != startI)
+          {
+            for ( ; startI<i ; startI++)
+              {  p++; deletions++; }
+            // fprintf (f, unsposFmt "D", i - startI);
+          }
+
+        if (j != startJ)
+          {
+            for ( ; startJ<j ; startJ++)
+              {  q++; insertions++; }
+            //fprintf (f, unsposFmt "I", j - startJ);
+          }
+			}
+  }
+
 
 	if ((seq1->revCompFlags & rcf_rev) == 0)
 		{
@@ -287,9 +329,10 @@ void print_paf_align
 		}
 	else
 		{
-		start1  = beg1-1 - offset1 + seq1True+2 - (startLoc1 + seq1Len) - beg1;
-    end1 = seq1True - beg1;
-		strand1 = '-';
+      start1 = seq2True - beg2 - residue_matches - deletions;
+      end1 = seq1True - beg1;
+
+      strand1 = '-';
 		}
 	if ((seq2->revCompFlags & rcf_rev) == 0)
 		{
@@ -298,12 +341,13 @@ void print_paf_align
 		}
 	else
 		{
-    start2  = beg2-1 - offset2 + seq2True+2 - (startLoc2 + seq2Len) - beg2;
-    end2 = seq2True - beg2;
-    strand2 = '-';
+      start2 = seq2True - beg2 - residue_matches - insertions;
+      end2 = seq2True - beg2;
+
+      strand2 = '-';
 		}
 
-  //printf("%d %d %d %d %d\n", beg2, offset2, seq2True, startLoc2, seq2Len);
+  // printf("%d %d %d %d %d\n", beg2, offset2, seq2True, startLoc2, seq2Len);
 
 	len1  =                  strlen (name1) + strlen (suff1);
 	len2  = strlen (pref2) + strlen (name2) + strlen (suff2);
@@ -317,11 +361,10 @@ void print_paf_align
   int seqPafLen1 = seq1True+1; // to include a terminating zero
   int seqPafLen2 = seq2True+1; // to include a terminating zero
 
-  int residue_matches = 0; // number of sequence matches
-
   // total number of sequence matches, mismatches, insertions and deletions in
   // the alignment
-  int alignment_block_length = seqPafLen1+seqPafLen2;
+  int alignment_block_length = exact_matches + insertions + deletions;
+  // int alignment_block_length = aln_s;
 
 	// print aligning path in sequence 1 (non-printables are printed as '*'
 	// but such should never be seen unless there is a problem elsewhere)
@@ -329,44 +372,6 @@ void print_paf_align
   //  printf("%s %d %d %d %c", name1, end1+1-beg1, start1, end1+1, strand1);
 
 
-  opIx = 0;
-  for (i=j=0 ; (i<height)||(j<width) ;) {
-    run = edit_script_run_of_subs (script, &opIx);
-
-    p = seq1->v+beg1+i;
-		q = seq2->v+beg2+j;
-
-    for (ix=0 ; ix<run ; ix++) {
-      if (*p == *q) {
-        residue_matches++;
-      }
-      p++; q++;
-    }
-    // fprintf (f, unsposFmt "M", run);
-    i += run; j += run;
-
-    if ((i < height) || (j < width))
-			{
-        startI = i;  p = seq1->v+beg1+i;
-        startJ = j;  q = seq2->v+beg2+j;
-
-        edit_script_indel_len (script, &opIx, &i, &j);
-
-        if (i != startI)
-          {
-            for ( ; startI<i ; startI++)
-              {  p++; }
-            // fprintf (f, unsposFmt "D", i - startI);
-          }
-
-        if (j != startJ)
-          {
-            for ( ; startJ<j ; startJ++)
-              {  q++; }
-            //fprintf (f, unsposFmt "I", j - startJ);
-          }
-			}
-  }
 
   // ‘+’ if query & target sequence are on the same strand; else ‘-’
   char relative_strand = '+';
