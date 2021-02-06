@@ -7,9 +7,9 @@
 // paf--
 //	Support for printing alignments in PAF format.
 //
-// PAF format is a well-established multiple alignment format.  As of Jan/2009,
+// PAF format is a well-established multiple alignment format.  As of Feb/2021,
 // a spec for PAF files can be found at
-//	http://genome.ucsc.edu/FAQ/FAQformat#format5
+//	https://github.com/lh3/miniasm/blob/master/PAF.md
 //
 //----------
 
@@ -90,10 +90,10 @@ static int max_digits (s64 num1, s64 num2);
 
 void print_paf_align_list
    (FILE*		f,
-	alignel*	alignList,
-	seq*		seq1,
-	seq*		seq2,
-	int			withComments)
+    alignel*	alignList,
+    seq*		seq1,
+    seq*		seq2,
+    int			withComments)
 	{
 	alignel*	a;
 	unspos		numer, denom;
@@ -140,7 +140,7 @@ void print_paf_align_list
 					fprintf (f, unsposFmt "m", run);
 					i += run; j += run;
 					}
-		
+
 				if ((i < height) || (j < width))
 					{
 					prevI = i;  prevJ = j;
@@ -187,13 +187,13 @@ static char* rcfSuffix[4] = { "", "~", "~", "" };
 
 void print_paf_align
    (FILE*			f,
-	seq*			seq1,
-	unspos			beg1,
-	unspos			end1,
-	seq*			seq2,
-	unspos			beg2,
-	unspos			end2,
-	editscript*		script)
+    seq*			seq1,
+    unspos			beg1,
+    unspos			end1,
+    seq*			seq2,
+    unspos			beg2,
+    unspos			end2,
+    editscript*		script)
 	{
 	seqpartition*	sp1 = &seq1->partition;
 	seqpartition*	sp2 = &seq2->partition;
@@ -216,11 +216,6 @@ void print_paf_align
 
 	height = end1 - beg1;
 	width  = end2 - beg2;
-
-	// report diagonal
-
-	if (paf_dbgReportDiag)
-		fprintf (f, "# diagonal=" sgnposFmt "\n", diagNumber(beg1,beg2));
 
 	//////////
 	// figure out position offsets and names
@@ -270,12 +265,10 @@ void print_paf_align
 	suff1 = rcfSuffix[seq1->revCompFlags];
 	suff2 = rcfSuffix[seq2->revCompFlags];
 
-  int residue_matches = 0; // number of sequence matches
-  int exact_matches = 0;
+  int residue_matches = 0; // number of exact matches
   int insertions = 0;
   int deletions = 0;
 
-  int aln_s = 0;
 
   opIx = 0;
   for (i=j=0 ; (i<height)||(j<width) ;) {
@@ -287,15 +280,11 @@ void print_paf_align
     for (ix=0 ; ix<run ; ix++) {
       if (*p == *q) {
         residue_matches++;
-        exact_matches++;
       }
       p++; q++;
     }
-    // fprintf (f, unsposFmt "M", run);
+
     i += run; j += run;
-
-    aln_s = j;
-
 
 
     if ((i < height) || (j < width))
@@ -309,14 +298,12 @@ void print_paf_align
           {
             for ( ; startI<i ; startI++)
               {  p++; deletions++; }
-            // fprintf (f, unsposFmt "D", i - startI);
           }
 
         if (j != startJ)
           {
             for ( ; startJ<j ; startJ++)
               {  q++; insertions++; }
-            //fprintf (f, unsposFmt "I", j - startJ);
           }
 			}
   }
@@ -347,8 +334,6 @@ void print_paf_align
       strand2 = '-';
 		}
 
-  // printf("%d %d %d %d %d\n", beg2, offset2, seq2True, startLoc2, seq2Len);
-
 	len1  =                  strlen (name1) + strlen (suff1);
 	len2  = strlen (pref2) + strlen (name2) + strlen (suff2);
 	nameW = (len1 >= len2)? len1 : len2;
@@ -361,24 +346,20 @@ void print_paf_align
   int seqPafLen1 = seq1True+1; // to include a terminating zero
   int seqPafLen2 = seq2True+1; // to include a terminating zero
 
-  // total number of sequence matches, mismatches, insertions and deletions in
-  // the alignment
-  int alignment_block_length = exact_matches + insertions + deletions;
-  // int alignment_block_length = aln_s;
+  /*
+    The total number of sequence matches, mismatches, insertions and deletions
+    in the alignment.
+   */
+  int alignment_block_length = residue_matches + insertions + deletions;
 
-	// print aligning path in sequence 1 (non-printables are printed as '*'
-	// but such should never be seen unless there is a problem elsewhere)
-
-  //  printf("%s %d %d %d %c", name1, end1+1-beg1, start1, end1+1, strand1);
-
-
-
-  // ‘+’ if query & target sequence are on the same strand; else ‘-’
+  /*
+    Set the relative strand to ‘+’ if query & target sequence are on the same
+    strand; else ‘-’
+   */
   char relative_strand = '+';
     if (strand1 != strand2) {
       relative_strand = '-';
     }
-
 
   printf("%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d\tcg:Z:",
          name2, seqPafLen2, start2, end2,
@@ -387,6 +368,8 @@ void print_paf_align
          residue_matches, alignment_block_length, mapping_quality
          );
 
+  // TODO: Do not repeat the double for loop to print the CIGAR string
+  //  Print the CIGAR string
   char chM = 'M';
 	char chD = 'D';
 	char chI = 'I';
@@ -444,103 +427,6 @@ void print_paf_align
 
 	if (withNewLine)
 		fprintf (f, "\n");
-  /*
-	fprintf (f, "s %s%s%*s" unsposStarFmt " " unsposStarFmt " %c " unsposStarFmt " ",
-	            name1, suff1, nameW+1-len1, " ",
-	            startW, start1-1, endW, end1+1-beg1, strand1, lenW, seq1True);
-
-	opIx = 0;
-	for (i=j=0 ; (i<height)||(j<width) ; )
-		{
-		// handle the next run
-
-		run = edit_script_run_of_subs (script, &opIx);
-
-		p = seq1->v+beg1+i-1;
-		q = seq2->v+beg2+j-1;
-		for (ix=0 ; ix<run ; ix++)
-			{ fprintf (f, "%c", dna_toprint(*p));  p++;  q++; }
-
-		i += run; j += run;
-
-		// handle the next indel
-
-		if ((i < height) || (j < width))
-			{
-			startI = i;  p = seq1->v+beg1+i-1;
-			startJ = j;  q = seq2->v+beg2+j-1;
-
-
-			edit_script_indel_len (script, &opIx, &i, &j);
-
-			if (i != startI)
-				{
-				for ( ; startI<i ; startI++)
-					{ fprintf (f, "%c", dna_toprint(*p));  p++; }
-				}
-
-			if (j != startJ)
-				{
-				for ( ; startJ<j ; startJ++)
-					{ fprintf (f, "-");  q++; }
-				}
-			}
-		}
-
-	fprintf (f, "\n");
-
-
-	//////////
-	// print aligning path in sequence 2
-	//////////
-
-
-
-	fprintf (f, "s %s%s%s%*s" unsposStarFmt " " unsposStarFmt " %c " unsposStarFmt " ",
-	            pref2, name2, suff2, nameW+1-len2, " ",
-	            startW, start2-1, endW, end2+1-beg2, strand2, lenW, seq2True);
-
-
-	opIx = 0;
-	for (i=j=0 ; (i<height)||(j<width) ; )
-		{
-		// handle the next run
-
-		run = edit_script_run_of_subs (script, &opIx);
-
-		p = seq1->v+beg1+i-1;
-		q = seq2->v+beg2+j-1;
-		for (ix=0 ; ix<run ; ix++)
-			{ fprintf (f, "%c", dna_toprint(*q));  p++;  q++; }
-
-		i += run; j += run;
-
-		// handle the next indel
-
-		if ((i < height) || (j < width))
-			{
-			startI = i;  p = seq1->v+beg1+i-1;
-			startJ = j;  q = seq2->v+beg2+j-1;
-
-			edit_script_indel_len (script, &opIx, &i, &j);
-
-			if (i != startI)
-				{
-				for ( ; startI<i ; startI++)
-					{ fprintf (f, "-");  p++; }
-				}
-
-			if (j != startJ)
-				{
-				for ( ; startJ<j ; startJ++)
-					{ fprintf (f, "%c", dna_toprint(*q));  q++; }
-				}
-			}
-		}
-
-
-	fprintf (f, "\n\n");
-  */
 	}
 
 //----------
