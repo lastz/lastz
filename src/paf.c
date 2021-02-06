@@ -157,7 +157,7 @@ void print_paf_align_list
 		print_paf_align (f,
 		                 seq1, a->beg1-1, a->end1,
 		                 seq2, a->beg2-1, a->end2,
-		                 a->script);
+		                 a->script, a->s);
 		}
 	}
 
@@ -193,7 +193,8 @@ void print_paf_align
     seq*			seq2,
     unspos			beg2,
     unspos			end2,
-    editscript*		script)
+    editscript*		script,
+    score			s)
 	{
 	seqpartition*	sp1 = &seq1->partition;
 	seqpartition*	sp2 = &seq2->partition;
@@ -361,12 +362,17 @@ void print_paf_align
       relative_strand = '-';
     }
 
-  printf("%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d\tcg:Z:",
-         name2, seqPafLen2, start2, end2,
-         relative_strand,
-         name1, seqPafLen1, start1, end1,
-         residue_matches, alignment_block_length, mapping_quality
+    fprintf(f,
+            "%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d",
+            name2, seqPafLen2, start2, end2,
+            relative_strand,
+            name1, seqPafLen1, start1, end1,
+            residue_matches, alignment_block_length, mapping_quality
          );
+
+    fprintf (f, "\t" "as:i:" scoreFmt, s);
+
+    fprintf (f,  "\t" "cg:Z:");
 
   // TODO: Do not repeat the double for loop to print the CIGAR string
   //  Print the CIGAR string
