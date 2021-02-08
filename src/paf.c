@@ -364,17 +364,17 @@ void print_paf_align
 		relative_strand = '-';
 		}
 
-	fprintf(f,
-	"%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d",
-	name2, seqPafLen2, start2, end2,
-	relative_strand,
-	name1, seqPafLen1, start1, end1,
-	residue_matches, alignment_block_length, mapping_quality
+	fprintf (f,
+		"%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d",
+		name2, seqPafLen2, start2, end2,
+		relative_strand,
+		name1, seqPafLen1, start1, end1,
+		residue_matches, alignment_block_length, mapping_quality
 	);
 
 	fprintf (f, "\t" "as:i:" scoreFmt, s);
 
-	fprintf (f,	 "\t" "cg:Z:");
+	fprintf (f,	"\t" "cg:Z:");
 
 	// Should we repeat the double for loop to print the CIGAR string?
 	// Print the CIGAR string
@@ -398,7 +398,7 @@ void print_paf_align
 			{
 			if (markMismatches)
 				print_cigar_mismatchy_run (f, s1+i, s2+j, run,
-				letterAfter, hideSingles, lowercase);
+					letterAfter, hideSingles, lowercase);
 			else
 				{
 				if (letterAfter) fprintf (f, unsposFmt "%c",	 run, chM);
