@@ -199,7 +199,7 @@ void print_paf_align
 	seqpartition*	sp1 = &seq1->partition;
 	seqpartition*	sp2 = &seq2->partition;
 	partition*		part;
-  unspos			height, width, i, j, prevI, prevJ, run;
+	unspos			height, width, i, j, prevI, prevJ, run;
 	u32				opIx;
 	u8*				p, *q;
 	unspos			ix;
@@ -271,145 +271,145 @@ void print_paf_align
   int deletions = 0;
 
 
-  opIx = 0;
-  for (i=j=0 ; (i<height)||(j<width) ;)
-    {
-      run = edit_script_run_of_subs (script, &opIx);
+	opIx = 0;
+	for (i=j=0 ; (i<height)||(j<width) ;)
+		{
+			run = edit_script_run_of_subs (script, &opIx);
 
-      p = seq1->v+beg1+i;
-      q = seq2->v+beg2+j;
+			p = seq1->v+beg1+i;
+			q = seq2->v+beg2+j;
 
-      for (ix=0 ; ix<run ; ix++)
-        {
-          if (*p == *q)
-            {
-              residue_matches++;
-            }
-          p++; q++;
-        }
+			for (ix=0 ; ix<run ; ix++)
+				{
+					if (*p == *q)
+						{
+							residue_matches++;
+						}
+					p++; q++;
+				}
 
-      i += run; j += run;
+			i += run; j += run;
 
-      if ((i < height) || (j < width))
-        {
-          startI = i;  p = seq1->v+beg1+i;
-          startJ = j;  q = seq2->v+beg2+j;
+			if ((i < height) || (j < width))
+				{
+					startI = i;	 p = seq1->v+beg1+i;
+					startJ = j;	 q = seq2->v+beg2+j;
 
-          edit_script_indel_len (script, &opIx, &i, &j);
+					edit_script_indel_len (script, &opIx, &i, &j);
 
-          if (i != startI)
-            {
-              for ( ; startI<i ; startI++)
-                {  p++; deletions++; }
-            }
+					if (i != startI)
+						{
+							for ( ; startI<i ; startI++)
+								{	 p++; deletions++; }
+						}
 
-          if (j != startJ)
-            {
-              for ( ; startJ<j ; startJ++)
-                {  q++; insertions++; }
-            }
-        }
-    }
+					if (j != startJ)
+						{
+							for ( ; startJ<j ; startJ++)
+								{	 q++; insertions++; }
+						}
+				}
+		}
 
 	if ((seq1->revCompFlags & rcf_rev) == 0)
 		{
-		start1  = beg1-1 - offset1 + startLoc1;
+		start1	= beg1-1 - offset1 + startLoc1;
 		strand1 = '+';
 		}
 	else
 		{
-      start1 = seq2True - beg2 - residue_matches - deletions;
-      end1 = seq1True - beg1;
+			start1 = seq2True - beg2 - residue_matches - deletions;
+			end1 = seq1True - beg1;
 
-      strand1 = '-';
+			strand1 = '-';
 		}
 	if ((seq2->revCompFlags & rcf_rev) == 0)
 		{
-		start2  = beg2-1 - offset2 + startLoc2;
+		start2	= beg2-1 - offset2 + startLoc2;
 		strand2 = '+';
 		}
 	else
 		{
-      start2 = seq2True - beg2 - residue_matches - insertions;
-      end2 = seq2True - beg2;
+			start2 = seq2True - beg2 - residue_matches - insertions;
+			end2 = seq2True - beg2;
 
-      strand2 = '-';
+			strand2 = '-';
 		}
 
-	len1  =                  strlen (name1) + strlen (suff1);
-	len2  = strlen (pref2) + strlen (name2) + strlen (suff2);
+	len1	=									 strlen (name1) + strlen (suff1);
+	len2	= strlen (pref2) + strlen (name2) + strlen (suff2);
 	nameW = (len1 >= len2)? len1 : len2;
 
 	startW = max_digits (start1, start2);
-	endW   = max_digits (end1+1-beg1, end2+1-beg2);
-	lenW   = max_digits (seq1True, seq2True);
+	endW	 = max_digits (end1+1-beg1, end2+1-beg2);
+	lenW	 = max_digits (seq1True, seq2True);
 
-  int mapping_quality = 255; // 0-255; 255 for missing
-  int seqPafLen1 = seq1True+1; // to include a terminating zero
-  int seqPafLen2 = seq2True+1; // to include a terminating zero
+	int mapping_quality = 255; // 0-255; 255 for missing
+	int seqPafLen1 = seq1True+1; // to include a terminating zero
+	int seqPafLen2 = seq2True+1; // to include a terminating zero
 
-  /*
-    The total number of sequence matches, mismatches, insertions and deletions
-    in the alignment.
-   */
-  int alignment_block_length = residue_matches + insertions + deletions;
+	/*
+		The total number of sequence matches, mismatches, insertions and deletions
+		in the alignment.
+	 */
+	int alignment_block_length = residue_matches + insertions + deletions;
 
-  /*
-    Set the relative strand to ‘+’ if query & target sequence are on the same
-    strand; else ‘-’
-   */
-  char relative_strand = '+';
-  if (strand1 != strand2)
-    {
-      relative_strand = '-';
-    }
+	/*
+		Set the relative strand to ‘+’ if query & target sequence are on the same
+		strand; else ‘-’
+	 */
+	char relative_strand = '+';
+	if (strand1 != strand2)
+		{
+			relative_strand = '-';
+		}
 
-  fprintf(f,
-          "%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d",
-          name2, seqPafLen2, start2, end2,
-          relative_strand,
-          name1, seqPafLen1, start1, end1,
-          residue_matches, alignment_block_length, mapping_quality
-          );
+	fprintf(f,
+					"%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d",
+					name2, seqPafLen2, start2, end2,
+					relative_strand,
+					name1, seqPafLen1, start1, end1,
+					residue_matches, alignment_block_length, mapping_quality
+					);
 
-  fprintf (f, "\t" "as:i:" scoreFmt, s);
+	fprintf (f, "\t" "as:i:" scoreFmt, s);
 
-  fprintf (f,  "\t" "cg:Z:");
+	fprintf (f,	 "\t" "cg:Z:");
 
   // Should we repeat the double for loop to print the CIGAR string?
   // Print the CIGAR string
-  char chM = 'M';
+	char chM = 'M';
 	char chD = 'D';
 	char chI = 'I';
-  int	 letterAfter = 1;
-  int	 hideSingles = 0;
-  int	 withNewLine = 1;
-  int	 markMismatches = 1;
-  int	 lowercase = 0;
+	int	 letterAfter = 1;
+	int	 hideSingles = 0;
+	int	 withNewLine = 1;
+	int	 markMismatches = 1;
+	int	 lowercase = 0;
 
-  u8*	 s1 = seq1->v + beg1;
+	u8*	 s1 = seq1->v + beg1;
 	u8*	 s2 = seq2->v + beg2;
 
-  opIx = 0;
+	opIx = 0;
 	for (i=j=0 ; (i<height)||(j<width) ; )
 		{
 		run = edit_script_run_of_subs (script, &opIx);
 		if (run > 0)
 			{
-        if (markMismatches)
-          print_cigar_mismatchy_run (f, s1+i, s2+j, run,
-                                     letterAfter, hideSingles, lowercase);
-        else
-          {
-            if (letterAfter) fprintf (f, unsposFmt "%c",   run, chM);
-            else fprintf (f, " %c " unsposFmt, chM, run);
-          }
-        i += run; j += run;
+				if (markMismatches)
+					print_cigar_mismatchy_run (f, s1+i, s2+j, run,
+																		 letterAfter, hideSingles, lowercase);
+				else
+					{
+						if (letterAfter) fprintf (f, unsposFmt "%c",	 run, chM);
+						else fprintf (f, " %c " unsposFmt, chM, run);
+					}
+				i += run; j += run;
 			}
 
 		if ((i < height) || (j < width))
 			{
-			prevI = i;  prevJ = j;
+			prevI = i;	prevJ = j;
 			edit_script_indel_len (script, &opIx, &i, &j);
 			if (i > prevI)
 				{
