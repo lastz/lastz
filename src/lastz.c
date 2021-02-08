@@ -4777,8 +4777,8 @@ static void format_options (void)
 	fprintf (helpout, "    files can be found at\n");
 	fprintf (helpout, "        https://github.com/lh3/miniasm/blob/master/PAF.md\n");
 	fprintf (helpout, "    The PAF files produced by lastz have exactly two sequences per block.  The\n");
-	fprintf (helpout, "    first sequence always comes from the target sequence file, the second from\n");
-	fprintf (helpout, "    the query.\n");
+	fprintf (helpout, "    first sequence always comes from the query sequence file, the second from\n");
+	fprintf (helpout, "    the target.\n");
 	fprintf (helpout, "\n");
 	fprintf (helpout, "SAM\n");
 	fprintf (helpout, "    SAM format is a pairwise alignment format used primarily for short-read\n");

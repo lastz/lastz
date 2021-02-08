@@ -272,43 +272,44 @@ void print_paf_align
 
 
   opIx = 0;
-  for (i=j=0 ; (i<height)||(j<width) ;) {
-    run = edit_script_run_of_subs (script, &opIx);
+  for (i=j=0 ; (i<height)||(j<width) ;)
+    {
+      run = edit_script_run_of_subs (script, &opIx);
 
-    p = seq1->v+beg1+i;
-		q = seq2->v+beg2+j;
+      p = seq1->v+beg1+i;
+      q = seq2->v+beg2+j;
 
-    for (ix=0 ; ix<run ; ix++) {
-      if (*p == *q) {
-        residue_matches++;
-      }
-      p++; q++;
+      for (ix=0 ; ix<run ; ix++)
+        {
+          if (*p == *q)
+            {
+              residue_matches++;
+            }
+          p++; q++;
+        }
+
+      i += run; j += run;
+
+      if ((i < height) || (j < width))
+        {
+          startI = i;  p = seq1->v+beg1+i;
+          startJ = j;  q = seq2->v+beg2+j;
+
+          edit_script_indel_len (script, &opIx, &i, &j);
+
+          if (i != startI)
+            {
+              for ( ; startI<i ; startI++)
+                {  p++; deletions++; }
+            }
+
+          if (j != startJ)
+            {
+              for ( ; startJ<j ; startJ++)
+                {  q++; insertions++; }
+            }
+        }
     }
-
-    i += run; j += run;
-
-
-    if ((i < height) || (j < width))
-			{
-        startI = i;  p = seq1->v+beg1+i;
-        startJ = j;  q = seq2->v+beg2+j;
-
-        edit_script_indel_len (script, &opIx, &i, &j);
-
-        if (i != startI)
-          {
-            for ( ; startI<i ; startI++)
-              {  p++; deletions++; }
-          }
-
-        if (j != startJ)
-          {
-            for ( ; startJ<j ; startJ++)
-              {  q++; insertions++; }
-          }
-			}
-  }
-
 
 	if ((seq1->revCompFlags & rcf_rev) == 0)
 		{
@@ -358,24 +359,25 @@ void print_paf_align
     strand; else ‘-’
    */
   char relative_strand = '+';
-    if (strand1 != strand2) {
+  if (strand1 != strand2)
+    {
       relative_strand = '-';
     }
 
-    fprintf(f,
-            "%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d",
-            name2, seqPafLen2, start2, end2,
-            relative_strand,
-            name1, seqPafLen1, start1, end1,
-            residue_matches, alignment_block_length, mapping_quality
-         );
+  fprintf(f,
+          "%s\t%d\t%d\t%d\t%c\t%s\t%d\t%d\t%d\t%d\t%d\t%d",
+          name2, seqPafLen2, start2, end2,
+          relative_strand,
+          name1, seqPafLen1, start1, end1,
+          residue_matches, alignment_block_length, mapping_quality
+          );
 
-    fprintf (f, "\t" "as:i:" scoreFmt, s);
+  fprintf (f, "\t" "as:i:" scoreFmt, s);
 
-    fprintf (f,  "\t" "cg:Z:");
+  fprintf (f,  "\t" "cg:Z:");
 
-  // TODO: Do not repeat the double for loop to print the CIGAR string
-  //  Print the CIGAR string
+  // Should we repeat the double for loop to print the CIGAR string?
+  // Print the CIGAR string
   char chM = 'M';
 	char chD = 'D';
 	char chI = 'I';
@@ -387,7 +389,6 @@ void print_paf_align
 
   u8*	 s1 = seq1->v + beg1;
 	u8*	 s2 = seq2->v + beg2;
-
 
   opIx = 0;
 	for (i=j=0 ; (i<height)||(j<width) ; )
