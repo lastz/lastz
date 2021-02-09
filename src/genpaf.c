@@ -148,6 +148,8 @@ void print_genpaf_job_header
 			case genpafCigarLower:       fprintf (f, "cigar-");             break;
 			case genpafCigarX:           fprintf (f, "cigarx");             break;
 			case genpafCigarXLower:      fprintf (f, "cigarx-");            break;
+			case genpafCigarX1:          fprintf (f, "cigarx1");            break;
+			case genpafCigarX1Lower:     fprintf (f, "cigarx1-");           break;
 			case genpafDiagonal:         fprintf (f, "diagonal");           break;
 			case genpafShingle:          fprintf (f, "shingle");            break;
 			case genpafScore:            fprintf (f, "score");              break;
@@ -174,6 +176,9 @@ void print_genpaf_job_header
 			case genpafHspId:            fprintf (f, "hspid");              break;
 			case genpafPositionHash:     fprintf (f, "phash");              break;
 			case genpafAlignmentHash:    fprintf (f, "ahash");              break;
+			case genpafPafMappingQual:   fprintf (f, "mapqual");            break;
+			case genpafPafScore:         fprintf (f, "astag");              break;
+			case genpafPafCigar:         fprintf (f, "cgtag");              break;
 			default:                                                        break;
 			}
 		}
@@ -1098,6 +1103,17 @@ void print_genpaf_align
 				                   /* lowerCase      */ (*k == genpafCigarXLower),
 				                   /* withNewLine    */ false);
 				break;
+			case genpafCigarX1:
+			case genpafCigarX1Lower:
+				print_cigar_align (f, seq1, beg1-1, end1, seq2, beg2-1, end2,
+				                   script, s,
+				                   /* withInfo       */ false,
+				                   /* markMismatches */ true,
+				                   /* letterAfter    */ true,
+				                   /* hideSingles    */ false,
+				                   /* lowerCase      */ (*k == genpafCigarXLower),
+				                   /* withNewLine    */ false);
+				break;
 			case genpafDiagonal:
 				fprintf (f, sgnposFmt, diagNumber(start1,start2));
 				break;
@@ -1257,6 +1273,24 @@ void print_genpaf_align
 				                    beg2, end2, seq2->revCompFlags,
 				                    script);
 				fprintf (f, "%08lX", (long) h);
+				break;
+			case genpafPafMappingQual:
+				fprintf (f, "255");
+				break;
+			case genpafPafScore:
+				fprintf (f, "AS:i:");
+				fprintf (f, scoreFmt, s);
+				break;
+			case genpafPafCigar:
+				fprintf (f, "cg:Z:");
+				print_cigar_align (f, seq1, beg1-1, end1, seq2, beg2-1, end2,
+				                   script, s,
+				                   /* withInfo       */ false,
+				                   /* markMismatches */ true,
+				                   /* letterAfter    */ true,
+				                   /* hideSingles    */ false,
+				                   /* lowerCase      */ false,
+				                   /* withNewLine    */ false);
 				break;
 			default:
 				break;
@@ -1624,6 +1658,17 @@ void print_genpaf_match
 				                   /* lowerCase      */ (*k == genpafCigarXLower),
 				                   /* withNewLine    */ false);
 				break;
+			case genpafCigarX1:
+			case genpafCigarX1Lower:
+				print_cigar_match (f, seq1, pos1, seq2, pos2, length,
+				                   s,
+				                   /* withInfo       */ false,
+				                   /* markMismatches */ true,
+				                   /* letterAfter    */ true,
+				                   /* hideSingles    */ false,
+				                   /* lowerCase      */ (*k == genpafCigarXLower),
+				                   /* withNewLine    */ false);
+				break;
 			case genpafDiagonal:
 				fprintf (f, sgnposFmt, diagNumber(start1,start2));
 				break;
@@ -1801,6 +1846,24 @@ void print_genpaf_match
 				break;
 			case genpafAlignmentHash:
 				fprintf (f, "(notimp)");  // $$$ not implemented yet
+				break;
+			case genpafPafMappingQual:
+				fprintf (f, "255");
+				break;
+			case genpafPafScore:
+				fprintf (f, "AS:i:");
+				fprintf (f, scoreFmt, s);
+				break;
+			case genpafPafCigar:
+				fprintf (f, "cg:Z:");
+				print_cigar_match (f, seq1, pos1, seq2, pos2, length,
+				                   s,
+				                   /* withInfo       */ false,
+				                   /* markMismatches */ true,
+				                   /* letterAfter    */ true,
+				                   /* hideSingles    */ false,
+				                   /* lowerCase      */ false,
+				                   /* withNewLine    */ false);
 				break;
 			default:
 				break;

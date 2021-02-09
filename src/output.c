@@ -242,6 +242,9 @@ void print_job_header (void)
 		case fmtGenpafBlastNoHeader:
 			; // (do nothing)
 			break;
+		case fmtGenpafPafWfMash:
+			; // (do nothing)
+			break;
 		case fmtText:
 		case fmtZeroText:
 		text_format:
@@ -330,6 +333,9 @@ void print_job_footer (void)
 			print_blast_job_footer (currParams->outputFile);
 			break;
 		case fmtGenpafBlastNoHeader:
+			; // (do nothing)
+			break;
+		case fmtGenpafPafWfMash:
 			; // (do nothing)
 			break;
 		case fmtText:
@@ -458,6 +464,9 @@ void print_header (void)
 			    currParams->seq1, currParams->seq2);
 			break;
 		case fmtGenpafBlastNoHeader:
+			; // (do nothing)
+			break;
+		case fmtGenpafPafWfMash:
 			; // (do nothing)
 			break;
 		case fmtText:
@@ -632,6 +641,7 @@ void print_align_list (alignel* alignList)
 		case fmtGenpafNameHeader:
 		case fmtGenpafBlast:
 		case fmtGenpafBlastNoHeader:
+		case fmtGenpafPafWfMash:
 			print_genpaf_align_list (currParams->outputFile,
 			                         alignList, currParams->seq1, currParams->seq2,
 			                         currParams->outputInfo);
@@ -802,6 +812,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 		case fmtGenpafNameHeader:
 		case fmtGenpafBlast:
 		case fmtGenpafBlastNoHeader:
+		case fmtGenpafPafWfMash:
 			print_genpaf_match (currParams->outputFile,
 			                    currParams->seq1, pos1,
 			                    currParams->seq2, pos2, length,
@@ -916,6 +927,7 @@ char* print_comment_open (void)
 		case fmtGenpafNameHeader:
 		case fmtGenpafBlast:
 		case fmtGenpafBlastNoHeader:
+		case fmtGenpafPafWfMash:
 			commentPrefix = "#";
 			break;
 		case fmtText:
@@ -983,6 +995,7 @@ void print_comment_close (void)
 		case fmtGenpafNameHeader:
 		case fmtGenpafBlast:
 		case fmtGenpafBlastNoHeader:
+		case fmtGenpafPafWfMash:
 		case fmtText:
 		case fmtZeroText:
 		case fmtHspComp:
@@ -1041,6 +1054,7 @@ void print_m_stanza (census* cen)
 		case fmtGenpafNameHeader:
 		case fmtGenpafBlast:
 		case fmtGenpafBlastNoHeader:
+		case fmtGenpafPafWfMash:
 		case fmtText:
 		case fmtZeroText:
 		case fmtHspComp:
@@ -1092,6 +1106,7 @@ void print_census_stanza (census* cen)
 		case fmtGenpafNameHeader:
 		case fmtGenpafBlast:
 		case fmtGenpafBlastNoHeader:
+		case fmtGenpafPafWfMash:
 		case fmtText:
 		case fmtZeroText:
 		case fmtHspComp:
@@ -1146,6 +1161,7 @@ void print_x_stanza (unspos numMasked)
 		case fmtGenpafNameHeader:
 		case fmtGenpafBlast:
 		case fmtGenpafBlastNoHeader:
+		case fmtGenpafPafWfMash:
 		case fmtText:
 		case fmtZeroText:
 		case fmtHspComp:
@@ -1231,6 +1247,7 @@ void print_generic
 		case fmtGenpafNameHeader:
 		case fmtGenpafBlast:
 		case fmtGenpafBlastNoHeader:
+		case fmtGenpafPafWfMash:
 		case fmtHspComp:
 		case fmtDiffs:
 		case fmtDiffsNoBlocks:
