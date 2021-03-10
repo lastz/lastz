@@ -9021,8 +9021,9 @@ threshold_check_done:
 		dump_score_set (stderr, lzParams->maskedScoring, (u8*)"ACGTacgtNnBbXF", (u8*)"ACGTacgtNnBbXF");
 		}
 
+	maxScore = 0;  // (in case maxScore is not needed)
 	if (lzParams->inferScores)
-		maxScore = 0;  // (maxScore is not needed)
+		;  // (do nothing
 	else if (lzParams->scoring == NULL)
 		suicidef ("internal error, lzParams->scoring is NULL");
 	else
