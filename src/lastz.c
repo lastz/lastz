@@ -4798,10 +4798,13 @@ static void format_options (void)
 	fprintf (helpout, "    BLASTN format is similar to the output from the blastn program of the NCBI\n");
 	fprintf (helpout, "    standalone blast package.\n");
 	fprintf (helpout, "\n");
+	fprintf (helpout, "PAF[:minimap2]\n");
 	fprintf (helpout, "PAF:wfmash\n");
-	fprintf (helpout, "    PAF:wfmash format is compatible with the output from the minimap program.\n");
-	fprintf (helpout, "    a spec for PAF files can be found at\n");
+	fprintf (helpout, "    PAF format and variants are compatible with the output from the minimap\n");
+	fprintf (helpout, "    program. A spec for PAF files can be found at\n");
 	fprintf (helpout, "        https://github.com/lh3/miniasm/blob/master/PAF.md\n");
+	fprintf (helpout, "    Lastz doesn't compute mapping quality scores, and reports 255 (missing)\n");
+	fprintf (helpout, "    for the mapping quality field.\n");
 	fprintf (helpout, "\n");
 	fprintf (helpout, "segments\n");
 	fprintf (helpout, "    Output anchor segments, for reprocessing with --segments=<file>.\n");
@@ -7113,6 +7116,18 @@ static void parse_options_loop
 			goto next_arg;
 			}
 
+		if ((strcmp (arg, "--format=PAF") == 0)
+		 || (strcmp (arg, "--format=paf") == 0)
+		 || (strcmp (arg, "--format=PAF:minimap2") == 0)
+		 || (strcmp (arg, "--format=paf:minimap2") == 0)
+		 || (strcmp (arg, "--format=PAF:MINIMAP2") == 0))
+			{
+			free_if_valid ("lzParams->outputInfo", lzParams->outputInfo);
+			lzParams->outputFormat = fmtGenpafPafMinimap2;
+			lzParams->outputInfo   = copy_string (genpafPafMinimap2Keys);
+			goto next_arg;
+			}
+
 		if ((strcmp (arg, "--format=PAF:wfmash") == 0)
 		 || (strcmp (arg, "--format=paf:wfmash") == 0)
 		 || (strcmp (arg, "--format=PAF:WFMASH") == 0))
@@ -9150,7 +9165,8 @@ threshold_check_done:
 	      || (lzParams->outputFormat == fmtGenpafNameHeader)
 	      || (lzParams->outputFormat == fmtGenpafBlast)
 	      || (lzParams->outputFormat == fmtGenpafBlastNoHeader)
-	      || (lzParams->outputFormat == fmtGenpafPafWfMash))
+	      || (lzParams->outputFormat == fmtGenpafPafWfMash)
+	      || (lzParams->outputFormat == fmtGenpafPafMinimap2))
 		{
 	    if ((strchr (lzParams->outputInfo, genpafSize1)        != NULL)
 	     || (strchr (lzParams->outputInfo, genpafSize2)        != NULL)

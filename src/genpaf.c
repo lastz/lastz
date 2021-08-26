@@ -178,7 +178,8 @@ void print_genpaf_job_header
 			case genpafAlignmentHash:    fprintf (f, "ahash");              break;
 			case genpafPafMappingQual:   fprintf (f, "mapqual");            break;
 			case genpafPafScore:         fprintf (f, "astag");              break;
-			case genpafPafCigar:         fprintf (f, "cgtag");              break;
+			case genpafPafCigarX:        fprintf (f, "cgtag");              break;
+			case genpafPafCigarM:        fprintf (f, "cgtag");              break;
 			default:                                                        break;
 			}
 		}
@@ -1278,15 +1279,27 @@ void print_genpaf_align
 				fprintf (f, "255");
 				break;
 			case genpafPafScore:
+				// $$$ this is non-compliant if score is not an integer
 				fprintf (f, "AS:i:");
 				fprintf (f, scoreFmt, s);
 				break;
-			case genpafPafCigar:
+			case genpafPafCigarX:
 				fprintf (f, "cg:Z:");
 				print_cigar_align (f, seq1, beg1-1, end1, seq2, beg2-1, end2,
 				                   script, s,
 				                   /* withInfo       */ false,
 				                   /* markMismatches */ true,
+				                   /* letterAfter    */ true,
+				                   /* hideSingles    */ false,
+				                   /* lowerCase      */ false,
+				                   /* withNewLine    */ false);
+				break;
+			case genpafPafCigarM:
+				fprintf (f, "cg:Z:");
+				print_cigar_align (f, seq1, beg1-1, end1, seq2, beg2-1, end2,
+				                   script, s,
+				                   /* withInfo       */ false,
+				                   /* markMismatches */ false,
 				                   /* letterAfter    */ true,
 				                   /* hideSingles    */ false,
 				                   /* lowerCase      */ false,
@@ -1854,12 +1867,23 @@ void print_genpaf_match
 				fprintf (f, "AS:i:");
 				fprintf (f, scoreFmt, s);
 				break;
-			case genpafPafCigar:
+			case genpafPafCigarX:
 				fprintf (f, "cg:Z:");
 				print_cigar_match (f, seq1, pos1, seq2, pos2, length,
 				                   s,
 				                   /* withInfo       */ false,
 				                   /* markMismatches */ true,
+				                   /* letterAfter    */ true,
+				                   /* hideSingles    */ false,
+				                   /* lowerCase      */ false,
+				                   /* withNewLine    */ false);
+				break;
+			case genpafPafCigarM:
+				fprintf (f, "cg:Z:");
+				print_cigar_match (f, seq1, pos1, seq2, pos2, length,
+				                   s,
+				                   /* withInfo       */ false,
+				                   /* markMismatches */ false,
 				                   /* letterAfter    */ true,
 				                   /* hideSingles    */ false,
 				                   /* lowerCase      */ false,

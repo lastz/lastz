@@ -58,6 +58,7 @@ enum
 	fmtGenpafBlast,				// .. in 'standard' BLASTN format
 	fmtGenpafBlastNoHeader,		// .. in 'standard' BLASTN format, no header
 	fmtGenpafPafWfMash,			// .. in PAF format (wfmash variant)
+	fmtGenpafPafMinimap2,		// .. in PAF format (minimap2)
 	fmtText,					// .. as text
 	fmtZeroText,				// .. as text (zero-based)
 	fmtHspComp,					// .. as text, showing composition of each HSP

@@ -105,7 +105,8 @@ enum
 	genpafAlignmentHash    = '5',
 	genpafPafMappingQual   = '{',  // (we don't expect the user to set this directly)
 	genpafPafScore         = '|',  // (we don't expect the user to set this directly)
-	genpafPafCigar         = '}',  // (we don't expect the user to set this directly)
+	genpafPafCigarX        = '}',  // (we don't expect the user to set this directly)
+	genpafPafCigarM        = '.',  // (we don't expect the user to set this directly)
 	genpafMarker           = '~'
 	};
 
@@ -118,6 +119,7 @@ enum
 #define genpafRDotplotKeys      "02!13!XX"
 #define genpafRDotplotScoreKeys "02#!13#!XXX"
 #define genpafPafWfMashKeys     "ns>,dNSZEuW{|}"
+#define genpafPafMinimap2Keys   "ns>,dNSZEuW{|."
 
 
 #define genpafTDName        "diff"
