@@ -79,8 +79,8 @@
 <body>
 
 <p class=vvlarge>
-<h1>LASTZ &nbsp; Non-release 1.04.11,
-                 built Feruary 9, 2021</h1>
+<h1>LASTZ &nbsp; Release 1.04.15,
+                 built August 27, 2021</h1>
 
 TABLE OF CONTENTS
 
@@ -151,6 +151,8 @@ TABLE OF CONTENTS
 	<li><a href="#fmt_sam">SAM</a>
 	<li><a href="#fmt_cigar">CIGAR</a>
 	<li><a href="#fmt_blastn">BLASTN</a>
+	<li><a href="#fmt_paf">PAF</a>
+	<li><a href="#fmt_paf">PAF:wfmash</a>
 	<li><a href="#fmt_diffs">Differences</a>
 	<li><a href="#fmt_rdotplot">R Dotplot</a>
 	<li><a href="#fmt_text">Human-Readable Text</a>
@@ -219,7 +221,7 @@ available in typical python installations.
 <td>Bob Harris&nbsp; &lt;rsharris at bx dot psu dot edu&gt;
 </td></tr>
 <tr><th>Date:</th><td></td>
-<td>November 2019
+<td>August 2021
 </td></tr>
 <tr><th>Mailing&nbsp;list:</th><td></td>
 <td>
@@ -244,6 +246,8 @@ LASTZ is available from github at
 <p>
 A packed archive containing source code for LASTZ is available from the
 <a href="http://www.bx.psu.edu/~rsharris/lastz/">Miller Lab</a> at Penn State.
+Note: 1.04.15 is the last release that will be available via the Miller Lab
+website.
 
 
 <!---->
@@ -286,11 +290,13 @@ floating-point scores.
 <p>
 The build process should not report any warnings or errors. Because of this,
 the Makefile is set up so that warnings are considered errors and will stop the
-build. If you encounter this situation, you can modify the Makefile, removing
-"-Werror" from the variable definedForAll. This should allow the build to
-complete, while still reporting the warnings. You'll need to decide whether
-the warnings indicate something is really wrong. Usually they don't, but please
-report them to the author regardless.
+build. If you encounter this situation, you can use Makefile.warnings instead:
+<pre>
+    make -f Makefile.warnings
+</pre>
+This should allow the build to complete, while still reporting the warnings.
+You'll need to decide whether the warnings indicate something is really wrong.
+Usually they don't, but please report them to the author regardless.
 
 <p>
 A simple self test is included so you can test whether the build succeeded.
@@ -2038,7 +2044,8 @@ Specifies the output format:
 <code><a href="#fmt_sam">softsam-</a></code>,
 <code><a href="#fmt_cigar">cigar</a></code>,
 <code><a href="#fmt_blastn">BLASTN</a></code>,
-<code><a href="#fmt_paf_wfmash">paf:wfmash</a></code>,
+<code><a href="#fmt_paf">PAF</a></code>,
+<code><a href="#fmt_paf">PAF:wfmash</a></code>,
 <code><a href="#fmt_diffs">differences</a></code>,
 <code><a href="#fmt_rdotplot">rdotplot</a></code>,
 <code><a href="#fmt_text">text</a></code>,
@@ -4277,10 +4284,10 @@ A segment file describes a list of segments representing gap-free alignments.
 This list is either produced internally by LASTZ as a result of the
 gap-free extension stage (see <a href="#overview">Overview</a>), or read from
 a user-supplied file via the
-<code><a href="#option_segments">&#8209;&#8209;segments</a></code> option. The
-latter causes LASTZ to skip the indexing, seeding, gap-free extension, and
-chaining stages and begin with the ungapped extension stage (or the next
-specified stage, if ungapped extension is not requested).
+<code><a href="#option_segments">&#8209;&#8209;segments</a></code> option. The latter
+causes LASTZ to skip the indexing, seeding, and gap-free extension stages and
+begin with the chaining stage (or the next specified stage, if chaining is not
+requested).
 
 <p>
 The file contains two intervals per line, one from the
@@ -4472,8 +4479,7 @@ some variants the length is omitted if it is 1; in other variants
 LASTZ implements combinations of these variants where appropriate; details
 are described in
 <code><a href="#fmt_gen_cigar">&#8209;&#8209;format=general:cigar</a></code>,
-<code><a href="#fmt_gen_cigarx">&#8209;&#8209;format=general:cigarx</a></code>,
-<code><a href="#fmt_gen_cigarx1">&#8209;&#8209;format=general:cigarx1</a></code>
+<code><a href="#fmt_gen_cigarx">&#8209;&#8209;format=general:cigarx</a></code>
 and <code><a href="#fmt_sam">&#8209;&#8209;format=sam</a></code>.
 
 <p>
@@ -4579,36 +4585,36 @@ approximation formulas are
 </pre>
 
 
+<!-- PAF -->
+<div><a name="fmt_paf"></a></div>
+<h3>PAF (alignment output)</h3>
 
-<!-- paf:wfmash -->
-<div><a name="fmt_paf_wfmash"></a></div>
-<h3>paf:wfmash (alignment output)</h3>
-
-<p>
-The paf:wfmash format reports pairwise alignments in a format compliant with
-PAF. PAF is the output default output format of minimap and minimap2, and is
-described at
-<a href="https://github.com/lh3/miniasm/blob/master/PAF.md">https://github.com/lh3/miniasm/blob/master/PAF.md</a>.
 
 <p>
-This variant is intended to match the output of
-<a href="https://github.com/ekg/wfmash">wfmash</a>.
-All 12 required columns of PAF are output, but with the mapping quality is set
-to 255 ("missing"). Two additional SAM tags are included &#8212; AS (alignment
-scores) and CG (cigar string).
+The PAF format reports pairwise alignments in a format compliant with
+minimap2, available from
+<a href="https://github.com/lh3/minimap2"> the minimap2 github site</a>.
+A simple spec for PAF files can be found
+<a href="https://github.com/lh3/miniasm/blob/master/PAF.md"> here</a>,
+while more detail can be found
+<a href="https://lh3.github.io/minimap2/minimap2.html#10"> here</a>.
 
 <p>
-Sample output.
-<pre>
-    ORANGE_0003 340 25  68  - APPLE_0007 322 10  53  42  43  255 AS:i:3897  cg:Z:12=1X30=
-    ORANGE_0005 344 263 327 + APPLE_0049 345 25  87  62  64  255 AS:i:5106  cg:Z:39=1I9=1I14=
-    ORANGE_0006 356 278 331 - APPLE_0015 345 279 334 49  55  255 AS:i:3862  cg:Z:1=1X31=1X10=2D4=2X3=
-    ORANGE_0009 333 236 312 + APPLE_0026 343 26  103 74  78  255 AS:i:5764  cg:Z:26=1I8=1D33=1D6=1X1=
-    ORANGE_0011 322 180 312 + APPLE_0032 339 21  154 129 133 255 AS:i:11680 cg:Z:35=1X19=1X11=1X25=1D39=
-    ORANGE_0014 343 201 316 + APPLE_0038 347 17  133 115 116 255 AS:i:10611 cg:Z:88=1D27=
-    ORANGE_0014 343 223 316 + APPLE_0020 350 25  122 91  97  255 AS:i:7675  cg:Z:2=1X52=1D7=1X3=3D27=
-</pre>
+LASTZ currently doesn't compute mapping quality scores, and reports 255
+(missing) for the mapping quality field (column 12).
 
+<p>
+The PAF spec allows for certain SAM-like tags to be included. LASTZ produces
+two such tags &mdash; <code>AS</code> reports the lastz alignment score and
+<code>cg</code> reports the alignment's <a href="#fmt_cigar">CIGAR</a> string.
+
+<p>
+Two variations of the format are provided, to support two different formats for
+the CIGAR field.
+For <code>&#8209;&#8209;format=PAF</code> the CIGAR string does not distinguish matches from
+substitutions, which is what minimap2 produces.
+For <code>&#8209;&#8209;format=PAF:wfmash</code> the CIGAR string <i>does</i> distinguish
+matches from substitutions.
 
 
 <!-- Differences -->
@@ -5119,18 +5125,6 @@ For more information, see the section about CIGAR and its
 <a name="fmt_gen_cigarx"></a>
 Same as <code>cigar</code>, but uses a newer syntax that distinguishes matches
 from substitutions and omits the run length when it is 1.
-<p class=small>
-For more information, see the section about <a href="#fmt_cigar">CIGAR</a> and
-its <code><a href="#ex_cigar">example</a></code>.
-</td>
-</tr>
-
-<tr>
-<td><code>cigarx1</code></td>
-<td>
-<a name="fmt_gen_cigarx1"></a>
-Same as <code>cigarx</code>, but does <i>not</i> omit the run length when it is
-1.
 <p class=small>
 For more information, see the section about <a href="#fmt_cigar">CIGAR</a> and
 its <code><a href="#ex_cigar">example</a></code>.
@@ -7765,18 +7759,46 @@ Several changes were made to the source code to placate compiler warnings.
 These changes have no affect on the executable.
 </td></tr>
 
-<!-- 1.04.11 -->
+<!-- 1.04.15 -->
 
 <tr class=newsect>
 <td>
-<a name="history_recent"></a>1.04.11</td><td>Feb/9/2021</td><td>
-Added <code><a href="#option_format">&#8209;&#8209;format=paf:wfmash</a></code>
-to support output in a <a href="#fmt_paf_wfmash">specific PAF format variant</a>.
+<a name="history_recent"></a>1.04.15</td><td>Aug/27/2021</td><td>
+Fixed a bug in which the setting for
+<code><a href="#option_queryhspbest">&#8209;&#8209;queryhspbest</a></code>
+was ignored. For more details see 
+<a href="https://github.com/lastz/lastz/issues/28">issue 28</a> at the lastz
+github repository.
 </td></tr>
 
 <tr><td></td><td></td><td>
-Added <code>&#8209;&#8209;format=general</code> field
-<code><a href="#fmt_gen_cigarx1">cigarx1</a></code>.
+Added several sanity checks to prevent possible segfaults.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Added <a href="#fmt_paf">PAF format</a>.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Updated the python scripts in the tools directory to be compatible with
+python3. The older scripts have been moved to the tools.python2 directory.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Added code to properly distinguish between char and int types in parsing input
+files (some compilers treat chars as signed, other treat them as unsigned). For
+more details see 
+<a href="https://github.com/lastz/lastz/issues/23">issue 23</a> at the lastz
+github repository.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Added Makefile.warnings.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Some changes were made to the source code to placate compiler warnings. These
+changes have no affect on the executable.
 </td></tr>
 
 </tbody></table>
