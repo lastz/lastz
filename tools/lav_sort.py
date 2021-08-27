@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Sort the a-stanzas in a lav file, according to the user's choice of key
 -----------------------------------------------------------------------

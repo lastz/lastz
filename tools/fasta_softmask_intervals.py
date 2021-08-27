@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Given a list of intervals, mask those bases in the fasta sequence(s).
 """
@@ -77,7 +77,7 @@ def main():
 
 	# read the intervals
 
-	f = file(intervalsFile,"rt")
+	f = open(intervalsFile,"rt")
 
 	chromToIntervals = {}
 

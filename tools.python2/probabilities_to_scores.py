@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Convert probabilities to a LASTZ scores file (including quantum scores)
 -----------------------------------------------------------------------
@@ -281,7 +281,7 @@ def main():
 	##########
 	
 	if (codeName != None):
-		codeF = open(codeName,"wt")
+		codeF = file(codeName,"wt")
 		for sym in symbols:
 			p = symProb[sym]
 			print >>codeF, "%s\t%s" \

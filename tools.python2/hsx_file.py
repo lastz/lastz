@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 if __name__ == "__main__":
 	from sys import exit
@@ -98,7 +98,7 @@ class HsxFile(object):
 	msBit5      = 0x80 << (4*8)
 
 	def open(self):
-		self.file = open(self.fileName,"rb")
+		self.file = file(self.fileName,"rb")
 
 		self.magic = magic = struct.unpack(">L",self.file.read(4))[0]
 		if   (magic == HsxFile.magicBig):    self.byteOrder = ">" # (big endian)
@@ -173,24 +173,22 @@ class HsxFile(object):
 
 	def get_sequence(self,name):
 		if ("fetch" in self.debug):
-			print ("[fetching %s]" % name,file=sys.stderr)
+			print >>sys.stderr, "[fetching %s]" % name
 		# read hash bucket for this name
 		bucket = HsxFile.hash(name) % self.numBuckets
 		if ("fetch" in self.debug):
-			print ("[  bucket = %d (file offset %08X)]"
-			     % (bucket,self.hashTableOffset+5*bucket),
-			       file=sys.stderr)
+			print >>sys.stderr, "[  bucket = %d (file offset %08X)]" \
+			                  % (bucket,self.hashTableOffset+5*bucket)
 		self.file.seek(self.hashTableOffset + 5*bucket)
 		bucketOffset = self.read5()
 		if (bucketOffset & HsxFile.msBit5 != 0):
 			if ("fetch" in self.debug):
-				print ("[  bucket is empty]",file=sys.stderr)
+				print >>sys.stderr, "[  bucket is empty]"
 			return None
 		bucketEnd = self.read5() & ~HsxFile.msBit5
 		if ("fetch" in self.debug):
-			print ("[  bucket offset = %010X..%010X ]"
-			     % (bucketOffset,bucketEnd),
-			       file=sys.stderr)
+			print >>sys.stderr, "[  bucket offset = %010X..%010X ]" \
+			                  % (bucketOffset,bucketEnd)
 		# scan the bucket until we find this sequence
 		self.file.seek(bucketOffset)
 		seqIx   = 1
@@ -201,16 +199,15 @@ class HsxFile(object):
 			seqOffset = self.read6()
 			seqName   = self.readString()
 			if ("fetch" in self.debug):
-				print ("[  (%010X) name %d = %s]" \
-				     % (bucketOffset,seqIx,seqName),
-				       file=sys.stderr)
+				print >>sys.stderr, "[  (%010X) name %d = %s]" \
+				                    % (bucketOffset,seqIx,seqName)
 			if (seqName == name): break
 			if (seqName >  name): return None
 			bucketOffset += 1 + 6 + 5 + len(seqName) + 1
 			seqIx += 1
 		if (seqName != name):
 			if ("fetch" in self.debug):
-				print ("[  %s not in bucket]" % name,file=sys.stderr)
+				print >>sys.stderr, "[  %s not in bucket]" % name
 			return None
 		# open the sequence file (if it isn't already open)
 		assert (fileIx < len(self.fileTable)), \
@@ -219,12 +216,12 @@ class HsxFile(object):
 		(seqFileName,seqFile) = self.fileTable[fileIx]
 		if (seqFile == None):
 			if ("fetch" in self.debug):
-				print ("[  opening %s]" % seqFileName,file=sys.stderr)
-			seqFile = open(seqFileName,"rt")
+				print >>sys.stderr, "[  opening %s]" % seqFileName
+			seqFile = file(seqFileName,"rt")
 			self.fileTable[fileIx] = (seqFileName,seqFile)
 		if ("fetch" in self.debug):
-			print ("[  reading from %s:%012X]" % (seqFileName,seqOffset),
-			       file=sys.stderr)
+			print >>sys.stderr, "[  reading from %s:%012X]" \
+			                  % (seqFileName,seqOffset)
 		# read the sequence
 		seqFile.seek(seqOffset)
 		seqLines = []
@@ -234,7 +231,7 @@ class HsxFile(object):
 			if (line == ""): break
 			line = line.strip()
 			if ("fetch" in self.debug):
-				print ("[  read %s]" % line,file=sys.stderr)
+				print >>sys.stderr, "[  read %s]" % line
 			if (line.startswith(">")):
 				if (len(seqLines) != 0): break
 				seqLines += [line]
@@ -282,3 +279,4 @@ class HsxFile(object):
 	def hash(name):
 		return hassock_hash.hassock_hash(name)
 	hash = staticmethod(hash)
+
