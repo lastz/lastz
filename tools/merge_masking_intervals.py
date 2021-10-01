@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Given a file of masking intervals, combine overlapping intervals.
 

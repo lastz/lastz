@@ -98,19 +98,28 @@ enum
 	genpafAlignmentNumZero = ']',
 	genpafCigarX           = '_',
 	genpafCigarXLower      = '^',
+	genpafCigarX1          = '"',
+	genpafCigarX1Lower     = '\'',
 	genpafHspId            = '(',
 	genpafPositionHash     = '4',
 	genpafAlignmentHash    = '5',
+	genpafPafMappingQual   = '{',  // (we don't expect the user to set this directly)
+	genpafPafScore         = '|',  // (we don't expect the user to set this directly)
+	genpafPafCigarX        = '}',  // (we don't expect the user to set this directly)
+	genpafPafCigarM        = '.',  // (we don't expect the user to set this directly)
 	genpafMarker           = '~'
 	};
 
-
+// these are pre-canned lists of fields; each character is one of the type codes
+// from the "type codes for printable fields" enumeration above
 #define genpafStandardKeys      "#NDSZEndszeIC"
 #define genpafMappingKeys       "NZEnd>,IC^"
 #define genpafSegmentKeys       "NBEnbed#"
 #define genpafBlastKeys         "nNmWvybeQR%$"
 #define genpafRDotplotKeys      "02!13!XX"
 #define genpafRDotplotScoreKeys "02#!13#!XXX"
+#define genpafPafWfMashKeys     "ns>,dNSZEuW{|}"
+#define genpafPafMinimap2Keys   "ns>,dNSZEuW{|."
 
 
 #define genpafTDName        "diff"
@@ -173,6 +182,8 @@ global stringtokey genpafName[] =
 	{ "cigar-",         genpafCigarLower       },
 	{ "cigarx",         genpafCigarX           },
 	{ "cigarx-",        genpafCigarXLower      },
+	{ "cigarx1",        genpafCigarX1          },
+	{ "cigarx1-",       genpafCigarX1Lower     },
 	{ "diagonal",       genpafDiagonal         },
 	{ "shingle",        genpafShingle          },
 	{ "score",          genpafScore            },

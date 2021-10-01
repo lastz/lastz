@@ -3621,7 +3621,7 @@ static void load_nib_sequence
 //----------
 
 static int find_2bit_sequence    (seq* _seq, char* name);
-static u32 read_2bit_index_entry (seq* _seq, char seqName[256], u32 seqNum);
+static u32 read_2bit_index_entry (seq* _seq, char seqName[maxSequenceName+1], u32 seqNum);
 
 //--- read_2bit_header ---
 
@@ -4025,6 +4025,12 @@ static int find_2bit_sequence
 
 //--- read_2bit_index_entry ---
 
+// complain if someone has tried to set maxSequenceName too small
+
+#if maxSequenceName < 255
+#error ***** maxSequenceName is too small (names in 2bit files can be up to 255 characters) *****
+#endif
+
 static u32 read_2bit_index_entry
    (seq*			_seq,
 	char			seqName[maxSequenceName+1],
@@ -4034,6 +4040,8 @@ static u32 read_2bit_index_entry
 	size_t			bytesRead;
 
 	// read the name
+	//
+	// nota bene: 0<=nameSize<=255
 
 	nameSize = getc_or_die (_seq->f, _seq->filename);
 	if (nameSize > 0)

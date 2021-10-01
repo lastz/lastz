@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Compare two axt files, reporting differences but ignoring some trivial ones
 ---------------------------------------------------------------------------
@@ -36,8 +36,8 @@ def main():
 
 	# compare the files
 
-	axt1 = open(axt1Filename,"rt")
-	axt2 = open(axt2Filename,"rt")
+	axt1 = file(axt1Filename,"rt")
+	axt2 = file(axt2Filename,"rt")
 	different = compare_files(axt1,axt2,sortEm=sortEm)
 	axt1.close()
 	axt2.close()
@@ -56,11 +56,11 @@ def main():
 		        % (axt1Filename,axt2Filename)
 
 	if (different):
-		print ("FAILURE: %s" % message,file=sys.stderr)
+		print >>sys.stderr,"FAILURE: %s" % message
 		sys.exit(1)
 
-	print ("SUCCESS: %s and %s are equivalent" % (axt1Filename,axt2Filename),
-	       file=sys.stderr)
+	print >>sys.stderr,"SUCCESS: %s and %s are equivalent" \
+					 % (axt1Filename,axt2Filename)
 
 
 # compare files

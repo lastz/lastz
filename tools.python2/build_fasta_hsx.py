@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Build a "hashed sequence index" (hsx) file for a fasta file
 -----------------------------------------------------------
@@ -167,7 +167,7 @@ def main():
 			f = sys.stdin
 		else:
 			try:
-				f = open(fileName,"rt")
+				f = file(fileName,"rt")
 			except IOError:
 				assert (False), "unable to open %s" % fileName
 
@@ -185,28 +185,26 @@ def main():
 
 			if (length == 0):
 				if (keepEmpties):
-					print ("WARNING: keeping empty sequence %s (%s)"
-					     % (name,line_reference((fileName,lineNum))),
-					       file=sys.stderr)
+					print >>sys.stderr, "WARNING: keeping empty sequence %s (%s)" \
+					                  % (name,line_reference((fileName,lineNum)))
 				else:
-					print ("WARNING: discarding empty sequence %s (%s)"
-					     % (name,line_reference((fileName,lineNum))),
-					       file=sys.stderr)
+					print >>sys.stderr, "WARNING: discarding empty sequence %s (%s)" \
+					                  % (name,line_reference((fileName,lineNum)))
 					continue
 
 			if (skipHeader): sequences += [(name,length,fileNum,seqOffset)]
 			else:            sequences += [(name,length,fileNum,headerOffset)]
 
 			if ("progress" in debug) and (progress != None) and (seqNum % progress == 0):
-				print ("read sequence %d (%s)" % (seqNum,name),file=sys.stderr)
+				print >>sys.stderr, "read sequence %d (%s)" % (seqNum,name)
 
 		if (fileName != ""): f.close()
 
 		if ("progress" in debug):
 			if (fileName != ""):
-				print ("finished reading %s" % fileName,file=sys.stderr)
+				print >>sys.stderr, "finished reading %s" % fileName
 			else:
-				print ("finished reading input file",file=sys.stderr)
+				print >>sys.stderr, "finished reading input file"
 
 	# scan collected sequence info and assign hash values
 
@@ -224,13 +222,12 @@ def main():
 	sequences.sort()
 
 	if ("progress" in debug):
-		print ("finished computing hashes",file=sys.stderr)
+		print >>sys.stderr, "finished computing hashes"
 
 	if ("info" in debug):
 		for (hash,name,length,fileNum,offset) in sequences:
-			print ("%10d==%08X %2d:%08X %s %d"
-			     % (HsxFile.hash(name),hash,fileNum,offset,name,length),
-			       file=sys.stderr)
+			print >>sys.stderr, "%10d==%08X %2d:%08X %s %d" \
+			                  % (HsxFile.hash(name),hash,fileNum,offset,name,length)
 
 	##########
 	# write the index
@@ -284,14 +281,10 @@ def main():
 	seqTableOffset  = hashTableOffset + hashTableSize
 
 	if ("file" in debug):
-		print ("fileTableOffset = %08X (%08X)" % (fileTableOffset,fileTableSize),
-		       file=sys.stderr)
-		print ("fileInfoOffset  = %08X (%08X)" % (fileInfoOffset,fileInfoSize),
-		       file=sys.stderr)
-		print ("hashTableOffset = %08X (%08X)" % (hashTableOffset,hashTableSize),
-		       file=sys.stderr)
-		print ("seqTableOffset  = %08X"        % seqTableOffset,
-		       file=sys.stderr)
+		print >>sys.stderr, "fileTableOffset = %08X (%08X)" % (fileTableOffset,fileTableSize)
+		print >>sys.stderr, "fileInfoOffset  = %08X (%08X)" % (fileInfoOffset,fileInfoSize)
+		print >>sys.stderr, "hashTableOffset = %08X (%08X)" % (hashTableOffset,hashTableSize)
+		print >>sys.stderr, "seqTableOffset  = %08X"        % seqTableOffset
 
 	# determine offsets into the sequence table
 
@@ -324,7 +317,7 @@ def main():
 	writeZeros(headerPad)
 
 	if ("progress" in debug):
-		print ("finished writing header",file=sys.stderr)
+		print >>sys.stderr, "finished writing header"
 
 	# write file table and file info
 
@@ -340,7 +333,7 @@ def main():
 	writeZeros(fileInfoPad)
 
 	if ("progress" in debug):
-		print ("finished writing file table",file=sys.stderr)
+		print >>sys.stderr, "finished writing file table"
 
 	# write hash table
 
@@ -357,14 +350,14 @@ def main():
 			# output previous bucket
 			write5(seqOffset)
 			if ("progress" in debug) and (progress != None) and ((hash+1) % progress == 0):
-				print ("wrote hash bucket %d" % (hash+1),file=sys.stderr)
+				print >>sys.stderr, "wrote hash bucket %d" % (hash+1)
 			# output intervening empty buckets
 			prevHash += 1
 			while (prevHash < hash):
 				write5(msBit5 + nameToOffset[name])
 				prevHash += 1
 				if ("progress" in debug) and (progress != None) and (prevHash % progress == 0):
-					print ("wrote hash bucket %d" % (prevHash),file=sys.stderr)
+					print >>sys.stderr, "wrote hash bucket %d" % (prevHash)
 
 		bucketSize = 1
 		seqOffset  = nameToOffset[name]
@@ -384,7 +377,7 @@ def main():
 	writeZeros(hashTablePad)
 
 	if ("progress" in debug):
-		print ("finished writing hash table",file=sys.stderr)
+		print >>sys.stderr, "finished writing hash table"
 
 	# write sequence table
 
@@ -394,10 +387,10 @@ def main():
 		write6(offset)			# offset to the sequence data
 		writeString(name)		# name of sequence
 		if ("progress" in debug) and (progress != None) and ((seqNum+1) % progress == 0):
-			print ("wrote sequence entry %d" % (seqNum+1),file=sys.stderr)
+			print >>sys.stderr, "wrote sequence entry %d" % (seqNum+1)
 
 	if ("progress" in debug):
-		print ("finished writing index",file=sys.stderr)
+		print >>sys.stderr, "finished writing index"
 
 
 def pad_for_16(n):

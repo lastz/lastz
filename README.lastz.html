@@ -79,8 +79,8 @@
 <body>
 
 <p class=vvlarge>
-<h1>LASTZ &nbsp; Release 1.04.03,
-                 built November 14, 2019</h1>
+<h1>LASTZ &nbsp; Release 1.04.15,
+                 built August 27, 2021</h1>
 
 TABLE OF CONTENTS
 
@@ -151,6 +151,8 @@ TABLE OF CONTENTS
 	<li><a href="#fmt_sam">SAM</a>
 	<li><a href="#fmt_cigar">CIGAR</a>
 	<li><a href="#fmt_blastn">BLASTN</a>
+	<li><a href="#fmt_paf">PAF</a>
+	<li><a href="#fmt_paf">PAF:wfmash</a>
 	<li><a href="#fmt_diffs">Differences</a>
 	<li><a href="#fmt_rdotplot">R Dotplot</a>
 	<li><a href="#fmt_text">Human-Readable Text</a>
@@ -219,7 +221,7 @@ available in typical python installations.
 <td>Bob Harris&nbsp; &lt;rsharris at bx dot psu dot edu&gt;
 </td></tr>
 <tr><th>Date:</th><td></td>
-<td>November 2019
+<td>August 2021
 </td></tr>
 <tr><th>Mailing&nbsp;list:</th><td></td>
 <td>
@@ -244,6 +246,8 @@ LASTZ is available from github at
 <p>
 A packed archive containing source code for LASTZ is available from the
 <a href="http://www.bx.psu.edu/~rsharris/lastz/">Miller Lab</a> at Penn State.
+Note: 1.04.15 is the last release that will be available via the Miller Lab
+website.
 
 
 <!---->
@@ -286,11 +290,13 @@ floating-point scores.
 <p>
 The build process should not report any warnings or errors. Because of this,
 the Makefile is set up so that warnings are considered errors and will stop the
-build. If you encounter this situation, you can modify the Makefile, removing
-"-Werror" from the variable definedForAll. This should allow the build to
-complete, while still reporting the warnings. You'll need to decide whether
-the warnings indicate something is really wrong. Usually they don't, but please
-report them to the author regardless.
+build. If you encounter this situation, you can use Makefile.warnings instead:
+<pre>
+    make -f Makefile.warnings
+</pre>
+This should allow the build to complete, while still reporting the warnings.
+You'll need to decide whether the warnings indicate something is really wrong.
+Usually they don't, but please report them to the author regardless.
 
 <p>
 A simple self test is included so you can test whether the build succeeded.
@@ -2038,6 +2044,8 @@ Specifies the output format:
 <code><a href="#fmt_sam">softsam-</a></code>,
 <code><a href="#fmt_cigar">cigar</a></code>,
 <code><a href="#fmt_blastn">BLASTN</a></code>,
+<code><a href="#fmt_paf">PAF</a></code>,
+<code><a href="#fmt_paf">PAF:wfmash</a></code>,
 <code><a href="#fmt_diffs">differences</a></code>,
 <code><a href="#fmt_rdotplot">rdotplot</a></code>,
 <code><a href="#fmt_text">text</a></code>,
@@ -4276,10 +4284,10 @@ A segment file describes a list of segments representing gap-free alignments.
 This list is either produced internally by LASTZ as a result of the
 gap-free extension stage (see <a href="#overview">Overview</a>), or read from
 a user-supplied file via the
-<code><a href="#option_segments">&#8209;&#8209;segments</a></code> option. The
-latter causes LASTZ to skip the indexing, seeding, gap-free extension, and
-chaining stages and begin with the ungapped extension stage (or the next
-specified stage, if ungapped extension is not requested).
+<code><a href="#option_segments">&#8209;&#8209;segments</a></code> option. The latter
+causes LASTZ to skip the indexing, seeding, and gap-free extension stages and
+begin with the chaining stage (or the next specified stage, if chaining is not
+requested).
 
 <p>
 The file contains two intervals per line, one from the
@@ -4575,6 +4583,38 @@ approximation formulas are
      evalue    = 3.0e9*exp(-0.01421*score)
      bit score = 0.0205*score
 </pre>
+
+
+<!-- PAF -->
+<div><a name="fmt_paf"></a></div>
+<h3>PAF (alignment output)</h3>
+
+
+<p>
+The PAF format reports pairwise alignments in a format compliant with
+minimap2, available from
+<a href="https://github.com/lh3/minimap2"> the minimap2 github site</a>.
+A simple spec for PAF files can be found
+<a href="https://github.com/lh3/miniasm/blob/master/PAF.md"> here</a>,
+while more detail can be found
+<a href="https://lh3.github.io/minimap2/minimap2.html#10"> here</a>.
+
+<p>
+LASTZ currently doesn't compute mapping quality scores, and reports 255
+(missing) for the mapping quality field (column 12).
+
+<p>
+The PAF spec allows for certain SAM-like tags to be included. LASTZ produces
+two such tags &mdash; <code>AS</code> reports the lastz alignment score and
+<code>cg</code> reports the alignment's <a href="#fmt_cigar">CIGAR</a> string.
+
+<p>
+Two variations of the format are provided, to support two different formats for
+the CIGAR field.
+For <code>&#8209;&#8209;format=PAF</code> the CIGAR string does not distinguish matches from
+substitutions, which is what minimap2 produces.
+For <code>&#8209;&#8209;format=PAF:wfmash</code> the CIGAR string <i>does</i> distinguish
+matches from substitutions.
 
 
 <!-- Differences -->
@@ -7672,7 +7712,7 @@ avoid the situation.
 
 <tr class=newsect>
 <td>
-<a name="history_recent"></a>1.04.03</td><td>Nov/14/2019</td><td>
+1.04.03</td><td>Nov/14/2019</td><td>
 Fixed a problem with <a href="#fmt_blastn">blastn format</a> when
 <code><a href="#option_nogapped">&#8209;&#8209;nogapped</a></code> was used. The q.end
 column was incorrect (it had the query length concatentated to it).
@@ -7717,6 +7757,48 @@ See the "testing" section in <code>src/Makefile</code> for a list.
 <tr><td></td><td></td><td>
 Several changes were made to the source code to placate compiler warnings.
 These changes have no affect on the executable.
+</td></tr>
+
+<!-- 1.04.15 -->
+
+<tr class=newsect>
+<td>
+<a name="history_recent"></a>1.04.15</td><td>Aug/27/2021</td><td>
+Fixed a bug in which the setting for
+<code><a href="#option_queryhspbest">&#8209;&#8209;queryhspbest</a></code>
+was ignored. For more details see 
+<a href="https://github.com/lastz/lastz/issues/28">issue 28</a> at the lastz
+github repository.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Added several sanity checks to prevent possible segfaults.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Added <a href="#fmt_paf">PAF format</a>.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Updated the python scripts in the tools directory to be compatible with
+python3. The older scripts have been moved to the tools.python2 directory.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Added code to properly distinguish between char and int types in parsing input
+files (some compilers treat chars as signed, other treat them as unsigned). For
+more details see 
+<a href="https://github.com/lastz/lastz/issues/23">issue 23</a> at the lastz
+github repository.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Added Makefile.warnings.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Some changes were made to the source code to placate compiler warnings. These
+changes have no affect on the executable.
 </td></tr>
 
 </tbody></table>

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Python implementation of the hash used for "hashed sequence index" files.
 

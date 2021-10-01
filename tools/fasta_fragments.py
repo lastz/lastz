@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Break a fasta file into fragments.
 
@@ -84,13 +84,14 @@ def main():
 		if (headLimit != None) and (fragNum > headLimit): break
 
 		seq = seq.upper()
-		for ix in xrange(0,len(seq)-fragmentLength,stepLength):
+		for ix in range(0,len(seq)-fragmentLength,stepLength):
 			frag = seq[ix:ix+fragmentLength]
 			if (frag == allN): continue
 
 			fragNum += 1
 			if (headLimit != None) and (fragNum > headLimit):
-				print >>stderr, "limit of %d emitted fragments reached" % headLimit
+				print ("limit of %d emitted fragments reached" % headLimit,
+				       file=stderr)
 				break
 
 			if (origin == "zero"): header = ">%s_%d" % (name,ix)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Convert any file to a LASTZ quantum dna file, just by appending qdna headers
 

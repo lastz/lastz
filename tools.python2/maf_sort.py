@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Sort alignment blocks in a maf file, according to the user's choice of key
 --------------------------------------------------------------------------

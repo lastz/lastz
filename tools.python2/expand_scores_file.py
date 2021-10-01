@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Add scoring-related parameters to a lastz scores file
 -----------------------------------------------------

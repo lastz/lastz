@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Convert quantum-code files to a LASTZ scores file
 -------------------------------------------------

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Compare two gfa files, reporting differences but ignoring some trivial ones
 ---------------------------------------------------------------------------
@@ -36,20 +36,19 @@ def main():
 
 	# compare the files
 
-	gfa1 = open(gfa1Filename,"rt")
-	gfa2 = open(gfa2Filename,"rt")
+	gfa1 = file(gfa1Filename,"rt")
+	gfa2 = file(gfa2Filename,"rt")
 
 	if (sortEm): (different,lineNum) = compare_unsorted_files(gfa1,gfa2)
 	else:        (different,lineNum) = compare_sorted_files  (gfa1,gfa2)
 
 	if (different):
-		print ("FAILURE: %s and %s are different (line %d)"
-		     % (gfa1Filename,gfa2Filename,lineNum),
-		       file=sys.stderr)
+		print >>sys.stderr,"FAILURE: %s and %s are different (line %d)" \
+		                 % (gfa1Filename,gfa2Filename,lineNum)
 		sys.exit(1)
 
-	print ("SUCCESS: %s and %s are equivalent" % (gfa1Filename,gfa2Filename),
-	       file=sys.stderr)
+	print >>sys.stderr,"SUCCESS: %s and %s are equivalent" \
+					 % (gfa1Filename,gfa2Filename)
 
 
 # compare files that we expect are in the same order

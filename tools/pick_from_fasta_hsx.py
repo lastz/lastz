@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Select a subset of sequences from a fasta file indexed by an hsx file
 ---------------------------------------------------------------------
@@ -46,7 +46,7 @@ def main():
 		if (arg in ["--help","-h","--h","-help"]) and (val == None):
 			usage()
 		elif (arg == "--names") and (val != None):
-			f = file(val)
+			f = open(val)
 			seqNames += [line.strip() for line in f]
 			f.close()
 		elif (arg == "--nowarn") and (val == None):
@@ -79,9 +79,10 @@ def main():
 		if (seq != None):
 			print (seq)
 			if (showProgress):
-				print >>sys.stderr, name
+				print (name,file=sys.stderr)
 		elif (warnOnMissing):
-			print >>sys.stderr, "WARNING: %s not found" % name
+			print ("WARNING: %s not found" % name,
+			       file=sys.stderr)
 	hsx.close()
 
 

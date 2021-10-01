@@ -192,7 +192,7 @@ typedef struct interval { unspos s;  unspos e; } interval;
 //
 //----------
 
-#define maxSequenceName     100
+#define maxSequenceName     255	// has to be at least this big to accomodate 2bit files
 #define maxSequenceHeader   992
 #define seqBufferSize       (maxSequenceHeader+32)
 #define maxFastqSequenceLen 10000
