@@ -31,6 +31,7 @@ int gapped_extend_dbgShowIdentity = false;
 int gapped_extend_dbgShowHsps     = false;
 int gapped_extend_dbgShowAnchors  = false;
 int gapped_extend_dbgShowAnchorsHowOften = 0;
+int gapped_extend_dbgAnchorsProgress     = 0;
 int gapped_extend_dbgAllowBatches = false;
 #ifdef tryout
 int gapped_extend_dbgTriviality   = false;
@@ -42,6 +43,7 @@ global int gapped_extend_dbgShowIdentity;
 global int gapped_extend_dbgShowHsps;
 global int gapped_extend_dbgShowAnchors;
 global int gapped_extend_dbgShowAnchorsHowOften;
+global int gapped_extend_dbgAnchorsProgress;
 global int gapped_extend_dbgAllowBatches;
 #ifdef tryout
 global int gapped_extend_dbgTriviality;

@@ -1288,6 +1288,10 @@ alignel* gapped_extend
 			{
 			mp = msp[i];
 
+			if ((gapped_extend_dbgAnchorsProgress != 0) &&  (i % gapped_extend_dbgAnchorsProgress == 0))
+				fprintf (stderr, "processing anchor #%u (%.2f%% of %u) hspId=" u64Fmt "\n",
+								 i+1, 100.0*i/anchors->len, anchors->len, mp->hspId);
+
 			debugGappedExtendVerbosity_1;
 			debugSnoopAnchorToGapped_1;
 			debugsnoopSpecialHsp_1;

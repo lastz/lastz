@@ -459,6 +459,7 @@ static int   dbgAnchorParsing            = false;
 static int   dbgAnchorContent            = false;
 static int   dbgShowAnchors              = false;
 static int   dbgShowAnchorsHowOften      = 0;
+static int   dbgAnchorsProgress          = 0;
 static int   dbgSortAnchorsByDiag        = false;
 static int   dbgInhibitSegmentReduction  = false;
 static int   dbgMasking                  = false;
@@ -7781,6 +7782,18 @@ static void parse_options_loop
 			goto next_arg;
 			}
 
+		if ((strcmp_prefix (arg, "--debug=segmentprogress:")  == 0)
+		 || (strcmp_prefix (arg, "--debug=segmentsprogress:") == 0)
+		 || (strcmp_prefix (arg, "--debug=anchorprogress:")   == 0)
+		 || (strcmp_prefix (arg, "--debug=anchorsprogress:")  == 0))
+			{
+			scan = strchr(argStr,':') + 1;
+			dbgAnchorsProgress = string_to_unitized_int (scan, true /*units of 1,000*/);
+			if (dbgAnchorsProgress <= 0)
+				dbgAnchorsProgress = 0;
+			goto next_arg;
+			}
+
 		if (strcmp (arg, "--debug=sort:diag") == 0)
 			{ dbgSortAnchorsByDiag = true;  goto next_arg; }
 
@@ -9190,6 +9203,7 @@ threshold_check_done:
 	gapped_extend_dbgShowHsps    = dbgShowHsps;
 	gapped_extend_dbgShowAnchors = dbgShowAnchors;
 	gapped_extend_dbgShowAnchorsHowOften = dbgShowAnchorsHowOften;
+	gapped_extend_dbgAnchorsProgress = dbgAnchorsProgress;
 
 	sequences_keepFastaArrow     = lzParams->lajCompatible;
 
