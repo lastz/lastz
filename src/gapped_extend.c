@@ -1288,9 +1288,30 @@ alignel* gapped_extend
 			{
 			mp = msp[i];
 
-			if ((gapped_extend_dbgAnchorsProgress != 0) &&  (i % gapped_extend_dbgAnchorsProgress == 0))
-				fprintf (stderr, "processing anchor #%u (%.2f%% of %u) hspId=" u64Fmt "\n",
+			if ((gapped_extend_dbgAnchorsProgress != 0) && (i % gapped_extend_dbgAnchorsProgress == 0))
+				{
+				int reportStrand = true;
+				fprintf (stderr, "processing");
+				if ((seq2->shortHeader != NULL) && (!seq2->useFullNames))
+					fprintf (stderr, " %s", seq2->shortHeader);
+				else if (seq2->header != NULL)
+					fprintf (stderr, " %s", seq2->header);
+				else
+					reportStrand = false;
+				if (reportStrand)
+					{
+					if (seq2->revCompFlags == rcf_comp)
+						fprintf (stderr, "(complement)");
+					else if (seq2->revCompFlags == rcf_rev)
+						fprintf (stderr, "(reverse)");
+					else if (seq2->revCompFlags == rcf_revcomp)
+						fprintf (stderr, "-");
+					else
+						fprintf (stderr, "+");
+					}
+				fprintf (stderr, " anchor #%u (%.2f%% of %u) hspId=" u64Fmt "\n",
 								 i+1, 100.0*i/anchors->len, anchors->len, mp->hspId);
+				}
 
 			debugGappedExtendVerbosity_1;
 			debugSnoopAnchorToGapped_1;
