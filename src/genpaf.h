@@ -115,7 +115,7 @@ enum
 #define genpafStandardKeys      "#NDSZEndszeIC"
 #define genpafMappingKeys       "NZEnd>,IC^"
 #define genpafSegmentKeys       "NBEnbed#"
-#define genpafBlastKeys         "nNmWvybeQR%$"
+#define genpafBlastKeys         "nNmWvy<,QR%$"  // was, erroneously, "nNmWvybeQR%$"
 #define genpafRDotplotKeys      "02!13!XX"
 #define genpafRDotplotScoreKeys "02#!13#!XXX"
 #define genpafPafWfMashKeys     "ns>,dNSZEuW{|}"
