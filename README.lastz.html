@@ -79,8 +79,8 @@
 <body>
 
 <p class=vvlarge>
-<h1>LASTZ &nbsp; Release 1.04.15,
-                 built August 27, 2021</h1>
+<h1>LASTZ &nbsp; Release 1.04.22,
+                 built August 7, 2022</h1>
 
 TABLE OF CONTENTS
 
@@ -4531,12 +4531,16 @@ be described by this field:
 
 
 <p>
+<em>Note: Prior to release 1.04.22, this format reported query positions
+incorrectly when alignments were on opposite strands.</em>
+
+<p>
 The BLASTN format reports pairwise alignments in a format similar to
 NCBI&rsquo;s BLASTN program. Output is modeled upon version 2.2.24+ of the
 standalone version of BLASTN available from
 <a href="ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/">
-NCBI&rsquo;s BLAST ftp site</a>. Output should be similar that produced by the
-command
+NCBI&rsquo;s BLAST ftp site</a>. (Note: that version of BLASTN is no longer
+available.) Output should be similar that produced by the command
 <pre>
     blastn -task blastn -db &lt;target&gt; -query &lt;query&gt; -outfmt 7
 </pre>
@@ -7763,7 +7767,7 @@ These changes have no affect on the executable.
 
 <tr class=newsect>
 <td>
-<a name="history_recent"></a>1.04.15</td><td>Aug/27/2021</td><td>
+1.04.15</td><td>Aug/27/2021</td><td>
 Fixed a bug in which the setting for
 <code><a href="#option_queryhspbest">&#8209;&#8209;queryhspbest</a></code>
 was ignored. For more details see 
@@ -7799,6 +7803,25 @@ Added Makefile.warnings.
 <tr><td></td><td></td><td>
 Some changes were made to the source code to placate compiler warnings. These
 changes have no affect on the executable.
+</td></tr>
+
+<!-- 1.04.22 -->
+
+<tr class=newsect>
+<td>
+<a name="history_recent"></a>1.04.22</td><td>Aug/7/2022</td><td>
+Fixed a serious bug in the <a href="#fmt_blastn">blastn format</a>.
+<p class=small>
+In previous versions query positions were misreported for alignments on
+opposite strands. Blastn (the program) always reports the position of the
+query along the forward strand. Previous versions of lastz reported it
+along the aligning strand.
+<p class=small>
+This has been corrected.
+<p class=small>
+For more details see 
+<a href="https://github.com/lastz/lastz/issues/51">issue 51</a> at the lastz
+github repository.
 </td></tr>
 
 </tbody></table>

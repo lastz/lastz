@@ -7,9 +7,9 @@ https://github.com/lastz/lastz/releases.
 Users are encouraged to use a tagged release, as this working branch may not
 be stable.
 
-As of this writing, the latest official release is version 1.04.15.
-Additional LASTZ releases, including all releases prior to August 2021, can be
-found at http://www.bx.psu.edu/~rsharris/lastz (in the form of tarballs).
+As of this writing, the latest official release is version 1.04.22.
+Additional LASTZ releases, including all releases prior to September 2021, can
+be found at http://www.bx.psu.edu/~rsharris/lastz (in the form of tarballs).
 
 For information about installation and use, see https://lastz.github.io/lastz
 (equivalent to README.lastz.html in this repository).
@@ -24,5 +24,5 @@ binaries (the version there might lag behind the latest version here):
 A GPU accelerated version, SegAlign, can be found at
 https://github.com/gsneha26/SegAlign.
 
-Updated Oct/1/2021 by Bob Harris (the LASTZ guy)
+Updated Aug/7/2022 by Bob Harris (the LASTZ guy)
 
