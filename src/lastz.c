@@ -126,6 +126,7 @@ char* programRevisionDate    = REVISION_DATE;
 #include <string.h>				// standard C string stuff
 #include <ctype.h>				// standard C upper/lower stuff
 #include <stdarg.h>				// standard C variable argument list stuff
+#include <limits.h>				// standard C value limit stuff
 #include <math.h>				// standard C math stuff
 #include <time.h>				// standard C time stuff
 #include "build_options.h"		// build options
@@ -6293,6 +6294,14 @@ static void parse_options_loop
 			}
 
 		// --allocate:traceback=<bytes> or --traceback=<bytes> or m=<bytes>
+		//
+		// ~~~ github issue 52 ~~~ 
+		// though tracebackMem is a u32, this must *not* exceed the maximum
+		// signed int; this is because some code in gapped_extend.c incorrectly
+		// treats tracebackMem, and derived variables, as if they were ints; as
+		// of this writing (Oct/2022) it is more prudent to limit tracebackMem
+		// to INT_MAX than to risk breaking the core code in gapped_extend.c;
+		// see notes in gapped_extend.c marked "github issue 52"
 
 		if ((strcmp_prefix (arg, "--allocate:traceback=") == 0)
 		 || (strcmp_prefix (arg, "--alloc:traceback="   ) == 0)
@@ -6301,7 +6310,15 @@ static void parse_options_loop
 		 || (strcmp_prefix (arg, "--traceback="         ) == 0)
 		 || (strcmp_prefix (arg, "m="                   ) == 0))
 			{
-			lzParams->tracebackMem = string_to_unitized_int (argStr, false /*units of 1,024*/);
+			int64 tracebackMemArg;
+			tracebackMemArg = string_to_unitized_int64 (argStr, false /*units of 1,024*/);
+			if (tracebackMemArg < 0)
+				chastise ("--allocate:traceback cannot be negative (%s)\n",arg);
+			if (tracebackMemArg == ((u32) INT_MAX)+1)
+				tracebackMemArg = INT_MAX; // special case so that "2G" is accepted
+			else if (tracebackMemArg > INT_MAX)
+				chastise ("--allocate:traceback cannot be more than 2G (%s)\n",arg);
+			lzParams->tracebackMem = (u32) tracebackMemArg;
 			goto next_arg;
 			}
 

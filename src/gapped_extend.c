@@ -34,6 +34,18 @@
 
 //----------
 //
+// ~~~ github issue 52 ~~~ 
+//
+// Some of the code here has potential overflow issues if tb->size > INT_MAX.
+// This is because it, and some derived variables, are incorrectly treated as
+// if they were ints. As this writing (Oct/2022) it is more prudent to limit
+// tb->size to INT_MAX (that limit is enforced in lastz.c) than to risk
+// breaking the core gapped alignment code here.
+//
+//----------
+
+//----------
+//
 // other files
 //
 //----------
@@ -2252,6 +2264,10 @@ static score score_identical_partition_of
 //
 //----------
 
+// ~~~ github issue 52 ~~~ 
+// The formula here to compute the number of cells is subject to integer
+// overflow if size>INT_MAX.
+
 tback* new_traceback
    (u32		size)
 	{
@@ -3306,6 +3322,7 @@ static void tbrow_needed (u32 rowsNeeded)
 
 	if (rowsNeeded <= tbRowLen) return;
 
+	// ~~~ github issue 52 ~~~ this should test for overflow
 	needed = round_up(sizeof(u32)*(rowsNeeded+1+rowsNeeded/16), 512*1024);
 	tbRow = realloc_or_die ("ydrop_one_sided_align tbRow", tbRow, needed);
 	tbRowLen = needed / sizeof(u32);
@@ -3320,6 +3337,9 @@ void free_traceback_rows (void)
 
 
 //=== ydrop_one_sided_align ===
+// ~~~ github issue 52 ~~~ 
+// tbLen should be u32, not int
+// tbNeeded should be u32, not int
 
 static score ydrop_one_sided_align
    (alignio*	io,
@@ -3574,6 +3594,7 @@ static score ydrop_one_sided_align
 
 		if (RY < LY) RY = LY;	// (see note 11)
 		tbNeeded = RY - LY + yDropTail;
+		// ~~~ github issue 52 ~~~ could this test fail due to overflow?
 		if ((tbp - tb->space) + tbNeeded >= tbLen)
 			{
 			if (gapped_extend_inhibitTruncationReport)
@@ -3778,6 +3799,7 @@ dp_finished:
 		cTemp = 0;		// (place to set a breakpoint)
 #endif // snoopAlgorithm
 
+	// ~~~ github issue 52 ~~~ need to check if this loop has overflow issues
 	for (prevOp=0 ; (row>=1) || (col>0) ; prevOp=op)
 		{
 		link = tb->space[tbRow[row] + col];

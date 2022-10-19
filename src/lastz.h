@@ -240,6 +240,10 @@ typedef struct control
 								//              .. alignment
 	u32			tracebackMem;	//     number of bytes to allocate to track
 								//     .. gapped alignment traceback
+								//     ~~~ github issue 52 ~~~ 
+								//     though declared as a u32, tracebackMem
+								//     .. must *not* exceed the maximum signed
+								//     .. int
 	tback*		traceback;		//     memory in which to track gapped alignment
 								//     .. traceback
 	int			nIsAmbiguous;	//     true  => N is an ambiguous nucleotide

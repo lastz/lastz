@@ -728,6 +728,7 @@ int string_to_unitized_int
 
 	if (isFloat)
 		{
+		// nota bene: this test is not correct when vf=2.0 and mult=2^30
 		if ((vf > 0) && ( vf*mult > INT_MAX)) goto overflow;
 		if ((vf < 0) && (-vf*mult > INT_MAX)) goto overflow;
 		v = (vf * mult) + .5;
