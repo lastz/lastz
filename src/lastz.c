@@ -8630,7 +8630,7 @@ static void parse_options
 		{
 		if (lzParams->gappedExtend)
 			chastise ("-force:reportfilteredhsps can only be used with --nogapped\n");
-		if (currParams->hspThreshold.t != 'S')   // (hsps are adaptive)
+		if (lzParams->hspThreshold.t != 'S')   // (hsps are adaptive)
 			chastise ("-force:reportfilteredhsps cannot be used with an adaptive HSP threshold\n");
 		}
 
