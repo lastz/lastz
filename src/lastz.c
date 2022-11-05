@@ -448,6 +448,8 @@ static const int   defaultTwinsYes   = false;
 static const int   defaultTwinMinGap = 0;
 static const int   defaultTwinMaxGap = 10;
 
+static int   forceReportFilteredHsps     = false;
+
 static int   dbgShowMatrix               = false;
 static int   dbgDumpTargetSequence       = false;
 static int   dbgDumpQuerySequence        = false;
@@ -471,6 +473,7 @@ static char* dbgQueryProgressPrefix      = "";
 static int   dbgTargetProgress           = 0;
 static char* dbgTargetProgressPrefix     = "";
 #endif // allowSeveralTargets
+static int   dbgFilterProgress           = 0;
 static int   dbgReportFinish             = false;
 
 #define innerWordSize	7				// word size for inner alignment seed
@@ -586,7 +589,7 @@ static void      remove_interval_seeds   (unspos b, unspos e, void* info);
 static u32       report_hsps             (void* info,
                                           unspos pos1, unspos pos2, unspos length,
                                           score s);
-static u32       collect_filtered_hsps   (void* info,
+static u32       report_filtered_hsps    (void* info,
                                           unspos pos1, unspos pos2, unspos length,
                                           score s);
 static u32       collect_hsps            (void* info,
@@ -2807,9 +2810,14 @@ void set_up_hit_processor
 	  && (dbgShowHspCountsMin == (u32)-1)))
 		hpInfo->reporter = report_hsps;
 
-	if ((params->hspImmediate) && (!params->gappedExtend))
+	if (forceReportFilteredHsps)
 		{
-		hpInfo->reporter                  = collect_filtered_hsps;
+		hpInfo->reporter                  = report_filtered_hsps;
+		hpInfo->reporterInfo              = NULL;
+		}
+	else if ((params->hspImmediate) && (!params->gappedExtend))
+		{
+		hpInfo->reporter                  = report_filtered_hsps;
 		hpInfo->reporterInfo              = NULL;
 		}
 	else if ((params->hspImmediate) && (params->gappedExtend))
@@ -2911,25 +2919,25 @@ void set_up_hit_processor
 		}
 
 #ifdef snoopHitProc
-	if      (*_hitProc == process_for_plain_hit)        fprintf (stderr, "hitProc              == process_for_plain_hit (%p)\n",       *_hitProc);
-	else if (*_hitProc == process_for_recoverable_hit)  fprintf (stderr, "hitProc              == process_for_recoverable_hit (%p)\n", *_hitProc);
-	else if (*_hitProc == process_for_simple_hit)       fprintf (stderr, "hitProc              == process_for_simple_hit (%p)\n",      *_hitProc);
-	else if (*_hitProc == process_for_twin_hit)         fprintf (stderr, "hitProc              == process_for_twin_hit (%p)\n",        *_hitProc);
-	else                                                fprintf (stderr, "hitProc              == ??? (%p)\n",                         *_hitProc);
+	if      (*_hitProc == process_for_plain_hit)       fprintf (stderr, "hitProc              == process_for_plain_hit (%p)\n",       *_hitProc);
+	else if (*_hitProc == process_for_recoverable_hit) fprintf (stderr, "hitProc              == process_for_recoverable_hit (%p)\n", *_hitProc);
+	else if (*_hitProc == process_for_simple_hit)      fprintf (stderr, "hitProc              == process_for_simple_hit (%p)\n",      *_hitProc);
+	else if (*_hitProc == process_for_twin_hit)        fprintf (stderr, "hitProc              == process_for_twin_hit (%p)\n",        *_hitProc);
+	else                                               fprintf (stderr, "hitProc              == ??? (%p)\n",                         *_hitProc);
 
-	if      (*_hitProcInfo == &simpleInfo)              fprintf (stderr, "hitProcInfo          == simpleInfo (%p)\n",                  *_hitProcInfo);
-	else if (*_hitProcInfo == &twinInfo)                fprintf (stderr, "hitProcInfo          == twinInfo (%p)\n",                    *_hitProcInfo);
-	else                                                fprintf (stderr, "hitProcInfo          == ??? (%p)\n",                         *_hitProcInfo);
+	if      (*_hitProcInfo == &simpleInfo)             fprintf (stderr, "hitProcInfo          == simpleInfo (%p)\n",                  *_hitProcInfo);
+	else if (*_hitProcInfo == &twinInfo)               fprintf (stderr, "hitProcInfo          == twinInfo (%p)\n",                    *_hitProcInfo);
+	else                                               fprintf (stderr, "hitProcInfo          == ??? (%p)\n",                         *_hitProcInfo);
 
-	if      (hpInfo->reporter == collect_hsps)          fprintf (stderr, "hpInfo->reporter     == collect_hsps (%p)\n",                hpInfo->reporter);
-	else if (hpInfo->reporter == report_hsps)           fprintf (stderr, "hpInfo->reporter     == report_hsps (%p)\n",                 hpInfo->reporter);
-	else if (hpInfo->reporter == collect_filtered_hsps) fprintf (stderr, "hpInfo->reporter     == collect_filtered_hsps (%p)\n",       hpInfo->reporter);
-	else if (hpInfo->reporter == gappily_extend_hsps)   fprintf (stderr, "hpInfo->reporter     == gappily_extend_hsps (%p)\n",         hpInfo->reporter);
-	else                                                fprintf (stderr, "hpInfo->reporter     == ??? (%p)\n",                         hpInfo->reporter);
+	if      (hpInfo->reporter == collect_hsps)         fprintf (stderr, "hpInfo->reporter     == collect_hsps (%p)\n",                hpInfo->reporter);
+	else if (hpInfo->reporter == report_hsps)          fprintf (stderr, "hpInfo->reporter     == report_hsps (%p)\n",                 hpInfo->reporter);
+	else if (hpInfo->reporter == report_filtered_hsps) fprintf (stderr, "hpInfo->reporter     == report_filtered_hsps (%p)\n",       hpInfo->reporter);
+	else if (hpInfo->reporter == gappily_extend_hsps)  fprintf (stderr, "hpInfo->reporter     == gappily_extend_hsps (%p)\n",         hpInfo->reporter);
+	else                                               fprintf (stderr, "hpInfo->reporter     == ??? (%p)\n",                         hpInfo->reporter);
 
-	if      (hpInfo->reporterInfo == &gappilyInfo)      fprintf (stderr, "hpInfo->reporterInfo == gappily_extend_hsps (%p)\n",         hpInfo->reporterInfo);
-	else if (hpInfo->reporterInfo == NULL)              fprintf (stderr, "hpInfo->reporterInfo == NULL (%p)\n",                        hpInfo->reporterInfo);
-	else                                                fprintf (stderr, "hpInfo->reporterInfo == ??? (%p)\n",                         hpInfo->reporterInfo);
+	if      (hpInfo->reporterInfo == &gappilyInfo)     fprintf (stderr, "hpInfo->reporterInfo == gappily_extend_hsps (%p)\n",         hpInfo->reporterInfo);
+	else if (hpInfo->reporterInfo == NULL)             fprintf (stderr, "hpInfo->reporterInfo == NULL (%p)\n",                        hpInfo->reporterInfo);
+	else                                               fprintf (stderr, "hpInfo->reporterInfo == ??? (%p)\n",                         hpInfo->reporterInfo);
 #endif // snoopHitProc
 	}
 
@@ -3802,6 +3810,97 @@ static u32 report_hsps
 //----------
 // [[-- a seed hit reporter function --]]
 //
+// report_filtered_hsps--
+//	Report a seed hit or HSP (i.e. just write it to output), so long as it
+//	satisfies the current filtering criteria.
+//
+// Arguments and Return value: (see seed_search.h)
+//
+//----------
+//
+// Note: in earlier versions, this was collect_filtered_hsps(), but that was a
+//       misnomer.
+//
+//----------
+
+static u32 report_filtered_hsps
+   (arg_dont_complain(void* info),
+	unspos	pos1,
+	unspos	pos2,
+	unspos	length,
+	score	s)
+	{
+	static u64 numHsps = 0;
+	static u64 numRejected = 0;
+	unspos	startPos1 = pos1 - length;
+	unspos	startPos2 = pos2 - length;
+	segment	seg;
+
+	numHsps++;
+
+	if ((dbgFilterProgress != 0) && (numHsps % dbgFilterProgress == 1))
+		{
+		char* name2 = NULL;
+		if (currParams->seq2->partition.p == NULL) // sequence 2 is not partitioned
+			name2 = (currParams->seq1->useFullNames)? currParams->seq2->header
+													: currParams->seq2->shortHeader;
+		if ((name2 == NULL) || (name2[0] == 0)) name2 = "seq2";
+
+		fprintf (stderr, "filter: passed %s HSPs / rejected %s (%.2f%%) / %s.%s.pos=%s (%.2f%%)\n",
+		                 ucommatize(numHsps-numRejected), ucommatize(numRejected),
+		                 (100.0*numRejected) / numHsps,
+		                 name2,currParams->seq2->revCompFlags==rcf_forward?"fwd":"rev",ucommatize(pos2),
+		                 (100.0*pos2 / currParams->seq2->len));
+		}
+
+	// filter HSP by identity and/or coverage
+
+	if ((currParams->minIdentity > 0) || (currParams->maxIdentity < 1))
+		{
+		if (filter_segment_by_identity (currParams->seq1, startPos1,
+		                                currParams->seq2, startPos2, length,
+		                                currParams->minIdentity,
+		                                currParams->maxIdentity))
+			goto rejected;
+		}
+
+	if ((currParams->minCoverage > 0) || (currParams->maxCoverage < 1))
+		{
+		seg.pos1   = startPos1;
+		seg.pos2   = startPos2;
+		seg.length = length;
+		if (filter_segment_by_coverage (currParams->seq1, currParams->seq2, &seg,
+		                                currParams->minCoverage,
+		                                currParams->maxCoverage))
+			goto rejected;
+		}
+
+	if (currParams->minMatchCount > 0)
+		{
+		if (filter_segment_by_match_count (currParams->seq1, startPos1,
+		                                   currParams->seq2, startPos2, length,
+		                                   currParams->minMatchCount))
+			goto rejected;
+		}
+
+	if (currParams->maxMismatchCount >= 0)
+		{
+		if (filter_segment_by_mismatch_count (currParams->seq1, startPos1,
+		                                      currParams->seq2, startPos2, length,
+		                                      currParams->minMatchCount))
+			goto rejected;
+		}
+
+	return report_hsps (info, pos1, pos2, length, s);
+
+rejected:
+	numRejected++;
+	return 0;
+	}
+
+//----------
+// [[-- a seed hit reporter function --]]
+//
 // collect_hsps--
 //	Collect a seed hit or HSP.
 //
@@ -3888,72 +3987,6 @@ static u32 collect_hsps
 		}
 
 	return 2*length;
-	}
-
-//----------
-// [[-- a seed hit reporter function --]]
-//
-// collect_filtered_hsps--
-//	Collect a seed hit or HSP, so long as it satisfies the current filtering
-//	criteria.
-//
-// Arguments and Return value: (see seed_search.h)
-//
-//----------
-
-static u32 collect_filtered_hsps
-   (arg_dont_complain(void* info),
-	unspos	pos1,
-	unspos	pos2,
-	unspos	length,
-	score	s)
-	{
-	unspos	startPos1 = pos1 - length;
-	unspos	startPos2 = pos2 - length;
-	segment	seg;
-
-	// filter HSP by identity and/or coverage
-
-	if ((currParams->minIdentity > 0) || (currParams->maxIdentity < 1))
-		{
-		if (filter_segment_by_identity (currParams->seq1, startPos1,
-		                                currParams->seq2, startPos2, length,
-		                                currParams->minIdentity,
-		                                currParams->maxIdentity))
-			goto filtered;
-		}
-
-	if ((currParams->minCoverage > 0) || (currParams->maxCoverage < 1))
-		{
-		seg.pos1   = startPos1;
-		seg.pos2   = startPos2;
-		seg.length = length;
-		if (filter_segment_by_coverage (currParams->seq1, currParams->seq2, &seg,
-		                                currParams->minCoverage,
-		                                currParams->maxCoverage))
-			goto filtered;
-		}
-
-	if (currParams->minMatchCount > 0)
-		{
-		if (filter_segment_by_match_count (currParams->seq1, startPos1,
-		                                   currParams->seq2, startPos2, length,
-		                                   currParams->minMatchCount))
-			goto filtered;
-		}
-
-	if (currParams->maxMismatchCount >= 0)
-		{
-		if (filter_segment_by_mismatch_count (currParams->seq1, startPos1,
-		                                      currParams->seq2, startPos2, length,
-		                                      currParams->minMatchCount))
-			goto filtered;
-		}
-
-	return report_hsps (info, pos1, pos2, length, s);
-
-filtered:
-	return 0;
 	}
 
 //----------
@@ -7681,10 +7714,17 @@ static void parse_options_loop
 		 || (strcmp (arg, "--help=yasra") == 0))
 			{ expander_options ("yasra-specific options", "--yasra"); }
 
-		// --tryout=<what> (unadvertised)
+		// --force:<what> (unadvertised)
+
+		if ((strcmp (arg, "--force:reportfilteredhsps") == 0)
+		 || (strcmp (arg, "--force=reportfilteredhsps") == 0))
+			{ forceReportFilteredHsps = true;  goto next_arg; }
+
+		// --tryout:<what> (unadvertised)
 
 #ifdef tryout
-		if (strcmp (arg, "--tryout=immediategapped") == 0)
+		if ((strcmp (arg, "--tryout:immediategapped") == 0)
+		 || (strcmp (arg, "--tryout=immediategapped") == 0))
 			{
 			lzParams->hspImmediate = true;
 			goto next_arg;
@@ -7947,6 +7987,12 @@ static void parse_options_loop
 		if (strcmp (arg, "--debug=progressprefix") == 0)
 			{ dbgQueryProgressPrefix = dbgTargetProgressPrefix = "==================== ";  goto next_arg; }
 #endif // allowSeveralTargets
+
+		if (strcmp_prefix (arg, "--progress:filter=") == 0)
+			{
+			dbgFilterProgress = string_to_unitized_int (argStr, true /*units of 1,000*/);
+			goto next_arg;
+			}
 
 		if ((strcmp (arg, "--debug=converge") == 0)
 		 || (strcmp (arg, "--debug=convergence") == 0))
@@ -8577,6 +8623,14 @@ static void parse_options
 		if (haveInterpThreshold)
 			chastise ("--inner cannot be used with --writesegments\n");
 		lzParams->gappedExtend = false;
+		}
+
+	if (forceReportFilteredHsps)
+		{
+		if (lzParams->gappedExtend)
+			chastise ("-force:reportfilteredhsps can only be used with --nogapped\n");
+		if (currParams->hspThreshold.t != 'S')   // (hsps are adaptive)
+			chastise ("-force:reportfilteredhsps cannot be used with an adaptive HSP threshold\n");
 		}
 
 	//////////
