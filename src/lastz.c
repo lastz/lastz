@@ -3841,6 +3841,7 @@ static u32 report_filtered_hsps
 	if ((dbgFilterProgress != 0) && (numHsps % dbgFilterProgress == 1))
 		{
 		char* name2 = NULL;
+
 		if (currParams->seq2->partition.p == NULL) // sequence 2 is not partitioned
 			name2 = (currParams->seq1->useFullNames)? currParams->seq2->header
 													: currParams->seq2->shortHeader;
