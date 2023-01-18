@@ -485,6 +485,10 @@ static const float defaultBallScoreFactor = 0.75;
 //	Whenever the process will go beyond just finding gap-free extensions, the
 //	segments that will become anchors (e.g. HSPs) are collected in this table
 //	instead of being written to the console.
+// $$$ Consider adding an --allocate:segtable=<bytes> option so the user can
+// $$$ .. modify numDefaultAnchors. We'd need to be able to convert <bytes> to
+// $$$ .. the number of anchors, by inverting segtable_bytes() which is
+// $$$ .. currently defined in segment.c
 
 #define numDefaultAnchors 4000
 
