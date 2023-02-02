@@ -473,6 +473,7 @@ static char* dbgQueryProgressPrefix      = "";
 static int   dbgTargetProgress           = 0;
 static char* dbgTargetProgressPrefix     = "";
 #endif // allowSeveralTargets
+static int   dbgSeedHitProgress          = 0;
 static int   dbgFilterProgress           = 0;
 static int   dbgReportFinish             = false;
 
@@ -2935,7 +2936,7 @@ void set_up_hit_processor
 
 	if      (hpInfo->reporter == collect_hsps)         fprintf (stderr, "hpInfo->reporter     == collect_hsps (%p)\n",                hpInfo->reporter);
 	else if (hpInfo->reporter == report_hsps)          fprintf (stderr, "hpInfo->reporter     == report_hsps (%p)\n",                 hpInfo->reporter);
-	else if (hpInfo->reporter == report_filtered_hsps) fprintf (stderr, "hpInfo->reporter     == report_filtered_hsps (%p)\n",       hpInfo->reporter);
+	else if (hpInfo->reporter == report_filtered_hsps) fprintf (stderr, "hpInfo->reporter     == report_filtered_hsps (%p)\n",        hpInfo->reporter);
 	else if (hpInfo->reporter == gappily_extend_hsps)  fprintf (stderr, "hpInfo->reporter     == gappily_extend_hsps (%p)\n",         hpInfo->reporter);
 	else                                               fprintf (stderr, "hpInfo->reporter     == ??? (%p)\n",                         hpInfo->reporter);
 
@@ -3764,12 +3765,29 @@ static u32 report_hsps
 	unspos	length,
 	score	s)
 	{
-	static u64	hspIdCounter;
-	unspos	s1, s2;
+	static u64 hspIdCounter;
+	unspos s1, s2;
+
+	hspIdCounter++;
+
+	if ((dbgSeedHitProgress != 0) && (hspIdCounter % dbgSeedHitProgress == 1))
+		{
+		char* name2 = NULL;
+
+		if (currParams->seq2->partition.p == NULL) // sequence 2 is not partitioned
+			name2 = (currParams->seq1->useFullNames)? currParams->seq2->header
+													: currParams->seq2->shortHeader;
+		if ((name2 == NULL) || (name2[0] == 0)) name2 = "seq2";
+
+		fprintf (stderr, "hspsearch: %s HSPs / %s.%s.pos=%s (%.2f%%)\n",
+		                 ucommatize(hspIdCounter),
+		                 name2,currParams->seq2->revCompFlags==rcf_forward?"fwd":"rev",ucommatize(pos2),
+		                 (100.0*pos2 / currParams->seq2->len));
+		}
 
 	// report this hit/HSP
 
-	print_match (pos1-length, pos2-length, length, s, ++hspIdCounter);
+	print_match (pos1-length, pos2-length, length, s, hspIdCounter);
 
 	if (dbgShowHsps)
 		{
@@ -3920,8 +3938,26 @@ static u32 collect_hsps
 	unspos	length,
 	score	s)
 	{
+	static u64 numHsps = 0;
 	unspos	s1, s2;
 	int		reportAnchor = false;
+
+	numHsps++;
+
+	if ((dbgSeedHitProgress != 0) && (numHsps % dbgSeedHitProgress == 1))
+		{
+		char* name2 = NULL;
+
+		if (currParams->seq2->partition.p == NULL) // sequence 2 is not partitioned
+			name2 = (currParams->seq1->useFullNames)? currParams->seq2->header
+													: currParams->seq2->shortHeader;
+		if ((name2 == NULL) || (name2[0] == 0)) name2 = "seq2";
+
+		fprintf (stderr, "hspsearch: %s HSPs / %s.%s.pos=%s (%.2f%%)\n",
+		                 ucommatize(numHsps),
+		                 name2,currParams->seq2->revCompFlags==rcf_forward?"fwd":"rev",ucommatize(pos2),
+		                 (100.0*pos2 / currParams->seq2->len));
+		}
 
 	// add this hit/HSP to the list of anchors;  note that we use the strand
 	// (actually the rcf value) as the id field, so that if we happen to be
@@ -7844,12 +7880,17 @@ static void parse_options_loop
 			goto next_arg;
 			}
 
-		if ((strcmp_prefix (arg, "--debug=segmentprogress:")  == 0)
+		if ((strcmp_prefix (arg, "--progress:segments=")      == 0)
+		 || (strcmp_prefix (arg, "--progress:anchors=")       == 0)
+		 || (strcmp_prefix (arg, "--debug=segmentprogress:")  == 0)
 		 || (strcmp_prefix (arg, "--debug=segmentsprogress:") == 0)
 		 || (strcmp_prefix (arg, "--debug=anchorprogress:")   == 0)
 		 || (strcmp_prefix (arg, "--debug=anchorsprogress:")  == 0))
 			{
-			scan = strchr(argStr,':') + 1;
+			if (strcmp_prefix (arg, "--progress:") == 0)
+				scan = argStr;
+			else
+				scan = strchr(argStr,':') + 1;
 			dbgAnchorsProgress = string_to_unitized_int (scan, true /*units of 1,000*/);
 			if (dbgAnchorsProgress <= 0)
 				dbgAnchorsProgress = 0;
@@ -7993,9 +8034,19 @@ static void parse_options_loop
 			{ dbgQueryProgressPrefix = dbgTargetProgressPrefix = "==================== ";  goto next_arg; }
 #endif // allowSeveralTargets
 
+		if (strcmp_prefix (arg, "--progress:hspsearch=") == 0)
+			{
+			dbgSeedHitProgress = string_to_unitized_int (argStr, true /*units of 1,000*/);
+			if (dbgSeedHitProgress == 1)
+				chastise ("progress:hspsearch must be at least 2\n");  // because of the way modularity is tested
+			goto next_arg;
+			}
+
 		if (strcmp_prefix (arg, "--progress:filter=") == 0)
 			{
 			dbgFilterProgress = string_to_unitized_int (argStr, true /*units of 1,000*/);
+			if (dbgFilterProgress == 1)
+				chastise ("progress:filter must be at least 2\n");  // because of the way modularity is tested
 			goto next_arg;
 			}
 
