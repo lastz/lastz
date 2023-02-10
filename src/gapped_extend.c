@@ -531,8 +531,8 @@ static unspos segment_peak
 		for (ix=0 ; ix<anchorPeakLen; ix++)
 			{
 			similarity += scoring->sub[*t1++][*t2++];
-			//fprintf (stderr, "%c %c " scoreFmtSimple " " scoreFmtSimple "\n",
-			//                 t1[-1], t2[-1], scoring->sub[t1[-1]][t2[-1]], similarity);
+			//printf ("[%d] %c %c " scoreFmtSimple " " scoreFmtSimple "\n",
+			//        ix, t1[-1], t2[-1], scoring->sub[t1[-1]][t2[-1]], similarity);
 			}
 		best = similarity;
 		peak = anchorPeakLen / 2;
@@ -541,8 +541,8 @@ static unspos segment_peak
 			{
 			similarity -= scoring->sub[*s1++][*s2++];
 			similarity += scoring->sub[*t1++][*t2++];
-			//fprintf (stderr, "%c %c " scoreFmtSimple " " scoreFmtSimple "\n",
-			//                 t1[-1], t2[-1], scoring->sub[t1[-1]][t2[-1]], similarity);
+			//printf ("[%d] %c %c " scoreFmtSimple " " scoreFmtSimple "\n",
+			//        ix, t1[-1], t2[-1], scoring->sub[t1[-1]][t2[-1]], similarity);
 			if (similarity > best)
 				{
 				best = similarity;
@@ -552,6 +552,7 @@ static unspos segment_peak
 
 		gapped_extend_count_stat (numPeaks);
 		gapped_extend_add_stat   (totalPeakScore, best);
+		// printf ("peak: " unsposFmt " " scoreFmtSimple "\n", peak, best);
 		}
 
 	return peak;
@@ -2331,6 +2332,46 @@ void free_traceback
 //	and script.
 //
 //----------
+//
+// Notes:
+//
+// (1)	(see github issue 54) The alignment problem is split into a left and
+//		right part, at the anchor point. The fact that the anchor point goes
+//		into one part but not the other means that two runs may give
+//		different results when everything is the same but in one run the
+//		target is reversed. It is presumed that this is rare, but it has not
+//		been measured.
+//
+//		The split occurs in this code:
+//		  scoreLeft  = ydrop_one_sided_align(...)
+//		   ...
+//		  scoreRight = ydrop_one_sided_align(...)
+//
+//		When the target is reversed, this effectively moved the anchor point
+//		into the other half of the alignment. In the issue 54 example, this
+//		cause a 2-base indel that had been at the start of one half to be
+//		two 1-base indels, one at the start of each half. This in turn caused
+//		the indels to be avoided in favor of a poorer overall alignment with
+//		more mismatches.
+//
+//		Possible solutions:
+//		(1a) Include the anchor point in both halves, then try to sort things
+//		out when merging the two alignments. Seems like a writhing sack of
+//		worms to guarantee, and still could have similar cases of strand
+//		differences.
+//		(1b) Compute the score of the windows on both sides of the anchor
+//		(these are already computed in segment_peak) and use whichever of those
+//		two is higher to decide which half the anchor should go in. This is
+//		relatively easy to implement, but it's hard to know which side is the
+//		'right' one, there's no guarantee that the one chosen will give the
+//		better alignment score, and there will still be cases where strand
+//		differences could occur (e.g. if those two secondary windows have the
+//		same score.
+//
+//		At present (Feb/2023) the best thing to do is nothing -- just leave it
+//		as is.
+//
+//----------
 
 static void lop_initial_indels (alignio* io);
 static void lop_final_indels   (alignio* io);
@@ -2460,6 +2501,9 @@ static void ydrop_align
 		dump_score_set (stderr, io->scoring, (u8*)"ACGTacgtNn", (u8*)"ACGTacgtNn");
 		}
 #endif // snoopAlgorithm
+
+	// nota bene: the left/right split here is not robust to separate runs
+	// in which the target is reversed; see github issue 54 and note (1) above
 
 	snoopSubprobsA_1;
 
