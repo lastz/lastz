@@ -404,6 +404,10 @@ typedef struct control
 	char*		dotplotFilename;//     name of the file to write dot plot to
 	FILE*		dotplotFile;	//     file to write dot plot to
 	char*		dotplotKeys;	//     genpaf keys for formatting dotplot
+	char*		axtFilename;	//     name of the file to write axt format to
+	FILE*		axtFile;		//     file to write axt format to
+	char*		mafFilename;	//     name of the file to write maf format to
+	FILE*		mafFile;		//     file to write maf format to
 
 	// for inner alignment (interpolation)
 
@@ -487,7 +491,6 @@ void finish_one_strand    (seq* target, u8* targetRev,
                            tback* traceback, census* targCensus);
 void split_anchors        (int id);
 void swap_anchor_sets     (void);
-void print_job_header     (void);
 
 //----------
 //

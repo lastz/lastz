@@ -33,8 +33,9 @@
 
 enum
 	{
-	fmtBad  = -1,
-	fmt_min = 0,
+	fmtUnspecified = -2,
+	fmtBad         = -1,
+	fmt_min        = 0,
 	fmtGfa = fmt_min,			// output alignments in GFA format
 	fmtGfaNoScore,				// .. in GFA format but without scores
 	fmtLav,						// .. in LAV format
@@ -101,8 +102,8 @@ void  print_job_header          (void);
 void  print_job_footer          (void);
 void  print_header              (void);
 void  print_align_list          (alignel* alignList);
-char* print_comment_open        (void);
-void  print_comment_close       (void);
+char* print_comment_open        (FILE* f, int _outputFormat);
+void  print_comment_close       (FILE* f, int _outputFormat);
 void  print_eof_comment         (void);
 void  print_match               (unspos pos1, unspos pos2, unspos length,
                                  score s, u64 hspId);

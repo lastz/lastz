@@ -172,14 +172,15 @@ void print_align_list_segments (alignel* alignList)
 
 void print_job_header (void)
 	{
-	int outputFormat = currParams->outputFormat;
+	FILE*	outputFile   = currParams->outputFile;
+	int		outputFormat = currParams->outputFormat;
 
 	switch (outputFormat)
 		{
 		case fmtGfa:
 		case fmtGfaNoScore:
 			print_gfa_job_header
-			   (currParams->outputFile, program_name(),
+			   (outputFile, program_name(),
 			    currParams->seq1->filename, currParams->seq2->filename);
 			break;
 		case fmtLav:
@@ -188,7 +189,7 @@ void print_job_header (void)
 		case fmtLavText:
 		case fmtLavInfScores:
 			print_lav_job_header
-			   (currParams->outputFile, program_name(),
+			   (outputFile, program_name(),
 			    currParams->seq1->filename, currParams->seq2->filename, currParams->args,
 		        currParams->scoring, &currParams->hspThreshold, &currParams->gappedThreshold,
 		        currParams->dynamicMasking,
@@ -203,7 +204,7 @@ void print_job_header (void)
 		case fmtAxtComment:
 		case fmtAxtGeneral:
 			print_axt_job_header
-			   (currParams->outputFile, program_name(), currParams->args,
+			   (outputFile, program_name(), currParams->args,
 		        currParams->scoring,
 		        &currParams->hspThreshold, &currParams->gappedThreshold,
 		        currParams->xDrop, currParams->yDrop);
@@ -212,7 +213,7 @@ void print_job_header (void)
 		case fmtMafComment:
 		case fmtMafNoComment:
 			print_maf_job_header
-			   (currParams->outputFile, program_name(), currParams->args,
+			   (outputFile, program_name(), currParams->args,
 		        currParams->scoring,
 		        &currParams->hspThreshold, &currParams->gappedThreshold,
 		        currParams->xDrop, currParams->yDrop,
@@ -220,24 +221,24 @@ void print_job_header (void)
 			break;
 		case fmtSoftSam:
 		case fmtHardSam:
-			print_sam_job_header (currParams->outputFile,currParams->readGroup);
+			print_sam_job_header (outputFile,currParams->readGroup);
 			break;
 		case fmtSoftSamNoHeader:
 		case fmtHardSamNoHeader:
 			; // (do nothing)
 			break;
 		case fmtCigar:
-			print_cigar_job_header (currParams->outputFile);
+			print_cigar_job_header (outputFile);
 			break;
 		case fmtGenpaf:
-			print_genpaf_job_header (currParams->outputFile, currParams->outputInfo);
+			print_genpaf_job_header (outputFile, currParams->outputInfo);
 			break;
 		case fmtGenpafNoHeader:
 		case fmtGenpafNameHeader:
 			print_genpaf_job_header (NULL, NULL);
 			break;
 		case fmtGenpafBlast:
-			print_blast_job_header (currParams->outputFile);
+			print_blast_job_header (outputFile);
 			break;
 		case fmtGenpafBlastNoHeader:
 			; // (do nothing)
@@ -250,14 +251,14 @@ void print_job_header (void)
 		case fmtZeroText:
 		text_format:
 			print_text_align_job_header
-			   (currParams->outputFile, program_name(),
+			   (outputFile, program_name(),
 			    currParams->seq1->filename, currParams->seq2->filename,
 			    (outputFormat!=fmtZeroText));
 			break;
 		case fmtDiffs:
 		case fmtDiffsNoBlocks:
 			print_align_diffs_job_header
-			   (currParams->outputFile, program_name(),
+			   (outputFile, program_name(),
 			    currParams->seq1->filename, currParams->seq2->filename);
 			break;
 		case fmtInfStats:
@@ -281,24 +282,41 @@ void print_job_header (void)
 
 //	if (currParams->dotplotFile != NULL)
 //		; // (do nothing)
+
+	if (currParams->axtFile != NULL)
+		print_axt_job_header
+		   (currParams->axtFile, program_name(), currParams->args,
+	        currParams->scoring,
+	        &currParams->hspThreshold, &currParams->gappedThreshold,
+	        currParams->xDrop, currParams->yDrop);
+
+	if (currParams->mafFile != NULL)
+		print_maf_job_header
+		   (currParams->mafFile, program_name(), currParams->args,
+	        currParams->scoring,
+	        &currParams->hspThreshold, &currParams->gappedThreshold,
+	        currParams->xDrop, currParams->yDrop,
+	        (outputFormat != fmtMafNoComment));
 	}
+
 
 void print_job_footer (void)
 	{
-	int outputFormat = currParams->outputFormat;
+	FILE*	outputFile   = currParams->outputFile;
+	int		outputFormat = currParams->outputFormat;
 
 	switch (outputFormat)
 		{
 		case fmtGfa:
 		case fmtGfaNoScore:
-			print_gfa_job_footer (currParams->outputFile);
+			print_gfa_job_footer (outputFile);
 			break;
 		case fmtLav:
 		case fmtLavComment:
 		case fmtLavScore:
 		case fmtLavText:
 		case fmtLavInfScores:
-			print_lav_job_footer (currParams->outputFile);
+			print_lav_job_footer (outputFile);
 			if (outputFormat == fmtLavText)
 				goto text_format;
 			if (outputFormat == fmtLavInfScores)
@@ -307,12 +325,12 @@ void print_job_footer (void)
 		case fmtAxt:
 		case fmtAxtComment:
 		case fmtAxtGeneral:
-			print_axt_job_footer (currParams->outputFile);
+			print_axt_job_footer (outputFile);
 			break;
 		case fmtMaf:
 		case fmtMafComment:
 		case fmtMafNoComment:
-			print_maf_job_footer (currParams->outputFile);
+			print_maf_job_footer (outputFile);
 			break;
 		case fmtSoftSam:
 		case fmtSoftSamNoHeader:
@@ -321,17 +339,17 @@ void print_job_footer (void)
 			; // (do nothing)
 			break;
 		case fmtCigar:
-			print_cigar_job_footer (currParams->outputFile);
+			print_cigar_job_footer (outputFile);
 			break;
 		case fmtGenpaf:
-			print_genpaf_job_footer (currParams->outputFile);
+			print_genpaf_job_footer (outputFile);
 			break;
 		case fmtGenpafNoHeader:
 		case fmtGenpafNameHeader:
 			; // (do nothing)
 			break;
 		case fmtGenpafBlast:
-			print_blast_job_footer (currParams->outputFile);
+			print_blast_job_footer (outputFile);
 			break;
 		case fmtGenpafBlastNoHeader:
 			; // (do nothing)
@@ -343,17 +361,17 @@ void print_job_footer (void)
 		case fmtText:
 		case fmtZeroText:
 		text_format:
-			print_text_align_job_footer (currParams->outputFile);
+			print_text_align_job_footer (outputFile);
 			break;
 		case fmtDiffs:
 		case fmtDiffsNoBlocks:
-			print_align_diffs_job_footer (currParams->outputFile);
+			print_align_diffs_job_footer (outputFile);
 			break;
 		case fmtInfStats:
-			print_inference_stats_job (currParams->outputFile);
+			print_inference_stats_job (outputFile);
 			break;
 		case fmtIdDist:
-			print_identity_dist_job (currParams->outputFile);
+			print_identity_dist_job (outputFile);
 			break;
 		case fmtInfScores:
 		inf_scores_format:
@@ -370,7 +388,14 @@ void print_job_footer (void)
 
 //	if (currParams->dotplotFile != NULL)
 //		; // (do nothing)
+
+	if (currParams->axtFile != NULL)
+		print_axt_job_footer (currParams->axtFile);
+
+	if (currParams->mafFile != NULL)
+		print_maf_job_footer (currParams->mafFile);
 	}
+
 
 void print_header (void)
 	{
@@ -379,6 +404,7 @@ void print_header (void)
 	static char		prevNameBuff1[maxSequenceName+1];
 	static char		prevNameBuff2[maxSequenceName+1];
 	char*			name1, *name2;
+	FILE*			outputFile = currParams->outputFile;
 	int				outputFormat = currParams->outputFormat;
 
 	if (prevName1 == NULL)
@@ -390,16 +416,14 @@ void print_header (void)
 		{
 		case fmtGfa:
 		case fmtGfaNoScore:
-			print_gfa_header (currParams->outputFile,
-			                  currParams->seq1, currParams->seq2);
+			print_gfa_header (outputFile, currParams->seq1, currParams->seq2);
 			break;
 		case fmtLav:
 		case fmtLavComment:
 		case fmtLavScore:
 		case fmtLavText:
 		case fmtLavInfScores:
-			print_lav_header (currParams->outputFile,
-			                  currParams->seq1, currParams->seq2);
+			print_lav_header (outputFile, currParams->seq1, currParams->seq2);
 			if (outputFormat == fmtLavText)
 				goto text_format;
 			if (outputFormat == fmtLavInfScores)
@@ -408,31 +432,26 @@ void print_header (void)
 		case fmtAxt:
 		case fmtAxtComment:
 		case fmtAxtGeneral:
-			print_axt_header (currParams->outputFile,
-			                  currParams->seq1, currParams->seq2);
+			print_axt_header (outputFile, currParams->seq1, currParams->seq2);
 			break;
 		case fmtMaf:
 		case fmtMafComment:
 		case fmtMafNoComment:
-			print_maf_header (currParams->outputFile,
-			                  currParams->seq1, currParams->seq2);
+			print_maf_header (outputFile, currParams->seq1, currParams->seq2);
 			break;
 		case fmtSoftSam:
 		case fmtHardSam:
-			print_sam_header (currParams->outputFile,
-			                  currParams->seq1, currParams->seq2);
+			print_sam_header (outputFile, currParams->seq1, currParams->seq2);
 			break;
 		case fmtSoftSamNoHeader:
 		case fmtHardSamNoHeader:
 			; // (do nothing)
 			break;
 		case fmtCigar:
-			print_cigar_header (currParams->outputFile,
-			                    currParams->seq1, currParams->seq2);
+			print_cigar_header (outputFile, currParams->seq1, currParams->seq2);
 			break;
 		case fmtGenpaf:
-			print_genpaf_header (currParams->outputFile,
-			                     currParams->seq1, currParams->seq2);
+			print_genpaf_header (outputFile, currParams->seq1, currParams->seq2);
 			break;
 		case fmtGenpafNoHeader:
 			; // (do nothing)
@@ -452,9 +471,9 @@ void print_header (void)
 			 || (strcmp (name2, prevName2) != 0))
 				{
 				if (strcmp(currParams->outputInfo,genpafRDotplotScoreKeys) == 0)
-					fprintf (currParams->outputFile, "%s\t%s\tscore\n", name1, name2);
+					fprintf (outputFile, "%s\t%s\tscore\n", name1, name2);
 				else
-					fprintf (currParams->outputFile, "%s\t%s\n", name1, name2);
+					fprintf (outputFile, "%s\t%s\n", name1, name2);
 				strncpy (/*to*/ prevName1, /*from*/ name1, sizeof(prevNameBuff1));
 				strncpy (/*to*/ prevName2, /*from*/ name2, sizeof(prevNameBuff2));
 				}
@@ -462,7 +481,7 @@ void print_header (void)
 			break;
 		case fmtGenpafBlast:
 			print_blast_header
-			   (currParams->outputFile, program_name(), currParams->args,
+			   (outputFile, program_name(), currParams->args,
 			    currParams->seq1, currParams->seq2);
 			break;
 		case fmtGenpafBlastNoHeader:
@@ -475,14 +494,12 @@ void print_header (void)
 		case fmtText:
 		case fmtZeroText:
 		text_format:
-			print_text_align_header (currParams->outputFile,
-			                         currParams->seq1, currParams->seq2,
+			print_text_align_header (outputFile, currParams->seq1, currParams->seq2,
 			                         (outputFormat!=fmtZeroText));
 			break;
 		case fmtDiffs:
 		case fmtDiffsNoBlocks:
-			print_align_diffs_header (currParams->outputFile,
-			                          currParams->seq1, currParams->seq2);
+			print_align_diffs_header (outputFile, currParams->seq1, currParams->seq2);
 			break;
 		case fmtHspComp:
 		case fmtInfStats:
@@ -521,12 +538,20 @@ void print_header (void)
 			strncpy (/*to*/ prevName2, /*from*/ name2, sizeof(prevNameBuff2));
 			}
 		}
+
+	if (currParams->axtFile != NULL)
+		print_axt_header (currParams->axtFile, currParams->seq1, currParams->seq2);
+
+	if (currParams->mafFile != NULL)
+		print_maf_header (currParams->mafFile, currParams->seq1, currParams->seq2);
 	}
+
 
 void print_align_list (alignel* alignList)
 	{
-	int outputFormat = currParams->outputFormat;
-	alignel* a;
+	FILE*	 	outputFile   = currParams->outputFile;
+	int		 	outputFormat = currParams->outputFormat;
+	alignel*	a;
 
 	if ((currParams->searchLimit > 0)
 	 && (printedForQuery >= currParams->searchLimit))
@@ -547,7 +572,7 @@ void print_align_list (alignel* alignList)
 			                    &numer, &denom);
 			bin = identity_bin (numer, denom);
 			// nota bene: positions written as 1-based
-			print_generic (currParams->outputFile,
+			print_generic (outputFile,
 			               unsposSlashFmt
 			               " pct_identity=" unsposSlashFmt
 			               " (bin as " identityBinFormat ")",
@@ -561,9 +586,8 @@ void print_align_list (alignel* alignList)
 		{
 		case fmtGfa:
 		case fmtGfaNoScore:
-			print_gfa_align_list (currParams->outputFile,
-			                      (outputFormat == fmtGfa)? currParams->scoring
-			                                              : NULL,
+			print_gfa_align_list (outputFile,
+			                      (outputFormat == fmtGfa)? currParams->scoring : NULL,
 			                      alignList,
 								  currParams->seq1, currParams->seq2);
 			break;
@@ -571,7 +595,7 @@ void print_align_list (alignel* alignList)
 		case fmtLavComment:
 		case fmtLavScore:
 		case fmtLavInfScores:
-			print_lav_align_list (currParams->outputFile,
+			print_lav_align_list (outputFile,
 			                      alignList,
 			                      currParams->seq1, currParams->seq2);
 			if (outputFormat == fmtLavInfScores)
@@ -580,11 +604,11 @@ void print_align_list (alignel* alignList)
 		case fmtLavText:
 			for (a=alignList ; a!=NULL ; a=a->next)
 				{
-				print_lav_align        (currParams->outputFile,
+				print_lav_align        (outputFile,
 										a->seq1, a->beg1-1, a->end1,
 										a->seq2, a->beg2-1, a->end2,
 										a->script, a->s);
-				print_text_align_align (currParams->outputFile,
+				print_text_align_align (outputFile,
 										currParams->seq1, a->beg1-1, a->end1,
 										currParams->seq2, a->beg2-1, a->end2,
 										a->script, a->s,
@@ -593,44 +617,44 @@ void print_align_list (alignel* alignList)
 			break;
 		case fmtAxt:
 		case fmtAxtComment:
-			print_axt_align_list (currParams->outputFile, alignList,
+			print_axt_align_list (outputFile, alignList,
 			                      currParams->seq1, currParams->seq2,
 			                      /* comments */ outputFormat==fmtAxtComment,
 			                      /* extras   */ NULL);
 			break;
 		case fmtAxtGeneral:
-			print_axt_align_list (currParams->outputFile, alignList,
+			print_axt_align_list (outputFile, alignList,
 			                      currParams->seq1, currParams->seq2,
 			                      /* comments */ false,
 			                      /* extras   */ currParams->outputInfo);
 			break;
 		case fmtMaf:
 		case fmtMafNoComment:
-			print_maf_align_list (currParams->outputFile,
+			print_maf_align_list (outputFile,
 			                      alignList, currParams->seq1, currParams->seq2,
 			                      /* comments */ false);
 			break;
 		case fmtMafComment:
-			print_maf_align_list (currParams->outputFile,
+			print_maf_align_list (outputFile,
 			                      alignList, currParams->seq1, currParams->seq2,
 			                      /* comments */ true);
 			break;
 		case fmtSoftSam:
 		case fmtSoftSamNoHeader:
-			print_sam_align_list (currParams->outputFile,
+			print_sam_align_list (outputFile,
 			                      alignList, currParams->seq1, currParams->seq2,
 			                      /* softMasking */ true,
 			                      currParams->samRGTags);
 			break;
 		case fmtHardSam:
 		case fmtHardSamNoHeader:
-			print_sam_align_list (currParams->outputFile,
+			print_sam_align_list (outputFile,
 			                      alignList, currParams->seq1, currParams->seq2,
 			                      /* softMasking */ false,
 			                      currParams->samRGTags);
 			break;
 		case fmtCigar:
-			print_cigar_align_list (currParams->outputFile,
+			print_cigar_align_list (outputFile,
 			                        alignList, currParams->seq1, currParams->seq2,
 			                        /* withInfo       */ true,
 			                        /* markMismatches */ false,
@@ -646,20 +670,20 @@ void print_align_list (alignel* alignList)
 		case fmtGenpafBlastNoHeader:
 		case fmtGenpafPafWfMash:
 		case fmtGenpafPafMinimap2:
-			print_genpaf_align_list (currParams->outputFile,
+			print_genpaf_align_list (outputFile,
 			                         alignList, currParams->seq1, currParams->seq2,
 			                         currParams->outputInfo);
 			break;
 		case fmtText:
 		case fmtZeroText:
-			print_text_align_align_list (currParams->outputFile,
+			print_text_align_align_list (outputFile,
 			                             alignList, currParams->seq1, currParams->seq2,
 			                             (outputFormat!=fmtZeroText),
 			                             currParams->textContext);
 			break;
 		case fmtDiffs:
 		case fmtDiffsNoBlocks:
-			print_align_diffs_align_list (currParams->outputFile,
+			print_align_diffs_align_list (outputFile,
 			                              alignList, currParams->seq1, currParams->seq2,
 			                              (outputFormat == fmtDiffs),
 			                              currParams->nIsAmbiguous);
@@ -688,14 +712,30 @@ void print_align_list (alignel* alignList)
 		                                  alignList, currParams->seq1, currParams->seq2,
 		                                  currParams->dotplotKeys,
 		                                  currParams->scoring);
+
+	if (currParams->axtFile != NULL)
+		print_axt_align_list (currParams->axtFile, alignList,
+		                      currParams->seq1, currParams->seq2,
+		                      /* comments */ outputFormat==fmtAxtComment,
+		                      /* extras   */ NULL);
+
+	if (currParams->mafFile != NULL)
+		print_maf_align_list (currParams->mafFile,
+		                      alignList, currParams->seq1, currParams->seq2,
+		                      /* comments */ false);
 	}
+
 
 void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 	// pos1 and pos2 are the positions of first character in the match,
 	// .. (origin-0).
 	{
-	static u32 printsUntilFlush = matchFlushFrequency;
-	int outputFormat = currParams->outputFormat;
+	static u32 printsUntilFlush        = matchFlushFrequency;
+	static u32 dotplotPrintsUntilFlush = matchFlushFrequency;
+	static u32 axtPrintsUntilFlush     = matchFlushFrequency;
+	static u32 mafPrintsUntilFlush     = matchFlushFrequency;
+	FILE*	outputFile   = currParams->outputFile;
+	int		outputFormat = currParams->outputFormat;
 
 	if ((currParams->searchLimit > 0)
 	 && (printedForQuery >= currParams->searchLimit))
@@ -714,7 +754,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 		                  &numer, &denom);
 		bin = identity_bin (numer, denom);
 		// nota bene: positions written as 1-based
-		print_generic (currParams->outputFile,
+		print_generic (outputFile,
 		               unsposSlashFmt
 		               " pct_identity=" unsposSlashFmt
 		               " (bin as " identityBinFormat ")",
@@ -727,7 +767,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 		{
 		case fmtGfa:
 		case fmtGfaNoScore:
-			print_gfa_match (currParams->outputFile,
+			print_gfa_match (outputFile,
 			                 currParams->seq1, pos1,
 			                 currParams->seq2, pos2, length,
 		                     (outputFormat == fmtGfa)? s : 0);
@@ -736,7 +776,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 		case fmtLavComment:
 		case fmtLavText:
 		case fmtLavInfScores:
-			print_lav_match (currParams->outputFile,
+			print_lav_match (outputFile,
 			                 currParams->seq1, pos1,
 			                 currParams->seq2, pos2, length,
 			                 s);
@@ -746,14 +786,14 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 				goto inf_scores_format;
 			break;
 		case fmtLavScore:
-			print_lavscore_match (currParams->outputFile,
+			print_lavscore_match (outputFile,
 			                      currParams->seq1, pos1,
 			                      currParams->seq2, pos2, length,
 			                      s);
 			break;
 		case fmtAxt:
 		case fmtAxtComment:
-			print_axt_match (currParams->outputFile,
+			print_axt_match (outputFile,
 			                 currParams->seq1, pos1,
 			                 currParams->seq2, pos2, length,
 			                 s,
@@ -761,7 +801,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 			                 /* extras   */ NULL);
 			break;
 		case fmtAxtGeneral:
-			print_axt_match (currParams->outputFile,
+			print_axt_match (outputFile,
 			                 currParams->seq1, pos1,
 			                 currParams->seq2, pos2, length,
 			                 s,
@@ -770,20 +810,20 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 			break;
 		case fmtMaf:
 		case fmtMafNoComment:
-			print_maf_match (currParams->outputFile,
+			print_maf_match (outputFile,
 			                 currParams->seq1, pos1,
 			                 currParams->seq2, pos2, length,
 			                 s, /* comments */ false);
 			break;
 		case fmtMafComment:
-			print_maf_match (currParams->outputFile,
+			print_maf_match (outputFile,
 			                 currParams->seq1, pos1,
 			                 currParams->seq2, pos2, length,
 			                 s, /* comments */ true);
 			break;
 		case fmtSoftSam:
 		case fmtSoftSamNoHeader:
-			print_sam_match (currParams->outputFile,
+			print_sam_match (outputFile,
 			                 currParams->seq1, pos1,
 			                 currParams->seq2, pos2, length,
 			                 s,
@@ -792,7 +832,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 			break;
 		case fmtHardSam:
 		case fmtHardSamNoHeader:
-			print_sam_match (currParams->outputFile,
+			print_sam_match (outputFile,
 			                 currParams->seq1, pos1,
 			                 currParams->seq2, pos2, length,
 			                 s,
@@ -800,7 +840,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 			                 currParams->samRGTags);
 			break;
 		case fmtCigar:
-			print_cigar_match (currParams->outputFile,
+			print_cigar_match (outputFile,
 			                   currParams->seq1, pos1,
 			                   currParams->seq2, pos2, length,
 			                   s,
@@ -818,7 +858,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 		case fmtGenpafBlastNoHeader:
 		case fmtGenpafPafWfMash:
 		case fmtGenpafPafMinimap2:
-			print_genpaf_match (currParams->outputFile,
+			print_genpaf_match (outputFile,
 			                    currParams->seq1, pos1,
 			                    currParams->seq2, pos2, length,
 			                    s, hspId, currParams->outputInfo);
@@ -826,7 +866,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 		case fmtText:
 		case fmtZeroText:
 		text_format:
-			print_text_align_match (currParams->outputFile,
+			print_text_align_match (outputFile,
 			                        currParams->seq1, pos1,
 			                        currParams->seq2, pos2, length,
 			                        s,
@@ -835,14 +875,14 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 			break;
 		case fmtDiffs:
 		case fmtDiffsNoBlocks:
-			print_align_diffs_match (currParams->outputFile,
+			print_align_diffs_match (outputFile,
 			                         currParams->seq1, pos1,
 			                         currParams->seq2, pos2, length,
 			                         (outputFormat == fmtDiffs),
 			                         currParams->nIsAmbiguous);
 			break;
 		case fmtHspComp:
-			print_match_composition (currParams->outputFile,
+			print_match_composition (outputFile,
 			                         currParams->seq1, pos1,
 			                         currParams->seq2, pos2, length,
 			                         s, currParams->hitSeed, currParams->step);
@@ -861,7 +901,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 			                          currParams->seq2, pos2, length);
 			break;
 		case fmtDeseed:
-			dump_match (currParams->outputFile,
+			dump_match (outputFile,
 			            currParams->seq1, pos1,
 			            currParams->seq2, pos2, length);
 			printf ("\n");
@@ -873,24 +913,60 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 			suicidef ("internal error, in print_match, outputFormat=%d", outputFormat);
 		}
 
+	if (--printsUntilFlush == 0)
+		{
+		fflush (outputFile);
+		printsUntilFlush = matchFlushFrequency;
+		}
+
 	if (currParams->dotplotFile != NULL)
+		{
 		print_genpaf_match (currParams->dotplotFile,
 		                    currParams->seq1, pos1,
 		                    currParams->seq2, pos2, length,
 		                    s, (u64) 0, currParams->dotplotKeys);
+		if (--dotplotPrintsUntilFlush == 0)
+			{
+			fflush (currParams->dotplotFile);
+			dotplotPrintsUntilFlush = matchFlushFrequency;
+			}
+		}
 
-	if (--printsUntilFlush == 0)
+	if (currParams->axtFile != NULL)
 		{
-		fflush (currParams->outputFile);
-		printsUntilFlush = matchFlushFrequency;
+		print_axt_match (currParams->axtFile,
+		                 currParams->seq1, pos1,
+		                 currParams->seq2, pos2, length,
+		                 s,
+		                 /* comments */ outputFormat==fmtAxtComment,
+		                 /* extras   */ NULL);
+		if (--axtPrintsUntilFlush == 0)
+			{
+			fflush (currParams->axtFile);
+			axtPrintsUntilFlush = matchFlushFrequency;
+			}
+		}
+
+	if (currParams->mafFile != NULL)
+		{
+		print_maf_match (currParams->mafFile,
+		                 currParams->seq1, pos1,
+		                 currParams->seq2, pos2, length,
+		                 s, /* comments */ false);
+		if (--mafPrintsUntilFlush == 0)
+			{
+			fflush (currParams->mafFile);
+			mafPrintsUntilFlush = matchFlushFrequency;
+			}
 		}
 	}
 
 
-char* print_comment_open (void)
+char* print_comment_open (FILE* f, int _outputFormat)
 	{
-	int   outputFormat = currParams->outputFormat;
-	char* commentPrefix = NULL;
+	FILE*	outputFile   = (f==NULL)? currParams->outputFile : f;
+	int		outputFormat = (_outputFormat==fmtUnspecified)? currParams->outputFormat : _outputFormat;
+	char*	commentPrefix = NULL;
 
 	switch (outputFormat)
 		{
@@ -899,7 +975,7 @@ char* print_comment_open (void)
 		case fmtLavScore:
 		case fmtLavText:
 		case fmtLavInfScores:
-			print_lav_comment_open (currParams->outputFile);
+			print_lav_comment_open (outputFile);
 			break;
 		case fmtGfa:
 		case fmtGfaNoScore:
@@ -966,13 +1042,23 @@ char* print_comment_open (void)
 			suicidef ("internal error, in print_comment_open, outputFormat=%d", outputFormat);
 		}
 
+//	if (currParams->dotplotFile != NULL)
+//		; // (do nothing)
+
+//	if ((currParams->mafFile != NULL) && (outputFile != currParams->mafFile))
+//		; // (do nothing)
+
+//	if ((currParams->axtFile != NULL) && (outputFile != currParams->axtFile))
+//		; // (do nothing)
+
 	return commentPrefix;
 	}
 
 
-void print_comment_close (void)
+void print_comment_close (FILE* f, int _outputFormat)
 	{
-	int outputFormat = currParams->outputFormat;
+	FILE*	outputFile   = (f==NULL)? currParams->outputFile : f;
+	int		outputFormat = (_outputFormat==fmtUnspecified)? currParams->outputFormat : _outputFormat;
 
 	switch (outputFormat)
 		{
@@ -981,7 +1067,7 @@ void print_comment_close (void)
 		case fmtLavScore:
 		case fmtLavText:
 		case fmtLavInfScores:
-			print_lav_comment_close (currParams->outputFile);
+			print_lav_comment_close (outputFile);
 			break;
 		case fmtGfa:
 		case fmtGfaNoScore:
@@ -1018,21 +1104,41 @@ void print_comment_close (void)
 		default:
 			suicidef ("internal error, in print_comment_close, outputFormat=%d", outputFormat);
 		}
+
+//	if (currParams->dotplotFile != NULL)
+//		; // (do nothing)
+
+//	if ((currParams->mafFile != NULL) && (outputFile != currParams->mafFile))
+//		; // (do nothing)
+
+//	if ((currParams->axtFile != NULL) && (outputFile != currParams->axtFile))
+//		; // (do nothing)
 	}
 
 
 void print_eof_comment (void)
 	{
-	int outputFormat = currParams->outputFormat;
+	FILE*	outputFile   = currParams->outputFile;
+	int		outputFormat = currParams->outputFormat;
 
 	if (outputFormat != fmtNone)
-		fprintf (currParams->outputFile, "# lastz end-of-file\n");
+		fprintf (outputFile, "# lastz end-of-file\n");
+
+//	if (currParams->dotplotFile != NULL)
+//		; // (do nothing)  yes, this is intentional
+
+	if (currParams->axtFile != NULL)
+		fprintf (currParams->axtFile, "# lastz end-of-file\n");
+
+	if (currParams->mafFile != NULL)
+		fprintf (currParams->mafFile, "# lastz end-of-file\n");
 	}
 
 
 void print_m_stanza (census* cen)
 	{ // note that census might be NULL
-	int outputFormat = currParams->outputFormat;
+	FILE*	outputFile   = currParams->outputFile;
+	int		outputFormat = currParams->outputFormat;
 
 	switch (outputFormat)
 		{
@@ -1041,7 +1147,7 @@ void print_m_stanza (census* cen)
 		case fmtLavScore:
 		case fmtLavText:
 		case fmtLavInfScores:
-			print_lav_m_stanza (currParams->outputFile, cen);
+			print_lav_m_stanza (outputFile, cen);
 			break;
 		case fmtGfa:
 		case fmtGfaNoScore:
@@ -1081,11 +1187,19 @@ void print_m_stanza (census* cen)
 
 //	if (currParams->dotplotFile != NULL)
 //		; // (do nothing)
+
+//	if ((currParams->mafFile != NULL) && (outputFile != currParams->mafFile))
+//		; // (do nothing)
+
+//	if ((currParams->axtFile != NULL) && (outputFile != currParams->axtFile))
+//		; // (do nothing)
 	}
+
 
 void print_census_stanza (census* cen)
 	{
-	int outputFormat = currParams->outputFormat;
+	FILE*	outputFile   = currParams->outputFile;
+	int		outputFormat = currParams->outputFormat;
 
 	switch (outputFormat)
 		{
@@ -1094,7 +1208,7 @@ void print_census_stanza (census* cen)
 		case fmtLavScore:
 		case fmtLavText:
 		case fmtLavInfScores:
-			print_lav_census_stanza (currParams->outputFile, cen);
+			print_lav_census_stanza (outputFile, cen);
 			break;
 		case fmtGfa:
 		case fmtGfaNoScore:
@@ -1134,17 +1248,25 @@ void print_census_stanza (census* cen)
 
 //	if (currParams->dotplotFile != NULL)
 //		; // (do nothing)
+
+//	if ((currParams->mafFile != NULL) && (outputFile != currParams->mafFile))
+//		; // (do nothing)
+
+//	if ((currParams->axtFile != NULL) && (outputFile != currParams->axtFile))
+//		; // (do nothing)
 	}
+
 
 void print_x_stanza (unspos numMasked)
 	{
-	int outputFormat = currParams->outputFormat;
+	FILE*	outputFile   = currParams->outputFile;
+	int		outputFormat = currParams->outputFormat;
 
 	switch (outputFormat)
 		{
 		case fmtGfa:
 		case fmtGfaNoScore:
-			print_gfa_generic (currParams->outputFile,
+			print_gfa_generic (outputFile,
 			                   'x', "num_masked=" unsposFmt, numMasked);
 			break;
 		case fmtLav:
@@ -1152,7 +1274,7 @@ void print_x_stanza (unspos numMasked)
 		case fmtLavScore:
 		case fmtLavText:
 		case fmtLavInfScores:
-			print_lav_x_stanza (currParams->outputFile, numMasked);
+			print_lav_x_stanza (outputFile, numMasked);
 			break;
 		case fmtAxt:
 		case fmtAxtComment:
@@ -1180,7 +1302,7 @@ void print_x_stanza (unspos numMasked)
 		case fmtInfStats:
 		case fmtIdDist:
 		case fmtDeseed:
-			print_generic (currParams->outputFile,
+			print_generic (outputFile,
 			               "num_masked=" unsposFmt, numMasked);
 			break;
 		case fmtInfScores:
@@ -1193,51 +1315,60 @@ void print_x_stanza (unspos numMasked)
 
 //	if (currParams->dotplotFile != NULL)
 //		; // (do nothing)
+
+//	if ((currParams->mafFile != NULL) && (outputFile != currParams->mafFile))
+//		; // (do nothing)
+
+//	if ((currParams->axtFile != NULL) && (outputFile != currParams->axtFile))
+//		; // (do nothing)
 	}
 
+
 void print_generic
-   (FILE*		f,
+   (FILE*		f,				// if this is NULL, currParams->outputFile is used
 	const char*	format,
 	...)
 	{
-	int outputFormat;
+	FILE*	outputFile;
+	int		outputFormat;
 	va_list	args;
 
 	va_start (args, format);
 
+	outputFile   = (f == NULL)? currParams->outputFile : f;
 	outputFormat = currParams->outputFormat;
 
 	switch (outputFormat)
 		{
 		case fmtGfa:
 		case fmtGfaNoScore:
-			vprint_gfa_generic (f, 'z', format, args);
+			vprint_gfa_generic (outputFile, 'z', format, args);
 			break;
 		case fmtLavComment:
-			vprint_lav_comment (f, format, args);
+			vprint_lav_comment (outputFile, format, args);
 			break;
 		case fmtLavText:
-			vprint_lav_comment (f, format, args);
+			vprint_lav_comment (outputFile, format, args);
 			if (format != NULL)
 				{
 				va_end (args);
 				va_start (args, format);
-				vfprintf (f, format, args);
-				fprintf  (f, "\n");
+				vfprintf (outputFile, format, args);
+				fprintf  (outputFile, "\n");
 				}
 			break;
 		case fmtAxtComment:
-			vprint_axt_comment (f, format, args);
+			vprint_axt_comment (outputFile, format, args);
 			break;
 		case fmtMafComment:
-			vprint_maf_comment (f, format, args);
+			vprint_maf_comment (outputFile, format, args);
 			break;
 		case fmtText:
 		case fmtZeroText:
 			if (format != NULL)
 				{
-				vfprintf (f, format, args);
-				fprintf  (f, "\n");
+				vfprintf (outputFile, format, args);
+				fprintf  (outputFile, "\n");
 				}
 			break;
 		case fmtLav:
@@ -1274,6 +1405,12 @@ void print_generic
 		}
 
 //	if (currParams->dotplotFile != NULL)
+//		; // (do nothing)
+
+//	if ((currParams->mafFile != NULL) && (outputFile != currParams->mafFile))
+//		; // (do nothing)
+
+//	if ((currParams->axtFile != NULL) && (outputFile != currParams->axtFile))
 //		; // (do nothing)
 
 	va_end (args);

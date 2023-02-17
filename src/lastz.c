@@ -422,6 +422,8 @@ static const control defaultParams =
 	false,								// needTrueLengths
 	false,								// deGapifyOutput
 	NULL,NULL,NULL,						// dotplotFilename, dotplotFile, dotplotKeys
+	NULL,NULL,							// axtFilename, axtFile
+	NULL,NULL,							// mafFilename, mafFile
 
 	0,									// innerThreshold
 	NULL,								// innerSeed
@@ -606,7 +608,8 @@ static void      all_options             (void);
 static void      file_options            (void);
 static void      format_options          (void);
 static void      shortcuts               (void);
-static void      show_scoring_defaults   (FILE* f, int andExit);
+static void      show_scoring_defaults   (FILE* f, int outputFormat, int andExit);
+static void      show_scoring_defaults_core (FILE* f, int outputFormat, int andExit);
 static void      expander_options        (char* header, char* prefix);
 static void      chastise                (const char* format, ...);
 static void      parse_options           (int argc, char** argv,
@@ -721,11 +724,11 @@ int main
 	if (showDefaults)
 		{
 		if (showDefaultsExit)
-			show_scoring_defaults(helpout, /*andExit*/ true);	// (does not return)
+			show_scoring_defaults(helpout, fmtUnspecified, /*andExit*/ true);	// (does not return)
 		else if (showDefaultsStderr)
-			show_scoring_defaults(stderr,  /*andExit*/ false);
+			show_scoring_defaults(stderr,  fmtUnspecified, /*andExit*/ false);
 		else
-			show_scoring_defaults(stdout,  /*andExit*/ false);
+			show_scoring_defaults(stdout,  fmtUnspecified, /*andExit*/ false);
 		}
 
 	// open stats file
@@ -1928,6 +1931,10 @@ show_stats_and_clean_up:
 	free_if_valid        ("lz.dotplotFilename",    lzParams.dotplotFilename);    lzParams.dotplotFilename    = NULL;
 	fclose_if_valid      (lzParams.dotplotFile);                                 lzParams.dotplotFile        = NULL;
 	free_if_valid        ("lz.dotplotKeys",        lzParams.dotplotKeys);        lzParams.dotplotKeys        = NULL;
+	free_if_valid        ("lz.axtFilename",        lzParams.axtFilename);        lzParams.axtFilename        = NULL;
+	fclose_if_valid      (lzParams.axtFile);                                     lzParams.axtFile            = NULL;
+	free_if_valid        ("lz.mafFilename",        lzParams.mafFilename);        lzParams.mafFilename        = NULL;
+	fclose_if_valid      (lzParams.mafFile);                                     lzParams.mafFile            = NULL;
 	free_if_valid        ("lz.seq1Filename",       lzParams.seq1Filename);       lzParams.seq1Filename       = NULL;
 	free_sequence        (lzParams.seq1);                                        lzParams.seq1               = NULL;
 	if (freeTargetRev)
@@ -4711,6 +4718,8 @@ static void all_options (void)
 //	fprintf (helpout, "  --markend              Write a comment at the end of the output file\n");
 
 	fprintf (helpout, "  --rdotplot=<file>      create an output file suitable for plotting in R.\n");
+	fprintf (helpout, "  --axt=<file>           create an output file in AXT format.\n");
+	fprintf (helpout, "  --maf=<file>           create an output file in MAF format.\n");
 
 //	fprintf (helpout, "  --verbosity=<level>    set info level (0 is minimum, 10 is everything)\n");
 //	fprintf (helpout, "                         (default is %d)\n",
@@ -4832,6 +4841,9 @@ static void format_options (void)
 	fprintf (helpout, "    in the form of comments.  The exact content of these comment lines may\n");
 	fprintf (helpout, "    change in future releases of lastz.\n");
 	fprintf (helpout, "\n");
+	fprintf (helpout, "    The separate option --axt=<file> can be used to create a AXT format file\n");
+	fprintf (helpout, "    at the same time as creating alignment output in another format.\n");
+	fprintf (helpout, "\n");
 	fprintf (helpout, "MAF\n");
 	fprintf (helpout, "    MAF format is a multiple alignment format.  As of Jan/2009, a spec for MAF\n");
 	fprintf (helpout, "    files can be found at\n");
@@ -4846,6 +4858,9 @@ static void format_options (void)
 	fprintf (helpout, "\n");
 	fprintf (helpout, "    The option --format=maf- inhibits the maf header and any comments.  This\n");
 	fprintf (helpout, "    makes it suitable for catenating output from multiple runs.\n");
+	fprintf (helpout, "\n");
+	fprintf (helpout, "    The separate option --maf=<file> can be used to create a MAF format file\n");
+	fprintf (helpout, "    at the same time as creating alignment output in another format.\n");
 	fprintf (helpout, "\n");
 	fprintf (helpout, "SAM\n");
 	fprintf (helpout, "    SAM format is a pairwise alignment format used primarily for short-read\n");
@@ -5055,9 +5070,27 @@ static void shortcuts (void)
 	}
 
 
-static void show_scoring_defaults (FILE* f, int andExit)
+static void show_scoring_defaults
+   (FILE*		f,
+	int 		_outputFormat,
+	int			andExit)
+	{
+	show_scoring_defaults_core (f, _outputFormat, andExit);
+
+	if (currParams->axtFile != NULL)
+		show_scoring_defaults_core (currParams->axtFile, fmtAxt, /*andExit*/ false);
+
+	if (currParams->mafFile != NULL)
+		show_scoring_defaults_core (currParams->mafFile, fmtMaf, /*andExit*/ false);
+	}
+
+static void show_scoring_defaults_core
+   (FILE*		f,
+	int 		_outputFormat,
+	int			andExit)
 	{
 	// nota bene:  an older, similar routine is print_params()
+	int			outputFormat;
 	char*		name1   = currParams->seq1Filename;
 	char*		name2   = currParams->seq2Filename;
 	char*		args    = currParams->args;
@@ -5069,6 +5102,8 @@ static void show_scoring_defaults (FILE* f, int andExit)
 	char		_commentPrefix[2];
 	char		buffer[501];
 
+	outputFormat = (_outputFormat==fmtUnspecified)? currParams->outputFormat : _outputFormat;
+
 	if (name1 == NULL) name1 = "(no name)";
 	if (name2 == NULL) name2 = "(no name)";
 	if (args  == NULL) args  = "(none)";
@@ -5077,7 +5112,7 @@ static void show_scoring_defaults (FILE* f, int andExit)
 		{ _commentPrefix[0] = 0;  commentPrefix = _commentPrefix; }
 	else
 		{
-		commentPrefix = print_comment_open ();
+		commentPrefix = print_comment_open (f, outputFormat);
 		if (commentPrefix == NULL)
 			{ _commentPrefix[0] = 0;  commentPrefix = _commentPrefix; }
 		}
@@ -5167,7 +5202,7 @@ static void show_scoring_defaults (FILE* f, int andExit)
 	if (andExit)
 		exit (EXIT_FAILURE);
 	else
-		print_comment_close ();
+		print_comment_close (f, outputFormat);
 	}
 
 
@@ -5252,7 +5287,6 @@ char*	firstSpecialSub;
 score	specialSubScores[4][4];
 int		formatIsSegments;
 int		formatIsDotPlot;
-
 
 static void parse_options_loop   (int argc, char** argv,
                                   control* lzParams, control* izParams,
@@ -6960,6 +6994,17 @@ static void parse_options_loop
 			goto next_arg;
 			}
 
+		// --axt=<file>
+
+		if ((strcmp_prefix (arg, "--axt=") == 0)
+		 || (strcmp_prefix (arg, "--AXT=") == 0))
+			{
+			if (lzParams->axtFilename != NULL)
+				goto duplicated_option;
+			lzParams->axtFilename = copy_string (argStr);
+			goto next_arg;
+			}
+
 		if ((strcmp (arg, "--format=maf") == 0)
 		 || (strcmp (arg, "--format=MAF") == 0)
 		 || (strcmp (arg, "--maf")        == 0)
@@ -7036,6 +7081,17 @@ static void parse_options_loop
 			lzParams->outputFormat   = fmtMafNoComment;
 			lzParams->deGapifyOutput = true;
 			maf_distinguishNames     = false;
+			goto next_arg;
+			}
+
+		// --maf=<file>
+
+		if ((strcmp_prefix (arg, "--maf=") == 0)
+		 || (strcmp_prefix (arg, "--MAF=") == 0))
+			{
+			if (lzParams->mafFilename != NULL)
+				goto duplicated_option;
+			lzParams->mafFilename = copy_string (argStr);
 			goto next_arg;
 			}
 
@@ -8344,11 +8400,29 @@ static void parse_options
 	else
 		lzParams->outputFile = fopen_or_die (lzParams->outputFilename, "wt");
 
-	if ((lzParams->dotplotFilename) && (formatIsDotPlot))
+	if ((lzParams->dotplotFilename != NULL) && (formatIsDotPlot))
 		suicidef ("--format=rdotplot can't be used with --rdotplot=<file>");
 
 	if (lzParams->dotplotFilename != NULL)
 		lzParams->dotplotFile = fopen_or_die (lzParams->dotplotFilename, "wt");
+
+	if ((lzParams->axtFilename != NULL)
+	 &&  ((lzParams->outputFormat == fmtAxt)
+	   || (lzParams->outputFormat == fmtAxtComment)
+	   || (lzParams->outputFormat == fmtAxtGeneral)))
+		suicidef ("--format=axt can't be used with --axt=<file>");
+
+	if (lzParams->axtFilename != NULL)
+		lzParams->axtFile = fopen_or_die (lzParams->axtFilename, "wt");
+
+	if ((lzParams->mafFilename != NULL)
+	 &&  ((lzParams->outputFormat == fmtMaf)
+	   || (lzParams->outputFormat == fmtMafComment)
+	   || (lzParams->outputFormat == fmtMafNoComment)))
+		suicidef ("--format=maf can't be used with --maf=<file>");
+
+	if (lzParams->mafFilename != NULL)
+		lzParams->mafFile = fopen_or_die (lzParams->mafFilename, "wt");
 
 	if (lzParams->readGroup != NULL)
 		{
@@ -10178,21 +10252,21 @@ bad_step:
 static void print_options
    (void)
 	{
-	print_generic (currParams->outputFile,
+	print_generic (NULL,
 	               "seed=%s%s",
 	               seed_pattern(currParams->hitSeed),
 	               (currParams->hitSeed->withTrans == 0)?"":
 	               (currParams->hitSeed->withTrans == 1)?" w/transition"
 	                                                    :" w/2 transitions");
-	//print_generic (currParams->outputFile, "--hspthresh=" scoreFmtSimple, currParams->hspThreshold);
-	//print_generic (currParams->outputFile, "--gappedthresh=" scoreFmtSimple, currParams->gappedThreshold);
-	//print_generic (currParams->outputFile, "--xDrop=" scoreFmtSimple, currParams->xDrop);
-	//print_generic (currParams->outputFile, "--yDrop=" scoreFmtSimple, currParams->yDrop);
-	//print_generic (currParams->outputFile, "%s", (currParams->entropicHsp)? "--entropy" : "--noentropy");
-	//if (currParams->minMatches >= 0) print_generic (currParams->outputFile, 'z', "--filter=%d,%d", currParams->minMatches, currParams->maxTransversions);
-	//if (currParams->twinMinSpan > 0) print_generic (currParams->outputFile, "twins=%d..%d", currParams->twinMinSpan-2*currParams->hitSeed->length, currParams->twinMaxSpan-2*currParams->hitSeed->length);
-	//                        else print_generic (currParams->outputFile, "notwins");
-	print_generic (currParams->outputFile, "step=%u", currParams->step);
+	//print_generic (NULL, "--hspthresh=" scoreFmtSimple, currParams->hspThreshold);
+	//print_generic (NULL, "--gappedthresh=" scoreFmtSimple, currParams->gappedThreshold);
+	//print_generic (NULL, "--xDrop=" scoreFmtSimple, currParams->xDrop);
+	//print_generic (NULL, "--yDrop=" scoreFmtSimple, currParams->yDrop);
+	//print_generic (NULL, "%s", (currParams->entropicHsp)? "--entropy" : "--noentropy");
+	//if (currParams->minMatches >= 0) print_generic (NULL, 'z', "--filter=%d,%d", currParams->minMatches, currParams->maxTransversions);
+	//if (currParams->twinMinSpan > 0) print_generic (NULL, "twins=%d..%d", currParams->twinMinSpan-2*currParams->hitSeed->length, currParams->twinMaxSpan-2*currParams->hitSeed->length);
+	//                        else print_generic (NULL, "notwins");
+	print_generic (NULL, "step=%u", currParams->step);
 	}
 
 //----------
