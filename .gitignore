@@ -16,3 +16,7 @@ test_results/base_test.*
 # OS generated files #
 ######################
 .DS_Store
+
+# Python compiled bytecode files #
+######################
+*.pyc
