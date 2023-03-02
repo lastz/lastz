@@ -284,13 +284,14 @@ class AlignmentTable(object):
 				# if (name == "score"): val = int_or_float(val)
 				setattr(a,name,val)
 
-			for name in nonRequiredColumns:
-				if (name in columnAliases): name = columnAliases[name]
-				if (name not in columnNames): continue
-				val = fields[columnNames[name]]
-				# $$$ perhaps recognize some fields and parse them, such as:
-				# if (name == "score"): val = int_or_float(val)
-				setattr(a,name,val)
+			if (nonRequiredColumns != None):
+				for name in nonRequiredColumns:
+					if (name in columnAliases): name = columnAliases[name]
+					if (name not in columnNames): continue
+					val = fields[columnNames[name]]
+					# $$$ perhaps recognize some fields and parse them, such as:
+					# if (name == "score"): val = int_or_float(val)
+					setattr(a,name,val)
 
 			# validate the positional attributes
 			# $$$ add a way to flip start2 and end2 for negative strand
