@@ -362,11 +362,11 @@ def trace_cigar_path(cigarInfo,targetStart=0,queryStart=0,reverseQuery=False):
 	if (reverseQuery): 
 		matchStep  = (1,-1)
 		insertStep = (0,-1)
-		deleteStep = (0,-1)
+		deleteStep = (-1,0)
 	else:
 		matchStep  = (1,1)
 		insertStep = (0,1)
-		deleteStep = (0,1)
+		deleteStep = (1,0)
 
 	(tPos,qPos) = (targetStart,queryStart)
 	path = [(tPos,qPos)]
