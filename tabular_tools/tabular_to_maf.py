@@ -20,7 +20,7 @@ try:                from fasta_file import FastaFile
 except ImportError: FastaFile = None
 
 
-programName    = "alignment_to_maf"
+programName    = "tabular_to_maf"
 programVersion = "0.1.0"
 
 
