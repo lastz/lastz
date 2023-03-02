@@ -10,7 +10,7 @@ References
 from sys                  import argv,stdin,stderr,exit
 from math                 import ceil
 from alignment_table      import AlignmentTable
-from alignment_table_aids import construct_alignment_text,score_alignment
+from alignment_table_aids import construct_alignment_text,alignment_score
 from cigar                import split_cigar
 
 try:                from two_bit_file import TwoBitFile
@@ -236,7 +236,7 @@ def alignment_to_maf(a,refLookup):
 	if (hasattr(a,"score")):
 		score = a.score
 	else:
-		score = score_alignment(text1,text2)
+		score = alignment_score(text1,text2)
 
 	start1 = a.start1
 	size1  = a.end1 - a.start1

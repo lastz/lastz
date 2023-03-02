@@ -386,3 +386,159 @@ def trace_cigar_path(cigarInfo,targetStart=0,queryStart=0,reverseQuery=False):
 
 	return path
 
+
+# cigar_before_target--
+#	Return (as a list of (count,operation)) the prefix of a cigar string, up to
+#	(but not including) a specified target position.
+#
+# (cigarInfo is as for cigar_to_string)
+
+def cigar_before_target(cigarInfo,targetPos,targetStart=0):
+	if (hasattr(cigarInfo,"operations")):
+		operations = cigarInfo.operations
+		#startClip  = cigarInfo.startClip  # these don't
+		#endClip    = cigarInfo.endClip    # .. affect the path
+	else:
+		operations = cigarInfo
+
+	# follow path until we reach the goal, collecting operations; the final
+	# operation is shortened if necessary
+
+	tPos = targetStart
+	prefix = []
+	for (rpt,op) in operations:
+		if (tPos == targetPos):
+			break
+		assert (tPos < targetPos), "internal error in cigar_before_target, goal passed"
+		if (op in ["M","X","=","D"]):
+			if (tPos + rpt > targetPos):
+				rpt = targetPos - tPos
+			prefix += [(rpt,op)]
+			tPos += rpt
+		elif (op == "I"):
+			prefix += [(rpt,op)]
+		else:
+			raise ValueError
+
+	assert (tPos == targetPos), "internal error in cigar_before_target, goal not reached"
+
+	return prefix
+
+
+# cigar_after_target--
+#	Return (as a list of (count,operation)) the suffix of a cigar string, after
+#	(and including) a specified target position.
+#
+# (cigarInfo is as for cigar_to_string)
+
+def cigar_after_target(cigarInfo,targetPos,targetStart=0):
+	if (hasattr(cigarInfo,"operations")):
+		operations = cigarInfo.operations
+		#startClip  = cigarInfo.startClip  # these don't
+		#endClip    = cigarInfo.endClip    # .. affect the path
+	else:
+		operations = cigarInfo
+
+	# follow path until we reach the goal; the final operation is shortened
+	# if necessary, with any leftover part recorded
+
+	tPos = targetStart
+	leftover = None
+	for (ix,(rpt,op)) in enumerate(operations):
+		if (tPos == targetPos):
+			break
+		assert (tPos < targetPos), "internal error in cigar_after_target, goal passed"
+		if (op in ["M","X","=","D"]):
+			if (tPos + rpt > targetPos):
+				leftover = (tPos+rpt-targetPos,op)
+				rpt = targetPos - tPos
+			tPos += rpt
+		elif (op == "I"):
+			pass
+		else:
+			raise ValueError
+
+	assert (tPos == targetPos), "internal error in cigar_after_target, goal not reached"
+
+	# construct the suffix form the leftover (if any) and the remaining
+	# operations
+
+	suffix = [] if (leftover == None) else [leftover]
+	suffix += operations[ix:]
+
+	return suffix
+
+
+# cigar_identity--
+#	Compute the nucleotide identity (matches divided by matches+mismatches)
+#	represented by a cigar string.
+#
+# (cigarInfo is as for cigar_to_string)
+
+def cigar_identity(cigarInfo):
+	if (hasattr(cigarInfo,"operations")):
+		operations = cigarInfo.operations
+		#startClip  = cigarInfo.startClip  # these don't
+		#endClip    = cigarInfo.endClip    # .. affect the path
+	else:
+		operations = cigarInfo
+
+	nMatch    = sum([rpt for (rpt,op) in operations if (op in ["M","="])])
+	nMismatch = sum([rpt for (rpt,op) in operations if (op == "X")])
+	return nMatch / (nMatch+nMismatch)
+
+
+# cigar_blast_identity--
+#	Compute the alignment identity including indels (matches divided by
+#	matches+mismatches+indels) represented by a cigar string.
+#
+# (cigarInfo is as for cigar_to_string)
+
+def cigar_blast_identity(cigarInfo):
+	if (hasattr(cigarInfo,"operations")):
+		operations = cigarInfo.operations
+		#startClip  = cigarInfo.startClip  # these don't
+		#endClip    = cigarInfo.endClip    # .. affect the path
+	else:
+		operations = cigarInfo
+
+	nMatch     = sum([rpt for (rpt,op) in operations if (op in ["M","="])])
+	nMutations = sum([rpt for (rpt,op) in operations if (op in ["X","I","D"])])
+	return nMatch / (nMatch+nMutations)
+
+
+# cigar_continuity--
+#	Compute the continuity (the fraction of alignment columns that do not
+#	contain gaps) represented by a cigar string.
+#
+# (cigarInfo is as for cigar_to_string)
+
+def cigar_continuity(cigarInfo):
+	if (hasattr(cigarInfo,"operations")):
+		operations = cigarInfo.operations
+		#startClip  = cigarInfo.startClip  # these don't
+		#endClip    = cigarInfo.endClip    # .. affect the path
+	else:
+		operations = cigarInfo
+
+	nMatchOrSub = sum([rpt for (rpt,op) in operations if (op in ["M","=","X"])])
+	nColumns    = sum([rpt for (rpt,op) in operations])
+	return nMatchOrSub / nColumns
+
+
+# cigar_nmatch--
+#	Count the number of matched bases represented by a cigar string.
+#
+# (cigarInfo is as for cigar_to_string)
+
+def cigar_nmatch(cigarInfo):
+	if (hasattr(cigarInfo,"operations")):
+		operations = cigarInfo.operations
+		#startClip  = cigarInfo.startClip  # these don't
+		#endClip    = cigarInfo.endClip    # .. affect the path
+	else:
+		operations = cigarInfo
+
+	nMatch = sum([rpt for (rpt,op) in operations if (op in ["M","="])])
+	return nMatch
+

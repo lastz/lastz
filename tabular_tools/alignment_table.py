@@ -222,7 +222,7 @@ class AlignmentTable(object):
 				header = line[1:]
 				fields = line.split()
 				fields[0] = fields[0][1:]
-				headerNames = AlignmentTable.column_names(fields,requiredColumns,columnAliases=columnAliases)
+				headerNames = AlignmentTable.column_names(fields,requiredColumns,nonRequiredColumns=nonRequiredColumns,columnAliases=columnAliases)
 				if (columnNames != None):
 					differences = AlignmentTable.column_name_differences(headerNames,columnNames)
 					if (differences != None):
@@ -322,13 +322,16 @@ class AlignmentTable(object):
 			yield a
 
 	@staticmethod
-	def column_names(names,requiredColumns,columnAliases=None):
+	def column_names(names,requiredColumns,nonRequiredColumns=None,columnAliases=None):
 		if (columnAliases == None): columnAliases = {}
+		namesOfInterest = set(requiredColumns)
+		if (nonRequiredColumns != None):
+			namesOfInterest.update(nonRequiredColumns)
 		columnNames = {}
 		for (ix,name) in enumerate(names):
 			actualName = name
 			if (name in columnAliases): name = columnAliases[name]
-			if (name not in requiredColumns): continue
+			if (name not in namesOfInterest): continue
 			if (name in columnNames):
 				raise ValueError(("\"%s\" (or alias) appears more than once in --format" % actualName))
 			columnNames[name] = ix

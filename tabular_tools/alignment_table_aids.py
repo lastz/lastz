@@ -47,7 +47,7 @@ def construct_alignment_text(a,cigar,targetLookup,queryLookup):
 	return ("".join(text1),"".join(text2))
 
 
-# score_alignment--
+# alignment_score--
 #	Compute the score, using lastz default scoring, of an alignment. The
 #	alignment is provided as the two aligning strings text1 and text2.
 #
@@ -57,7 +57,7 @@ def construct_alignment_text(a,cigar,targetLookup,queryLookup):
 # $$$ ideally we'd like to be able to use other scoring schemes, read scores
 #     .. from files, etc.
 
-def score_alignment(text1,text2):
+def alignment_score(text1,text2):
 	gapOpenPenalty    = 400     # (see note
 	gapExtendPenalty  = 30      #  .. above)
 	xPenalty          = 1000
