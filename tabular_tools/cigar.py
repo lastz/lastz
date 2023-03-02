@@ -338,7 +338,7 @@ def cigar_extent(cigarInfo,targetStart=0,queryStart=0,reverseQuery=False):
 		elif (op == "I"):
 			qPos += qStep * rpt
 		elif (op == "D"):
-			tPos += qStep * rpt
+			tPos += rpt
 		else:
 			raise ValueError
 
