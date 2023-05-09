@@ -20,6 +20,11 @@ def usage(s=None):
                               sequence(s) <sequence_names> is a comma-separated
                               list
                               (default is to copy and mask all sequences)
+    --preserve:softmasking    if the input contains any softmasked content
+                              *outside* of our intervals, leave it alone
+                              (by default, we destroy softmasking in the input
+                              sequences, converting them to uppercase, before
+                              applying our intervals)
     --origin=one              intervals are origin-one, closed
                               (default is origin-zero, half-open)
     --wrap=<line_length>      split each sequence into multiple lines if needed
@@ -35,12 +40,13 @@ def main():
 
 	# parse args
 
-	chromsOfInterest = None
-	doComplement     = False
-	origin           = "zero"
-	wrapLength       = 100
-	maskChar         = None
-	intervalsFile    = None
+	chromsOfInterest    = None
+	doComplement        = False
+	convertInputToUpper = True
+	origin              = "zero"
+	wrapLength          = 100
+	maskChar            = None
+	intervalsFile       = None
 
 	for arg in argv[1:]:
 		if ("=" in arg):
@@ -54,6 +60,8 @@ def main():
 			chromsOfInterest += argVal.split(",")
 		elif (arg == "--complement"):
 			doComplement = True
+		elif (arg == "--preserve:softmasking"):
+			convertInputToUpper = False
 		elif (arg.startswith("--origin=")):
 			origin = argVal
 			if (origin == "0"): origin = "zero"
@@ -125,7 +133,7 @@ def main():
 			"more than one sequence is named %s" % chrom
 		chromSeen[chrom] = True
 
-		seq = seq.upper()
+		if (convertInputToUpper): seq = seq.upper()
 		if (chrom not in chromToIntervals): chromToIntervals[chrom] = []
 
 		intervals = chromToIntervals[chrom]
