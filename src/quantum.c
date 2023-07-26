@@ -330,7 +330,10 @@ static u32 generate_dna_ball
 										// .. reach ballScore
 	s8			citizenVal[maxWord];	// (each location is -1, 0, 1, 2, or 3)
 	u8			citizenDna[maxWord+1];	// (each location is A, C, G, T)
-	u32			dnaWords, goodWords;
+#ifdef collect_stats
+	u32			dnaWords;
+#endif // collect_stats
+	u32			goodWords;
 	int			ix, sym;
 	score		symScore, maxScore, wordScore, bestScore;
 
@@ -399,7 +402,10 @@ static u32 generate_dna_ball
 	// generate the ball
 	//////////
 
-	dnaWords = goodWords = 0;
+#ifdef collect_stats
+	dnaWords = 0;
+#endif // collect_stats
+	goodWords = 0;
 
 	citizenDna[wordLen] = 0;
 	citizenVal[0] = -1;
@@ -445,7 +451,9 @@ static u32 generate_dna_ball
 		// we have a word that occupies the 'ball'-- report it (and then go try
 		// the next symbol)
 
+#ifdef collect_stats
 		dnaWords++;
+#endif // collect_stats
 
 		if (judger == NULL)
 			goodWords++;
