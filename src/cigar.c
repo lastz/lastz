@@ -539,7 +539,8 @@ static void print_cigar_mismatchy_run
 	char	chX = (lowercase)? 'x' : 'X';
 
 	unspos	ix;
-	int		runIsMm, runLen;
+	int		runIsMm;
+	unspos	runLen;
 	s8		b1, b2;
 	char	ch;
 

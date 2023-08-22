@@ -3987,6 +3987,7 @@ fseek_failed:
 	          sequence_filename(_seq), seekType, seekPos, err);
 	return; // (never gets here)
 
+#if (maxSequenceIndex <= 32)
 sequence_too_big:
 	suicidef ("in load_2bit_sequence for %s, "
 			  "sequence length %s+%s exceeds maximum (%s)",
@@ -3994,6 +3995,7 @@ sequence_too_big:
 			  commatize(_seq->len),commatize(dnaSize+3),
 			  commatize(maxSequenceLen));
 	return; // (never gets here)
+#endif
 
 read_failed:
 	suicidef ("in load_2bit_sequence for %s,"
@@ -6052,7 +6054,7 @@ static void expand_nickname
 
 	len = strlen (src)
 	    - strlen ("{number}")
-	    + snprintf (NULL, 0, unsposFmt, contigNumber);
+	    + snprintf (NULL, 0, unsposFmt, (unspos) contigNumber);
 
 	// allocate the header (if necessary)
 
@@ -6078,7 +6080,7 @@ static void expand_nickname
 		s =  expand + strlen("{number}");
 		}
 
-	sprintf (d, unsposFmt, contigNumber);
+	sprintf (d, unsposFmt, (unspos) contigNumber);
 	d += strlen(d);
 
 	strcpy (d, s);
@@ -6916,8 +6918,10 @@ void print_partition_table
 	p = sp->p;
 	for (ix=0 ; ix<=sp->len ; ix++)
 		{
-		fprintf (f, "[%2d] %8u %8u " unsposStarFmt " " unsposStarFmt,
-		            ix, p[ix].sepBefore, p[ix].sepAfter,
+		fprintf (f, "[%2d] " unsposStarFmt " " unsposStarFmt " " unsposStarFmt " " unsposStarFmt,
+		            ix,
+		            8, p[ix].sepBefore,
+		            8, p[ix].sepAfter,
 		            8, p[ix].startLoc,
 		            8, p[ix].trueLen);
 		if (ix < sp->len)
