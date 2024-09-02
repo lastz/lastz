@@ -21,8 +21,10 @@ binaries (the version there might lag behind the latest version here):
     http://hgdownload.soe.ucsc.edu/admin/exe/macOSX.x86_64/
 ```
 
-A GPU accelerated version, SegAlign, can be found at
+A GPU accelerated version, KegAlign, can be found at
+https://github.com/galaxyproject/KegAlign. This improves on an earlier
+GPU accelerated version, SegAlign, which can be found at
 https://github.com/gsneha26/SegAlign.
 
-Updated Aug/7/2022 by Bob Harris (the LASTZ guy)
+Updated Sep/2/2024 by Bob Harris (the LASTZ guy)
 
