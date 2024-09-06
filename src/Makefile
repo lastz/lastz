@@ -91,10 +91,10 @@ incFiles = lastz.h infer_scores.h \
            utilities.h dna_utilities.h sequences.h capsule.h
 
 %.o: %.c version.mak ${incFiles}
-	${CC} -c ${CFLAGS} -Dscore_type=\'I\' $< -o $@
+	${CC} -c ${CFLAGS} -Dscore_type=I $< -o $@
 
 %_D.o: %.c version.mak ${incFiles}
-	${CC} -c ${CFLAGS} -Dscore_type=\'D\' $< -o $@
+	${CC} -c ${CFLAGS} -Dscore_type=D $< -o $@
 
 %_32.o: %.c version.mak ${incFiles}
 	${CC} -c ${CFLAGS} ${flagsFor32} $< -o $@

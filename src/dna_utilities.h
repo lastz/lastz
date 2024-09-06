@@ -35,9 +35,7 @@ global int dna_utilities_dbgShowQToBest;
 // score values--
 //	Scores used for sequence comparisons are normally signed 32-bit integers,
 //	but the programmer can override this at compile time by defining score_type
-//	as one of 'F', 'D', or 'I'.  Note that some effort must be taken to get
-//	the apostrophes into the definition from the compiler command line, such as
-//	-Dscore_type=\'F\' .
+//	as one of: F, D, or I, by compiling with e.g. -Dscore_type=F
 //
 //----------
 //
@@ -66,7 +64,15 @@ global int dna_utilities_dbgShowQToBest;
 //----------
 
 #if defined(score_type)
-#define scoreType score_type
+#if score_type == I
+#define scoreType 'I'
+#elif score_type == F
+#define scoreType 'F'
+#elif score_type == D
+#define scoreType 'D'
+#else
+#error ***** undecipherable score type definition *****
+#endif
 #else
 #define scoreType 'I'
 #endif
