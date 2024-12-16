@@ -35,9 +35,11 @@ global int dna_utilities_dbgShowQToBest;
 // score values--
 //	Scores used for sequence comparisons are normally signed 32-bit integers,
 //	but the programmer can override this at compile time by defining score_type
-//	as one of 'F', 'D', or 'I'.  Note that some effort must be taken to get
-//	the apostrophes into the definition from the compiler command line, such as
-//	-Dscore_type=\'F\' .
+//	as one of F, D, or I (e.g. -Dscore_type=F).
+//
+//	Note: Earlier versions of lastz required apostrophes around the letter, but
+//	this was problematic in some build systems. Thanks to github user Alexander
+//	Grund for suggesting the change used herein.
 //
 //----------
 //
@@ -66,7 +68,18 @@ global int dna_utilities_dbgShowQToBest;
 //----------
 
 #if defined(score_type)
-#define scoreType score_type
+// (the following is due to Alexander Grund)
+// convert the score_type define to one of the valid character constants
+#define LASTZ_CONCAT(a,b) a ## b
+
+#define LASTZ_SCORE_TYPE_I 'I'
+#define LASTZ_SCORE_TYPE_F 'F'
+#define LASTZ_SCORE_TYPE_D 'D'
+// indirection is required to expand the macro argument
+#define LASTZ_MAKE_SCORE_TYPE(c) LASTZ_CONCAT(LASTZ_SCORE_TYPE_,c)
+#define scoreType LASTZ_MAKE_SCORE_TYPE(score_type)
+// (the above is due to Alexander Grund)
+
 #else
 #define scoreType 'I'
 #endif
