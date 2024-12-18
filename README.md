@@ -12,9 +12,7 @@ Additional LASTZ releases, including all releases prior to September 2021, can
 be found at http://www.bx.psu.edu/~rsharris/lastz (in the form of tarballs).
 
 For information about installation and use, see https://lastz.github.io/lastz
-(equivalent to README.lastz.html in this repository). WARNING: That links to
-an older version of the README, as I have been unable to figure out how to
-update it.
+(equivalent to README.lastz.html in this repository).
 
 The UCSC genome browser group has included lastz and lastz_D in their prebuilt
 binaries (the version there might lag behind the latest version here):
