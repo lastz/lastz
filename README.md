@@ -7,7 +7,7 @@ https://github.com/lastz/lastz/releases.
 Users are encouraged to use a tagged release, as this working branch may not
 be stable.
 
-As of this writing, the latest official release is version 1.04.22.
+As of this writing, the latest official release is version 1.04.41.
 Additional LASTZ releases, including all releases prior to September 2021, can
 be found at http://www.bx.psu.edu/~rsharris/lastz (in the form of tarballs).
 
@@ -21,10 +21,8 @@ binaries (the version there might lag behind the latest version here):
     http://hgdownload.soe.ucsc.edu/admin/exe/macOSX.x86_64/
 ```
 
-A GPU accelerated version, KegAlign, can be found at
-https://github.com/galaxyproject/KegAlign. This improves on an earlier
-GPU accelerated version, SegAlign, which can be found at
+A GPU accelerated version, SegAlign, can be found at
 https://github.com/gsneha26/SegAlign.
 
-Updated Sep/2/2024 by Bob Harris (the LASTZ guy)
+Updated Dec/18/2024 by Bob Harris (the LASTZ guy)
 

@@ -270,6 +270,9 @@ u64    seed_hit_search        (seq* seq1, postable* pt,
 #ifdef densityFiltering
                                double maxDensity,
 #endif // densityFiltering
+#ifndef forbidBandWidth
+                               u32 bandWidth,
+#endif // not forbidBandWidth
                                hitprocessor processor, void* processorInfo);
 void   free_seed_hit_search   (void);
 u64    process_for_plain_hit  (void* info,

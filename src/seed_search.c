@@ -153,6 +153,9 @@ static s32			searchToGo;
 #ifdef densityFiltering
 static u64			maxBasesAllowed;
 #endif // densityFiltering
+#ifndef forbidBandWidth
+static u32			bandWidth;
+#endif // not forbidBandWidth
 static hitprocessor	processor;
 static void*		processorInfo;
 
@@ -252,6 +255,10 @@ static char* display_sequence_character (seq* _seq, u8 ch);
 //								The maximum alignment density we will "allow"
 //								.. before discarding a query sequence;  zero
 //	                            .. means there is no limit (see note 2 below).
+//	u32			bandWidth:		(only if forbidBandWidth is not #defined)
+//								Only seed hits within this distance above the
+//								.. main diagonal will be processed;  zero means
+//								.. this is not active
 //	hitprocessor processor:		Function to call for each hit to determine if it
 //								.. is 'good enough'.
 //	void*		processorInfo:	A value to pass thru with each call to processor.
@@ -326,6 +333,9 @@ u64 seed_hit_search
 #ifdef densityFiltering
 	double			_maxDensity,
 #endif // densityFiltering
+#ifndef forbidBandWidth
+	u32				_bandWidth,
+#endif // not forbidBandWidth
 	hitprocessor	_processor,
 	void*			_processorInfo)
 	{
@@ -369,6 +379,9 @@ u64 seed_hit_search
 #ifdef densityFiltering
 	maxBasesAllowed   = _maxDensity * seq2->len;
 #endif // densityFiltering
+#ifndef forbidBandWidth
+	bandWidth         = _bandWidth,
+#endif // not forbidBandWidth
 	processor	      = _processor;
 	processorInfo     = _processorInfo;
 
@@ -828,6 +841,11 @@ static u64 find_table_matches
 		if ((selfCompare) && (seed_hit_below_diagonal (pos1, pos2)))
 			continue;
 
+#ifndef forbidBandWidth
+		if ((sameStrand) && (bandWidth > 0) && (pos2-pos1 > bandWidth))
+			continue;  // seed hit is too far from main diagonal
+#endif // not forbidBandWidth
+
 		if (seed_search_dbgDumpRawHits)
 			{
 			if (seed_search_dbgShowRawHits)
@@ -884,6 +902,11 @@ static u64 find_table_matches_resolve
 
 		if ((selfCompare) && (seed_hit_below_diagonal (pos1, pos2)))
 			continue;
+
+#ifndef forbidBandWidth
+		if ((sameStrand) && (bandWidth > 0) && (pos2-pos1 > bandWidth))
+			continue;  // seed hit is too far from main diagonal
+#endif // not forbidBandWidth
 
 		// resolve the remaining seed bits
 

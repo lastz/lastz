@@ -79,8 +79,8 @@
 <body>
 
 <p class=vvlarge>
-<h1>LASTZ &nbsp; Release 1.04.15,
-                 built August 27, 2021</h1>
+<h1>LASTZ &nbsp; Release 1.04.41,
+                 built December 18, 2024</h1>
 
 TABLE OF CONTENTS
 
@@ -896,6 +896,16 @@ Inhibit the re-creation of mirror-image alignments. Output consists of only
 one copy of each meaningful alignment block in a self-alignment. This option
 is only applicable when the <code><a href="#option_self">&#8209;&#8209;self</a></code>
 option is used.
+</td>
+</tr>
+
+<tr>
+<td><a name="option_band"></a><code>--band=&lt;width&gt;</code></td>
+<td></td>
+<td>
+Discard HSPs that are not within &lt;width&gt; above the main diagonal.
+<p class=small>
+This option is only allowed for self-alignment.
 </td>
 </tr>
 
@@ -2058,6 +2068,30 @@ or
 </tr>
 
 <tr>
+<td><a name="option_axt"></a><code>--axt=&lt;file&gt;</code></td>
+<td></td>
+<td>
+Create an additional output file in AXT format. The
+output file is the same as would be produced by
+<code>&#8209;&#8209;format=<a href="#fmt_axt">axt</a></code>, but this option
+allows you to create the axt file while also outputting in any other format,
+without having to run the alignment twice.
+</td>
+</tr>
+
+<tr>
+<td><a name="option_maf"></a><code>--maf=&lt;file&gt;</code></td>
+<td></td>
+<td>
+Create an additional output file in MAF format. The
+output file is the same as would be produced by
+<code>&#8209;&#8209;format=<a href="#fmt_maf">maf</a></code>, but this option
+allows you to create the maf file while also outputting in any other format,
+without having to run the alignment twice.
+</td>
+</tr>
+
+<tr>
 <td><code>--rdotplot=&lt;file&gt;</code></td>
 <td></td>
 <td>
@@ -2282,6 +2316,46 @@ processing begins on that query. If N is omitted, every query is reported.
 </tr>
 
 <tr>
+<td><a name="option_progress_hspsearch"></a><code>--progress:hspsearch=&lt;N&gt;</code></td>
+<td><code></code></td>
+<td>
+Report progress of the HSP search stage as every <code>N</code>th HSP is
+discovered. Each report shows the position of the search along the sequence, as
+well as the percentage of the sequence that has been completed.
+<p class=small>This can be useful to estimate how long the HSP search stage
+will take.
+</td>
+</tr>
+
+<tr>
+<td><a name="option_progress_filter"></a><code>--progress:filter=&lt;N&gt;</code></td>
+<td><code></code></td>
+<td>
+Report progress of <a href="#options_backend">back-end filtering</a> during the
+HSP search stage as every <code>N</code>th HSP is subjected to the filters.
+Each report shows the numbers of HSPs that have passed or been rejected by the
+filter. The position of the search along the sequence is also shown, as well as
+the percentage of the sequence that has been completed.
+<p class=small>Note that filters are only applied to HSPs if the gapped stage
+will be skipped (otherwise, they are applied to the gapped alignments).
+<p class=small>This can be useful to understand the efficacy of the filter
+settings.
+</td>
+</tr>
+
+<tr>
+<td><a name="option_progress_segments"></a><code>--progress:segments=&lt;N&gt;</code></td>
+<td><code></code></td>
+<td>
+Report progress of the gapped alignment stage as every <code>N</code>th segment
+(a.k.a. anchor) is processed. Each report shows the number of the segment being
+processed, as well as the percentage of the segments that have been completed.
+<p class=small>This can be useful to estimate how long the gapped alignment
+stage will take.
+</td>
+</tr>
+
+<tr>
 <td><a name="option_show_defaults"></a><code>--show=defaults</code></td>
 <td><code></code></td>
 <td>
@@ -2337,6 +2411,8 @@ the gapped extension stage. <code>&lt;bytes&gt;</code> may contain an
 multiplier of 1,024 or 1,048,576, respectively). For example,
 <code>&#8209;&#8209;allocate:traceback=80.0M</code> is the same as
 <code>&#8209;&#8209;allocate:traceback=83886080</code>.
+<p class=small>
+This is limited to a maximum of 2G.
 <p class=small>
 For backwards compatibility, <code>&#8209;&#8209;traceback=&lt;bytes&gt;</code> is also
 accepted.
@@ -4531,12 +4607,16 @@ be described by this field:
 
 
 <p>
+<em>Note: Prior to release 1.04.22, this format reported query positions
+incorrectly when alignments were on opposite strands.</em>
+
+<p>
 The BLASTN format reports pairwise alignments in a format similar to
 NCBI&rsquo;s BLASTN program. Output is modeled upon version 2.2.24+ of the
 standalone version of BLASTN available from
 <a href="ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/">
-NCBI&rsquo;s BLAST ftp site</a>. Output should be similar that produced by the
-command
+NCBI&rsquo;s BLAST ftp site</a>. (Note: that version of BLASTN is no longer
+available.) Output should be similar that produced by the command
 <pre>
     blastn -task blastn -db &lt;target&gt; -query &lt;query&gt; -outfmt 7
 </pre>
@@ -5230,6 +5310,24 @@ that is covered by the alignment block (see
 The diagonal of the start of the alignment block in the
 <a href="#adv_dp">DP matrix</a>, expressed as an identifying number
 <code>start1-start2</code>.
+</td>
+</tr>
+
+<tr>
+<td><code>entropy1</code></td>
+<td>
+<a name="fmt_entropy1"></a>
+The entropy of the aligned nucleotides in the target. This represents, in log2,
+the probability distribution of the nucleotides.
+</td>
+</tr>
+
+<tr>
+<td><code>entropy2</code></td>
+<td>
+<a name="fmt_entropy2"></a>
+The entropy of the aligned nucleotides in the query. This represents, in log2,
+the probability distribution of the nucleotides.
 </td>
 </tr>
 
@@ -7763,7 +7861,7 @@ These changes have no affect on the executable.
 
 <tr class=newsect>
 <td>
-<a name="history_recent"></a>1.04.15</td><td>Aug/27/2021</td><td>
+1.04.15</td><td>Aug/27/2021</td><td>
 Fixed a bug in which the setting for
 <code><a href="#option_queryhspbest">&#8209;&#8209;queryhspbest</a></code>
 was ignored. For more details see 
@@ -7799,6 +7897,78 @@ Added Makefile.warnings.
 <tr><td></td><td></td><td>
 Some changes were made to the source code to placate compiler warnings. These
 changes have no affect on the executable.
+</td></tr>
+
+<!-- 1.04.22 -->
+
+<tr class=newsect>
+<td>
+</a>1.04.22</td><td>Aug/7/2022</td><td>
+Fixed a serious bug in the <a href="#fmt_blastn">blastn format</a>.
+<p class=small>
+In previous versions query positions were misreported for alignments on
+opposite strands. Blastn (the program) always reports the position of the
+query along the forward strand. Previous versions of lastz reported it
+along the aligning strand.
+<p class=small>
+This has been corrected.
+<p class=small>
+For more details see 
+<a href="https://github.com/lastz/lastz/issues/51">issue 51</a> at the lastz
+github repository.
+</td></tr>
+
+<!-- 1.04.41 -->
+
+<tr class=newsect>
+<td>
+<a name="history_recent"></a>1.04.41</td><td>Dec/18/2024</td><td>
+<a href="#option_alloc_traceback"><code>--allocate:traceback=&lt;bytes&gt;</code></a>
+is now limited to a maximum of 2G. In earlier versions, setting this to more
+that 2G caused a bug in the gapped alignment stage. This is now prevented by
+limiting the setting to 2G.
+<p class=small>
+For more details see 
+<a href="https://github.com/lastz/lastz/issues/52">issue 52</a> at the lastz
+github repository.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Fixed a bug in cigar outputs. In earlier versions, the length of any run of
+matches longer than about 2 billion would be misreported (due to signed integer
+overflow at 31 bits). This has been corrected.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Added <a href="#option_band"><code>--band=&lt;width&gt;</code></a> to restrict
+self-alignment to a band above the diagonal.
+<p class=small>
+This may be useful in identifying diverged tandem repeats.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Added <a href="#option_axt"><code>--axt=&lt;file&gt;</code></a> and
+<a href="#option_maf"><code>--maf=&lt;file&gt;</code></a> to allow alignments
+to be written in more than one format in a single run.
+</td></tr>
+
+<tr><td></td><td></td><td>
+Added <a href="#fmt_entropy1">entropy1</a> and
+<a href="#fmt_entropy2">entropy2</a> fields for general output.
+</td></tr>
+
+
+<tr><td></td><td></td><td>
+Added <a href="#option_progress_hspsearch"><code>--progress:hspsearch=&lt;N&gt;</code></a>,
+<a href="#option_progress_filter"><code>--progress:filter=&lt;N&gt;</code></a>,
+and <a href="#option_progress_segments"><code>--progress:segments=&lt;N&gt;</code></a>
+to provide better feedback on the state of the search.
+</td></tr>
+
+<tr><td></td><td></td><td>
+A change has been made to the way the score type is defined in the Makefile.
+The previous implementation was reported to have caused problems in some
+build systems.
 </td></tr>
 
 </tbody></table>

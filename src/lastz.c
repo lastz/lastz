@@ -416,6 +416,9 @@ static const control defaultParams =
 #ifdef densityFiltering
 	0.0,								// maxDensity
 #endif // densityFiltering
+#ifndef forbidBandWidth
+	0,									// bandWidth (zero => no band restriction)
+#endif // not forbidBandWidth
 	NULL,NULL,							// outputFilename, outputFile
 	fmtLav,NULL,NULL,NULL,				// outputFormat, outputInfo, readGroup, samRGTags
 	false,								// endComment
@@ -3063,14 +3066,18 @@ int start_one_strand
 		                         hitProc, hitProcInfo);
 	else
 		{
-#ifndef densityFiltering // === density filtering DISabled
+#if ((!defined densityFiltering) && (defined forbidBandWidth))
+		// === density filtering DISabled  and  band width DISabled
 		seed_hit_search (target, targPositions,
 		                 query, 0, query->len, currParams->selfCompare,
 		                 currParams->upperCharToBits, currParams->hitSeed,
 		                 searchLimit,
 		                 (currParams->searchLimitWarn)? currParams->searchLimit : 0,
 		                 hitProc, hitProcInfo);
-#else                    // === density filtering ENabled
+#endif // not densityFiltering and forbidBandWidth
+
+#if ((defined densityFiltering) && (defined forbidBandWidth))
+		// === density filtering ENabled  and  band width DISabled
 		basesHit = seed_hit_search (target, targPositions,
 		                            query, 0, query->len, currParams->selfCompare,
 		                            currParams->upperCharToBits, currParams->hitSeed,
@@ -3080,7 +3087,32 @@ int start_one_strand
 		                            hitProc, hitProcInfo);
 		if (basesHit == u64max) // maxDensity has been exceeded (u64max is used
 			goto abort;			// .. as a special value indicating this)
-#endif // densityFiltering
+#endif // densityFiltering and forbidBandWidth
+
+#if ((!defined densityFiltering) && (!defined forbidBandWidth))
+		// === density filtering DISabled  and  band width ENabled
+		seed_hit_search (target, targPositions,
+		                 query, 0, query->len, currParams->selfCompare,
+		                 currParams->upperCharToBits, currParams->hitSeed,
+		                 searchLimit,
+		                 (currParams->searchLimitWarn)? currParams->searchLimit : 0,
+		                 currParams->bandWidth,
+		                 hitProc, hitProcInfo);
+#endif // not densityFiltering and not forbidBandWidth
+
+#if ((defined densityFiltering) && (!defined forbidBandWidth))
+		// === density filtering ENabled  and  band width ENabled
+		basesHit = seed_hit_search (target, targPositions,
+		                            query, 0, query->len, currParams->selfCompare,
+		                            currParams->upperCharToBits, currParams->hitSeed,
+		                            searchLimit,
+		                            (currParams->searchLimitWarn)? currParams->searchLimit : 0,
+		                            currParams->maxDensity,
+		                            currParams->bandWidth,
+		                            hitProc, hitProcInfo);
+		if (basesHit == u64max) // maxDensity has been exceeded (u64max is used
+			goto abort;			// .. as a special value indicating this)
+#endif // densityFiltering and not forbidBandWidth
 		}
 
 	// see if we got too many HSPs/anchors/segments
@@ -6811,7 +6843,7 @@ static void parse_options_loop
 				lzParams->minMatchCountRatio = pct_string_to_double (argStr);
 			else
 				{
-				tempInt = string_to_int (argStr);
+				tempInt = string_to_unitized_int (argStr, true /*units of 1,000*/);
 				if (tempInt <= 0)
 					suicidef ("--filter=nmatch must be positive");
 				lzParams->minMatchCount = tempInt;
@@ -6824,13 +6856,13 @@ static void parse_options_loop
 
 		if (strcmp_prefix (arg, "--filter=nmismatch:..") == 0)
 			{
-			tempInt = string_to_int (strstr(arg,":..")+3);
+			tempInt = string_to_unitized_int (strstr(arg,":..")+3, true /*units of 1,000*/);
 			goto set_max_mismatch_count;
 			}
 
 		if (strcmp_prefix (arg, "--filter=nmismatch:0..") == 0)
 			{
-			tempInt = string_to_int (strstr(arg,":0..")+4);
+			tempInt = string_to_unitized_int (strstr(arg,":0..")+4, true /*units of 1,000*/);
 		set_max_mismatch_count:
 			if (tempInt < 0)
 				suicidef ("--filter=nmismatch can't be negative");
@@ -7697,6 +7729,24 @@ static void parse_options_loop
 		if (strcmp (arg, "--notruncationreport") == 0)
 			{ gapped_extend_inhibitTruncationReport = true;  goto next_arg; }
 
+		// --band=<width>
+
+		if ((strcmp_prefix (arg, "--band=") == 0) \
+		 || (strcmp_prefix (arg, "--bandwidth=") == 0))
+			{
+#ifndef forbidBandWidth
+			tempInt = string_to_unitized_int (strchr(arg,'=')+1, true /*units of 1,000*/);
+			if (tempInt <= 0)
+				suicidef ("--band width must be positive");
+			else if (tempInt > maxBandWidth)
+				suicidef ("--band width (%s) cannot be more than %s",commatize(tempInt),commatize(maxBandWidth));
+			lzParams->bandWidth = (u32) tempInt;
+#else // forbidBandWidth
+			suicidef ("--band[width] is not implemented in this build of lastz");
+#endif // forbidBandWidth
+			goto next_arg;
+			}
+
 		// --version and (unadvertised) --version:noerror
 
 		if (strcmp (arg, "--version:noerror") == 0)
@@ -7779,7 +7829,7 @@ static void parse_options_loop
 		 || (strcmp (arg, "--help=blastz") == 0))
 			{ shortcuts(); }
 
-		// --help=defaults, --show=defaults, and (unadvertized) --show=defaults:stderr
+		// --help=defaults, --show=defaults, and (unadvertised) --show=defaults:stderr
 
 		if (strcmp (arg, "--help=defaults") == 0)
 			{
@@ -8587,6 +8637,30 @@ static void parse_options
 		chastise ("--mirror can only be used with --self\n");
 	else
 		lzParams->mirrorHSP = lzParams->mirrorGapped = false;
+
+#ifndef forbidBandWidth
+	if (lzParams->bandWidth != 0)
+		{
+		if (!lzParams->selfCompare)
+			chastise ("--band=<width> requires --self\n");
+		if (lzParams->whichStrand != 0)
+			chastise ("--band=<width> requires --strand=plus\n");
+		if ((lzParams->targetIsQuantum) || (lzParams->queryIsQuantum))
+			chastise ("--band=<width> cannot be used with quantum DNA\n");
+		if (lzParams->inferScores)
+			chastise ("--band=<width> cannot be used with scoring inference\n");
+		if (lzParams->anchorsFilename != NULL)
+			{
+			// $$$ nota bene: to implement this would require a relatively
+			//     simple modification to read_segment_table(); however, since
+			//     the idea of --segments is to allow the user to use other
+			//     strategies to find HSPs/anchors, it seems reasonable to
+			//     expect her to restrict those to a band if that's what she
+			//     wants
+			fprintf (stderr, "WARNING. --band=<width> is ignored when --segments is specified\n");
+			}
+		}
+#endif // not forbidBandWidth
 
 	if (lzParams->readCapsule)
 		{

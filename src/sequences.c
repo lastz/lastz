@@ -60,6 +60,7 @@
 #include <stdio.h>				// standard C i/o stuff
 #include <string.h>				// standard C string stuff
 #include <ctype.h>				// standard C upper/lower stuff
+#include <math.h>				// standard C math stuff
 #include "build_options.h"		// build options
 #include "utilities.h"			// utility stuff
 #include "dna_utilities.h"		// dna/scoring stuff
@@ -9697,6 +9698,84 @@ score score_match
 		similarity += scoring->sub[*(s1++)][*(s2++)];
 
 	return similarity;
+	}
+
+//----------
+//
+// sequence_entropy--
+//	Compute the information theoretical entropy of a subsequence. This only
+//	considers A, C, G, T, and N (N is counted as 1/4 of each). Other characters
+//	are ignored.
+//
+// Note: This is different than the function entropy() in dna_utilities.c. This
+//       function computes the entropy of a single sequence segment, while that
+//       function computes the entropy of an ungapped alignment.
+//
+//----------
+//
+// Arguments:
+//	seq*		seq:		The sequence.
+//	unspos		pos:		The subsequence start position in seq (origin-0).
+//	unspos		length:		The length of the subsequence.  Note that this may
+//							.. be zero.
+//
+// Returns:
+//	The entropy of the sequence. This will normally be greater than zero. A
+//	value less than zero indicates that entropy could not be computed (for
+//	example, if the subsequence length is zero).
+//
+//----------
+
+double sequence_entropy
+   (seq*		seq,
+	unspos		pos,
+	unspos		length)
+	{
+	u8*			s = seq->v + pos;
+	u8*			stop = s + length;
+	u64			count[256];
+	u64			denom;
+	double		entropySum, logDenom;
+
+	if (length == 0)
+		return -1.0;
+
+	count['A'] = count['C'] = count['G'] = count['T'] = count['N'] = 0;
+	while (s < stop)
+		{
+		u8 nuc = *(s++);
+		nuc = dna_toupper(nuc);
+		if ((nuc == (u8)'N') || (nuc_to_bits[nuc] >= 0)) count[nuc]++;
+		}
+
+	count['A'] = 4*count['A'] + count['N'];  // (multiplying all counts by 4,
+	count['C'] = 4*count['C'] + count['N'];  // .. and treating N as though it
+	count['G'] = 4*count['G'] + count['N'];  // .. were A with probability 25%,
+	count['T'] = 4*count['T'] + count['N'];  // .. and so on)
+
+	denom = count['A'] + count['C'] + count['G'] + count['T'];
+	if (denom == 0)
+		return -1.0;
+
+	// nota bene: we compute the equivalent of
+	//   -(sum of p(x) log2(p(x)))
+	//   = -(sum of (count(x)/denom) * log2(count(x)/denom))
+	//   = -(sum of count(x) * (log2(count(x))-log2(denom)))) / denom
+	//   = -entropySum / denom
+	// we ignore counts that are zero; these terms devolve to 0*infinity which
+	// we consider to be zero in this context; at least one of the counts is
+	// greater than zero, because the denom==0 test above would have caught the
+	// all-zeros case
+
+	logDenom = log2((double)denom);
+
+	entropySum = 0.0;
+	if (count['A'] > 0) entropySum += count['A'] * (log2((double)count['A']) - logDenom);
+	if (count['C'] > 0) entropySum += count['C'] * (log2((double)count['C']) - logDenom);
+	if (count['G'] > 0) entropySum += count['G'] * (log2((double)count['G']) - logDenom);
+	if (count['T'] > 0) entropySum += count['T'] * (log2((double)count['T']) - logDenom);
+
+	return (-entropySum / denom);
 	}
 
 //----------

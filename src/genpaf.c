@@ -173,6 +173,8 @@ void print_genpaf_job_header
 			case genpafTargetQuals:      fprintf (f, "quals1");             break;
 			case genpafQueryNucs:        fprintf (f, "nucs2");              break;
 			case genpafQueryQuals:       fprintf (f, "quals2");             break;
+			case genpafEntropy1:         fprintf (f, "entropy1");           break;
+			case genpafEntropy2:         fprintf (f, "entropy2");           break;
 			case genpafHspId:            fprintf (f, "hspid");              break;
 			case genpafPositionHash:     fprintf (f, "phash");              break;
 			case genpafAlignmentHash:    fprintf (f, "ahash");              break;
@@ -591,6 +593,7 @@ void print_genpaf_align
 	sgnpos			diag, diagSE, diagNW;
 	unspos			numGaps;
 	u32				h;
+	float			entropy;
 
 	snoopGenpaf_5;
 
@@ -1260,6 +1263,16 @@ void print_genpaf_align
 						fprintf (f, "%c", seq2->vq[endOffset2-ix]);
 					}
 				break;
+			case genpafEntropy1:
+				entropy = (float) sequence_entropy (seq1, beg1, end1-beg1);
+				if (entropy >= 0.0) fprintf (f, "%0.3f", entropy);
+				else                fprintf (f, "NA");
+				break;
+			case genpafEntropy2:
+				entropy = (float) sequence_entropy (seq2, beg2, end2-beg2);
+				if (entropy >= 0.0) fprintf (f, "%0.3f", entropy);
+				else                fprintf (f, "NA");
+				break;
 			case genpafHspId:
 				fprintf (f, u64Fmt, hspId);
 				break;
@@ -1387,6 +1400,7 @@ void print_genpaf_match
 	char*			textDiffInfo;
 	sgnpos			diag, diagSE, diagNW;
 	u32				h;
+	float			entropy;
 
 	snoopGenpaf_6;
 
@@ -1847,6 +1861,16 @@ void print_genpaf_match
 					for (ix=0 ; ix<seq2Len ; ix++)
 						fprintf (f, "%c", seq2->vq[endOffset2-ix]);
 					}
+				break;
+			case genpafEntropy1:
+				entropy = (float) sequence_entropy (seq1, pos1, length);
+				if (entropy >= 0.0) fprintf (f, "%0.3f", entropy);
+				else                fprintf (f, "NA");
+				break;
+			case genpafEntropy2:
+				entropy = (float) sequence_entropy (seq2, pos2, length);
+				if (entropy >= 0.0) fprintf (f, "%0.3f", entropy);
+				else                fprintf (f, "NA");
 				break;
 			case genpafHspId:
 				fprintf (f, u64Fmt, hspId);

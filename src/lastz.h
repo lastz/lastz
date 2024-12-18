@@ -36,6 +36,10 @@ global int debug;				// how much debug info to show the programmer
 								//   0   => nothing
 								//   100 => everything
 
+#ifndef forbidBandWidth
+#define maxBandWidth (100*1000)	// maximum setting for bandWidth (in control
+								// .. structure below
+#endif // forbidBandWidth
 
 typedef struct infcontrol
 	{
@@ -382,6 +386,13 @@ typedef struct control
 								//     .. allow before discarding a query
 								//     .. sequence;  zero means no limit
 #endif // densityFiltering
+
+#ifndef forbidBandWidth
+	u32			bandWidth;		//     only seed hits within this distance
+								//     .. above the main diagonal will be 
+								//     .. processed;  zero means this is not
+								//     .. active
+#endif // not forbidBandWidth
 
 	char*		outputFilename;	//     name of the file to write output to
 	FILE*		outputFile;		//     file to write output to;  this may be

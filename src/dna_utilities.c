@@ -2860,6 +2860,11 @@ char* bits_to_nuc_string
 //
 // WARNING:  These functions are only valid for DNA sequences.
 //
+//
+// Note: This is different than the function sequence_entropy() in sequences.c.
+//       This function computes the entropy of an ungapped alignment, while
+//       that function computes the entropy of a single sequence segment.
+//
 //----------
 //
 // Arguments:

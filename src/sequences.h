@@ -711,6 +711,7 @@ int   percent_identical             (seq* seq1, unspos pos1,
 score score_match                   (scoreset* scoring,
                                      seq* seq1, unspos pos1,
                                      seq* seq2, unspos pos2, unspos length);
+double sequence_entropy             (seq* seq, unspos pos, unspos length);
 void  dump_aligned_nucleotides      (FILE* f,
                                      seq* seq1, unspos pos1,
                                      seq* seq2, unspos pos2, unspos length);

@@ -803,6 +803,9 @@ static void bounded_align
 #ifdef densityFiltering
 	                 /*maxDensity*/ 0.0,
 #endif // densityFiltering
+#ifndef forbidBandWidth
+	                 /*bandWidth*/ 0,
+#endif // not forbidBandWidth
 	                 process_for_simple_hit, (void*) &simpleInfo);
 
 	free_position_table (seq1Positions);
