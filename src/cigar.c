@@ -69,15 +69,6 @@
 
 //----------
 //
-// prototypes for private functions
-//
-//----------
-
-static void print_cigar_mismatchy_run (FILE* f, u8* s1, u8* s2, unspos length,
-                                       int letterAfter, int hideSingles, int lowercase);
-
-//----------
-//
 // print_cigar_job_header--
 //	Print cigar format job header.
 //
@@ -132,7 +123,8 @@ void print_cigar_header
 //	int			withInfo:		true  => include info before cigar path string
 //	int			markMismatches:	true  => use =/X syntax for non-indel runs
 //								false => use M syntax instead
-//	int			letterAfter:	true  => letters after count (defying spec)
+//	int			letterAfter:	true => letters after count (defying spec)
+//	int			withSpaces:	    true => include spaces between fields
 //	int			hideSingles:	true  => don't both to print count if count==1
 //	int			lowercase:		true  => use lower case letters (defying spec)
 //	int			withNewLine:	true  => write new-lines after each alignment
@@ -150,6 +142,7 @@ void print_cigar_align_list
 	int			withInfo,
 	int			markMismatches,
 	int			letterAfter,
+	int			withSpaces,
 	int			hideSingles,
 	int			lowercase,
 	int			withNewLine)
@@ -161,7 +154,7 @@ void print_cigar_align_list
 		                   seq1, a->beg1-1, a->end1,
 		                   seq2, a->beg2-1, a->end2,
 		                   a->script, a->s,
-		                   withInfo, markMismatches, letterAfter,
+		                   withInfo, markMismatches, letterAfter, withSpaces,
 		                   hideSingles, lowercase, withNewLine);
 	}
 
@@ -184,7 +177,8 @@ void print_cigar_align_list
 //	int			withInfo:		true  => include info before cigar path string
 //	int			markMismatches:	true  => use =/X syntax for non-indel runs
 //								false => use M syntax instead
-//	int			letterAfter:	true  => letters after count (defying spec)
+//	int			letterAfter:	true => letters after count (defying spec)
+//	int			withSpaces:	    true => include spaces between fields
 //	int			hideSingles:	true  => don't both to print count if count==1
 //	int			lowercase:		true  => use lower case letters (defying spec)
 //	int			withNewLine:	true  => write new-line after the alignment
@@ -209,6 +203,7 @@ void print_cigar_align
 	int				withInfo,
 	int				markMismatches,
 	int				letterAfter,
+	int				withSpaces,
 	int				hideSingles,
 	int				lowercase,
 	int				withNewLine)
@@ -317,7 +312,7 @@ void print_cigar_align
 			{
 			if (markMismatches)
 				print_cigar_mismatchy_run (f, s1+i, s2+j, run,
-				                           letterAfter, hideSingles, lowercase);
+				                           letterAfter, withSpaces, hideSingles, lowercase);
 			else
 				{
 				if (letterAfter) fprintf (f, unsposFmt "%c",   run, chM);
@@ -375,7 +370,8 @@ void print_cigar_align
 //	int		withInfo:		true  => include info before cigar path string
 //	int		markMismatches:	true  => use =/X syntax for non-indel runs
 //							false => use M syntax instead
-//	int		letterAfter:	true  => letters after count (defying spec)
+//	int		letterAfter:	true => letters after count (defying spec)
+//	int		withSpaces:	    true => include spaces between fields
 //	int		hideSingles:	true  => don't both to print count if count==1
 //	int		lowercase:		true  => use lower case letters (defying spec)
 //	int		withNewLine:	true  => write new-line after the alignment
@@ -396,6 +392,7 @@ void print_cigar_match
 	int				withInfo,
 	int				markMismatches,
 	int				letterAfter,
+	int				withSpaces,
 	int				hideSingles,
 	int				lowercase,
 	int				withNewLine)
@@ -491,7 +488,7 @@ void print_cigar_match
 
 	if (markMismatches)
 		print_cigar_mismatchy_run (f, s1, s2, length,
-		                           letterAfter, hideSingles, lowercase);
+		                           letterAfter, withSpaces, hideSingles, lowercase);
 	else
 		{
 		if (!letterAfter)
@@ -519,6 +516,7 @@ void print_cigar_match
 //	u8*  	s2:				Start of the run in the other sequence.
 //	unspos	length:			The number of nucleotides in the run.
 //	int		letterAfter:	true => letters after count (defying spec)
+//	int		withSpaces:	    true => include spaces between fields
 //	int		hideSingles:	true => don't both to print count if count==1
 //	int		lowercase:		true => use lower case letters (defying spec)
 //
@@ -527,12 +525,13 @@ void print_cigar_match
 //
 //----------
 
-static void print_cigar_mismatchy_run
+void print_cigar_mismatchy_run
    (FILE*	f,
 	u8*  	s1,
 	u8*  	s2,
 	unspos	length,
 	int		letterAfter,
+	int		withSpaces,
 	int		hideSingles,
 	int		lowercase)
 	{
@@ -558,7 +557,9 @@ static void print_cigar_mismatchy_run
 			if (!runIsMm) { runLen++;  continue; }
 			if (runLen > 0)
 				{
-				if (!letterAfter)
+				if ((!letterAfter) && (!withSpaces))
+					fprintf (f, "%c" unsposFmt, chX, runLen);
+				else if ((!letterAfter) && (withSpaces))
 					fprintf (f, " %c " unsposFmt, chX, runLen);
 				else if ((hideSingles) && (runLen == 1))
 					fprintf (f, "%c", chX);
@@ -573,7 +574,9 @@ static void print_cigar_mismatchy_run
 			if (runIsMm) { runLen++;  continue; }
 			if (runLen > 0)
 				{
-				if (!letterAfter)
+				if ((!letterAfter) && (!withSpaces))
+					fprintf (f, "=" unsposFmt, runLen);
+				else if ((!letterAfter) && (withSpaces))
 					fprintf (f, " = " unsposFmt, runLen);
 				else if ((hideSingles) && (runLen == 1))
 					fprintf (f, "=");
@@ -588,7 +591,9 @@ static void print_cigar_mismatchy_run
 	if (runLen > 0)
 		{
 		ch = (runIsMm)? chX : '=';
-		if (!letterAfter)
+		if ((!letterAfter) && (!withSpaces))
+			fprintf (f, "%c" unsposFmt, ch, runLen);
+		else if ((!letterAfter) && (withSpaces))
 			fprintf (f, " %c " unsposFmt, ch, runLen);
 		else if ((hideSingles) && (runLen == 1))
 			fprintf (f, "%c", ch);

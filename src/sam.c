@@ -28,6 +28,7 @@
 #include "sequences.h"			// sequence stuff
 #include "edit_script.h"		// alignment edit script stuff
 #include "identity_dist.h"		// identity distribution "format" stuff
+#include "cigar.h"				// cigar alignment format stuff
 #include "coverage_dist.h"		// query coverage distribution stuff
 
 #define  sam_owner				// (make this the owner of its globals)
@@ -254,15 +255,17 @@ void print_sam_header
 //----------
 //
 // Arguments:
-//	FILE*		f:			The file to print to.
-//	alignel*	alignList:	The list of alignments to print.
-//	seq*		seq1:		One sequence.
-//	seq*		seq2:		Another sequence.
-//	int			softMasked:	true  => sequence ends should be soft masked
-//							false => sequence ends should be hard masked
-//	char*		rgTags:		Additional tags for RG (read group).  This is a
-//							.. valid string per the format described in the SAM
-//							.. spec.  This may be NULL.
+//	FILE*		f:				The file to print to.
+//	alignel*	alignList:		The list of alignments to print.
+//	seq*		seq1:			One sequence.
+//	seq*		seq2:			Another sequence.
+//	int			markMismatches:	true  => use =/X syntax for non-indel runs
+//								false => use M syntax instead
+//	int			softMasked:		true  => sequence ends should be soft masked
+//								false => sequence ends should be hard masked
+//	char*		rgTags:			Additional tags for RG (read group).  This is a
+//								.. valid string per the format described in the
+//								.. SAM spec.  This may be NULL.
 //
 // Returns:
 //	(nothing)
@@ -274,6 +277,7 @@ void print_sam_align_list
 	alignel*	alignList,
 	seq*		seq1,
 	seq*		seq2,
+	int			markMismatches,
 	int			softMasked,
 	char*		rgTags)
 	{
@@ -284,7 +288,7 @@ void print_sam_align_list
 		print_sam_align (f,
 		                 seq1, a->beg1-1, a->end1,
 		                 seq2, a->beg2-1, a->end2,
-		                 a->script, a->s, softMasked, rgTags);
+		                 a->script, a->s, markMismatches, softMasked, rgTags);
 		}
 
 	}
@@ -297,19 +301,21 @@ void print_sam_align_list
 //----------
 //
 // Arguments:
-//	FILE*		f:			The file to print to.
-//	seq*		seq1:		One sequence.
-//	unspos		beg1, end1:	Range of positions in sequence 1 (origin 0).
-//	seq*		seq2:		Another sequence.
-//	unspos		beg2, end2:	Range of positions in sequence 2 (origin 0).
-//	editscript*	script:		The script describing the path the alignment takes
-//							.. in the DP matrix.
-//	score		s:			The alignment's score.
-//	int			softMasked:	true  => sequence ends should be soft masked
-//							false => sequence ends should be hard masked
-//	char*		rgTags:		Additional tags for RG (read group).  This is a
-//							.. valid string per the format described in the SAM
-//							.. spec.  This may be NULL.
+//	FILE*		f:				The file to print to.
+//	seq*		seq1:			One sequence.
+//	unspos		beg1, end1:		Range of positions in sequence 1 (origin 0).
+//	seq*		seq2:			Another sequence.
+//	unspos		beg2, end2:		Range of positions in sequence 2 (origin 0).
+//	editscript*	script:			The script describing the path the alignment
+//								.. takes in the DP matrix.
+//	score		s:				The alignment's score.
+//	int			markMismatches:	true  => use =/X syntax for non-indel runs
+//								false => use M syntax instead
+//	int			softMasked:		true  => sequence ends should be soft masked
+//								false => sequence ends should be hard masked
+//	char*		rgTags:			Additional tags for RG (read group).  This is a
+//								.. valid string per the format described in the
+//								.. SAM spec.  This may be NULL.
 //
 // Returns:
 //	(nothing)
@@ -326,12 +332,15 @@ void print_sam_align
 	unspos			end2,
 	editscript*		script,
 	arg_dont_complain(score s),
+	int				markMismatches,
 	int				softMasked,
 	char*			rgTags)
 	{
 	seqpartition*	sp1 = &seq1->partition;
 	seqpartition*	sp2 = &seq2->partition;
 	partition*		part;
+	u8*				s1 = seq1->v + beg1;
+	u8*				s2 = seq2->v + beg2;
 	unspos			height, width, i, j, prevI, prevJ, run;
 	u32				opIx;
 	unspos			len2;
@@ -391,7 +400,7 @@ void print_sam_align
 		}
 
 	//////////
-	// print sam line (field names indicate below are per sam spec)
+	// print sam line (field names indicated below are per sam spec)
 	//////////
 
 	start1 = beg1-1 - offset1 + startLoc1;
@@ -432,7 +441,14 @@ void print_sam_align
 		run = edit_script_run_of_subs (script, &opIx);
 		if (run > 0)
 			{
-			fprintf (f, unsposFmt "M", run);
+			if (markMismatches)
+				print_cigar_mismatchy_run (f, s1+i, s2+j, run,
+				                           /* letterAfter */ true,
+				                           /* hideSingles */ false,
+				                           /* withSpaces  */ false,
+				                           /* lowercase   */ false);
+			else
+				fprintf (f, unsposFmt "M", run);
 			i += run; j += run;
 			}
 
@@ -483,20 +499,22 @@ void print_sam_align
 //----------
 //
 // Arguments:
-//	FILE*	f:			The file to print to.
-//	seq*	seq1:		One sequence.
-//	unspos	pos1:		The position, in seq1, of first character in the
-//						.. match (origin-0).
-//	seq*	seq2:		Another sequence.
-//	unspos	pos1:		The position, in seq2, of first character in the
-//						.. match (origin-0).
-//	unspos	length:		The number of nucleotides in the HSP.
-//	score	s:			The HSP's score.
-//	int		softMasked:	true  => sequence ends should be soft masked
-//						false => sequence ends should be hard masked
-//	char*	rgTags:		Additional tags for RG (read group).  This is a valid
-//						.. string per the format described in the SAM spec.
-//						.. This may be NULL.
+//	FILE*	f:				The file to print to.
+//	seq*	seq1:			One sequence.
+//	unspos	pos1:			The position, in seq1, of first character in the
+//							.. match (origin-0).
+//	seq*	seq2:			Another sequence.
+//	unspos	pos1:			The position, in seq2, of first character in the
+//							.. match (origin-0).
+//	unspos	length:			The number of nucleotides in the HSP.
+//	score	s:				The HSP's score.
+//	int		markMismatches:	true  => use =/X syntax for non-indel runs
+//							false => use M syntax instead
+//	int		softMasked:		true  => sequence ends should be soft masked
+//							false => sequence ends should be hard masked
+//	char*	rgTags:			Additional tags for RG (read group).  This is a
+//							.. valid string per the format described in the SAM
+//							.. spec. This may be NULL.
 //
 // Returns:
 //	(nothing)
@@ -511,12 +529,15 @@ void print_sam_match
 	unspos			pos2,
 	unspos			length,
 	arg_dont_complain(score s),
+	int				markMismatches,
 	int				softMasked,
 	char*			rgTags)
 	{
 	seqpartition*	sp1 = &seq1->partition;
 	seqpartition*	sp2 = &seq2->partition;
 	partition*		part;
+	u8*				s1 = seq1->v + pos1;
+	u8*				s2 = seq2->v + pos2;
 	char*			name1, *name2;
 	unspos			offset1, offset2, start1, start2, end2;
 	unspos			startLoc1, startLoc2;
@@ -567,7 +588,7 @@ void print_sam_match
 		}
 
 	//////////
-	// print sam line (field names indicate below are per sam spec)
+	// print sam line (field names indicated below are per sam spec)
 	//////////
 
 	start1 = pos1 - offset1 + startLoc1;
@@ -601,7 +622,16 @@ void print_sam_match
 		{ tmp = preMask;  preMask = postMask;  postMask = tmp; }
 
 	if (preMask  != 0) fprintf (f, unsposFmt "%c", preMask, maskCh);
-	/* */              fprintf (f, unsposFmt "M",  length);
+
+	if (markMismatches)
+		print_cigar_mismatchy_run (f, s1, s2, length,
+		                           /* letterAfter */ true,
+		                           /* withSpaces  */ false,
+		                           /* hideSingles */ false,
+		                           /* lowercase   */ false);
+	else
+		fprintf (f, unsposFmt "M",  length);
+
 	if (postMask != 0) fprintf (f, unsposFmt "%c", postMask, maskCh);
 
 	// print mrnm, mpos, and isize

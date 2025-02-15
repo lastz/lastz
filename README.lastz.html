@@ -79,8 +79,8 @@
 <body>
 
 <p class=vvlarge>
-<h1>LASTZ &nbsp; Release 1.04.41,
-                 built December 18, 2024</h1>
+<h1>LASTZ &nbsp; Release 1.04.43,
+                 built February 15, 2025</h1>
 
 TABLE OF CONTENTS
 
@@ -2052,6 +2052,10 @@ Specifies the output format:
 <code><a href="#fmt_sam">softsam</a></code>,
 <code><a href="#fmt_sam">sam-</a></code>,
 <code><a href="#fmt_sam">softsam-</a></code>,
+<code><a href="#fmt_sam">sam+eqx</a></code>,
+<code><a href="#fmt_sam">softsam+eqx</a></code>,
+<code><a href="#fmt_sam">sam+eqx-</a></code>,
+<code><a href="#fmt_sam">softsam+eqx-</a></code>,
 <code><a href="#fmt_cigar">cigar</a></code>,
 <code><a href="#fmt_blastn">BLASTN</a></code>,
 <code><a href="#fmt_paf">PAF</a></code>,
@@ -2117,6 +2121,19 @@ list is a valid SAM tag list.
 Since the list is tab-delimited, you may need to surround this option with
 quotes to satisfy the command line shell. Alternately, you can use
 <code>--readgroup</code> more than once, and the lists are concatenated.
+</td>
+</tr>
+
+<tr>
+<td><a name="option_eqx"></a><code>--eqx</code></td>
+<td></td>
+<td>
+Used in conjuction with the <a href="#fmt_sam">SAM</a> file format, indicating
+that the operators "=" and "X" should be used in CIGAR strings, instead of the
+ambiguous "M" operator.
+<p class=small>
+This option is included for users familiar with minimap2. Equivalently, the
+string "+eqx" can be attached to the SAM format option.
 </td>
 </tr>
 
@@ -4489,13 +4506,13 @@ MAF, but it is a completely unrelated file format and is not supported by LASTZ.
 <div><a name="fmt_sam"></a></div>
 <h3>SAM (alignment output)</h3>
 
-
 <p>
 SAM is a pairwise alignment format used primarily for short-read mapping, and
 supported by the SAMtools programming suite. This format is described in
-<a href="#li_2009">[Li 2009]</a>, and as of May 2011 a specification for it
-can be found at the <a href="http://samtools.sourceforge.net/">SAMtools page</a>
-at SourceForge.
+<a href="#li_2009">[Li 2009]</a>, and as of Feb 2015 a specification for it
+can be found at the
+<a href="http://samtools.github.io/hts-specs/SAMv1.pdf">Sequence Alignment/Map Format Specification</a>
+in the <a href="https://github.com/samtools">SAMtools github repository</a>.
 
 <p>
 For SAM files, LASTZ assumes that the target sequence is the reference and
@@ -4504,6 +4521,13 @@ end of a query, <code><a href="#option_format">&#8209;&#8209;format=sam</a></cod
 "hard clipping", while <code><a href="#option_format">&#8209;&#8209;format=softsam</a></code>
 uses "soft clipping". See the section on "clipped alignment" in the SAM
 specification for an explanation of what this means.
+
+<p>
+The option <code><a href="#option_eqx">&#8209;&#8209;eqx</a></code> causes
+CIGAR strings to use the operators "=" and "X" instead of the ambiguous "M"
+operator. Equivalently, the string "+eqx" can be attached to the SAM format
+option, e.g. <code><a href="#option_format">&#8209;&#8209;format=sam+eqx</a></code>
+or <code><a href="#option_format">&#8209;&#8209;format=softsam+eqx</a></code>.
 
 <p>
 The options <code><a href="#option_format">&#8209;&#8209;format=sam-</a></code> and
@@ -7922,7 +7946,7 @@ github repository.
 
 <tr class=newsect>
 <td>
-<a name="history_recent"></a>1.04.41</td><td>Dec/18/2024</td><td>
+</a>1.04.41</td><td>Dec/18/2024</td><td>
 <a href="#option_alloc_traceback"><code>--allocate:traceback=&lt;bytes&gt;</code></a>
 is now limited to a maximum of 2G. In earlier versions, setting this to more
 that 2G caused a bug in the gapped alignment stage. This is now prevented by
@@ -7957,7 +7981,6 @@ Added <a href="#fmt_entropy1">entropy1</a> and
 <a href="#fmt_entropy2">entropy2</a> fields for general output.
 </td></tr>
 
-
 <tr><td></td><td></td><td>
 Added <a href="#option_progress_hspsearch"><code>--progress:hspsearch=&lt;N&gt;</code></a>,
 <a href="#option_progress_filter"><code>--progress:filter=&lt;N&gt;</code></a>,
@@ -7969,6 +7992,20 @@ to provide better feedback on the state of the search.
 A change has been made to the way the score type is defined in the Makefile.
 The previous implementation was reported to have caused problems in some
 build systems.
+</td></tr>
+
+<!-- 1.04.43 -->
+
+<tr class=newsect>
+<td>
+<a name="history_recent"></a>1.04.43</td><td>Feb/15/2025</td><td>
+Added options to support the use of the operators "=" and "X" in CIGAR strings
+for the <a href="#fmt_sam">SAM</a> file format. See
+<code><a href="#option_eqx">&#8209;&#8209;eqx</a></code>,
+<code><a href="#option_format">&#8209;&#8209;format=sam+eqx</a></code>,
+or <code><a href="#option_format">&#8209;&#8209;format=softsam+eqx</a></code>.
+
+
 </td></tr>
 
 </tbody></table>

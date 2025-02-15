@@ -25,28 +25,34 @@
 
 //----------
 //
-// prototypes for routines in maf.c
+// prototypes for routines in cigar.c
 //
 //----------
 
-void print_cigar_job_header (FILE* f);
-void print_cigar_job_footer (FILE* f);
-void print_cigar_header     (FILE* f, seq* seq1, seq* seq2);
-void print_cigar_align_list (FILE* f, alignel* alignList, seq* seq1, seq* seq2,
-                             int withInfo, int markMismatches, int letterAfter,
-                             int hideSingles, int lowercase, int withNewLine);
-void print_cigar_align      (FILE* f,
-                             seq* seq1, unspos beg1, unspos end1,
-                             seq* seq2, unspos beg2, unspos end2,
-                             editscript* script, score s,
-                             int withInfo, int markMismatches, int letterAfter,
-                             int hideSingles, int lowercase, int withNewLine);
-void print_cigar_match      (FILE* f,
-                             seq* seq1, unspos pos1,
-                             seq* seq2, unspos pos2, unspos length,
-                             score s,
-                             int withInfo, int markMismatches, int letterAfter,
-                             int hideSingles, int lowercase, int withNewLine);
+void print_cigar_job_header    (FILE* f);
+void print_cigar_job_footer    (FILE* f);
+void print_cigar_header        (FILE* f, seq* seq1, seq* seq2);
+void print_cigar_align_list    (FILE* f, alignel* alignList, seq* seq1, seq* seq2,
+                                int withInfo, int markMismatches, int letterAfter,
+                                int withSpaces,
+                                int hideSingles, int lowercase, int withNewLine);
+void print_cigar_align         (FILE* f,
+                                seq* seq1, unspos beg1, unspos end1,
+                                seq* seq2, unspos beg2, unspos end2,
+                                editscript* script, score s,
+                                int withInfo, int markMismatches, int letterAfter,
+                                int withSpaces,
+                                int hideSingles, int lowercase, int withNewLine);
+void print_cigar_match         (FILE* f,
+                                seq* seq1, unspos pos1,
+                                seq* seq2, unspos pos2, unspos length,
+                                score s,
+                                int withInfo, int markMismatches, int letterAfter,
+                                int withSpaces,
+                                int hideSingles, int lowercase, int withNewLine);
+void print_cigar_mismatchy_run (FILE* f, u8* s1, u8* s2, unspos length,
+                                int letterAfter,
+                                int withSpaces, int hideSingles, int lowercase);
 
 #undef global
-#endif // maf_H
+#endif // cigar_H

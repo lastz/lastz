@@ -1103,6 +1103,7 @@ void print_genpaf_align
 				                   /* withInfo       */ false,
 				                   /* markMismatches */ true,
 				                   /* letterAfter    */ true,
+				                   /* withSpaces     */ true,
 				                   /* hideSingles    */ true,
 				                   /* lowerCase      */ (*k == genpafCigarXLower),
 				                   /* withNewLine    */ false);
@@ -1114,6 +1115,7 @@ void print_genpaf_align
 				                   /* withInfo       */ false,
 				                   /* markMismatches */ true,
 				                   /* letterAfter    */ true,
+				                   /* withSpaces     */ true,
 				                   /* hideSingles    */ false,
 				                   /* lowerCase      */ (*k == genpafCigarXLower),
 				                   /* withNewLine    */ false);
@@ -1303,6 +1305,7 @@ void print_genpaf_align
 				                   /* withInfo       */ false,
 				                   /* markMismatches */ true,
 				                   /* letterAfter    */ true,
+				                   /* withSpaces     */ true,
 				                   /* hideSingles    */ false,
 				                   /* lowerCase      */ false,
 				                   /* withNewLine    */ false);
@@ -1314,6 +1317,7 @@ void print_genpaf_align
 				                   /* withInfo       */ false,
 				                   /* markMismatches */ false,
 				                   /* letterAfter    */ true,
+				                   /* withSpaces     */ true,
 				                   /* hideSingles    */ false,
 				                   /* lowerCase      */ false,
 				                   /* withNewLine    */ false);
@@ -1681,6 +1685,7 @@ void print_genpaf_match
 				                   /* withInfo       */ false,
 				                   /* markMismatches */ true,
 				                   /* letterAfter    */ true,
+				                   /* withSpaces     */ true,
 				                   /* hideSingles    */ true,
 				                   /* lowerCase      */ (*k == genpafCigarXLower),
 				                   /* withNewLine    */ false);
@@ -1692,6 +1697,7 @@ void print_genpaf_match
 				                   /* withInfo       */ false,
 				                   /* markMismatches */ true,
 				                   /* letterAfter    */ true,
+				                   /* withSpaces     */ true,
 				                   /* hideSingles    */ false,
 				                   /* lowerCase      */ (*k == genpafCigarXLower),
 				                   /* withNewLine    */ false);
@@ -1898,6 +1904,7 @@ void print_genpaf_match
 				                   /* withInfo       */ false,
 				                   /* markMismatches */ true,
 				                   /* letterAfter    */ true,
+				                   /* withSpaces     */ true,
 				                   /* hideSingles    */ false,
 				                   /* lowerCase      */ false,
 				                   /* withNewLine    */ false);
@@ -1909,6 +1916,7 @@ void print_genpaf_match
 				                   /* withInfo       */ false,
 				                   /* markMismatches */ false,
 				                   /* letterAfter    */ true,
+				                   /* withSpaces     */ true,
 				                   /* hideSingles    */ false,
 				                   /* lowerCase      */ false,
 				                   /* withNewLine    */ false);

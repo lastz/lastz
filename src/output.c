@@ -643,6 +643,7 @@ void print_align_list (alignel* alignList)
 		case fmtSoftSamNoHeader:
 			print_sam_align_list (outputFile,
 			                      alignList, currParams->seq1, currParams->seq2,
+			                      currParams->samMarkMismatches,
 			                      /* softMasking */ true,
 			                      currParams->samRGTags);
 			break;
@@ -650,6 +651,7 @@ void print_align_list (alignel* alignList)
 		case fmtHardSamNoHeader:
 			print_sam_align_list (outputFile,
 			                      alignList, currParams->seq1, currParams->seq2,
+			                      currParams->samMarkMismatches,
 			                      /* softMasking */ false,
 			                      currParams->samRGTags);
 			break;
@@ -659,6 +661,7 @@ void print_align_list (alignel* alignList)
 			                        /* withInfo       */ true,
 			                        /* markMismatches */ false,
 			                        /* letterAfter    */ false,
+			                        /* withSpaces     */ true,
 			                        /* hideSingles    */ false,
 			                        /* lowerCase      */ false,
 			                        /* withNewLine    */ true);
@@ -827,6 +830,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 			                 currParams->seq1, pos1,
 			                 currParams->seq2, pos2, length,
 			                 s,
+			                 currParams->samMarkMismatches,
 			                 /* softMasking */ true,
 			                 currParams->samRGTags);
 			break;
@@ -836,6 +840,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 			                 currParams->seq1, pos1,
 			                 currParams->seq2, pos2, length,
 			                 s,
+			                 currParams->samMarkMismatches,
 			                 /* softMasking */ false,
 			                 currParams->samRGTags);
 			break;
@@ -847,6 +852,7 @@ void print_match (unspos pos1, unspos pos2, unspos length, score s, u64 hspId)
 			                   /* withInfo       */ true,
 			                   /* markMismatches */ false,
 			                   /* letterAfter    */ false,
+			                   /* withSpaces     */ true,
 			                   /* hideSingles    */ false,
 			                   /* lowerCase      */ false,
 			                   /* withNewLine    */ true);

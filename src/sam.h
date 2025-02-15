@@ -25,15 +25,16 @@ char* sam_rg_tags          (char* readGroup, char** errorText);
 void  print_sam_job_header (FILE* f, char* readGroup);
 void  print_sam_header     (FILE* f, seq* seq1, seq* seq2);
 void  print_sam_align_list (FILE* f, alignel* alignList, seq* seq1, seq* seq2,
-                            int softMasked, char* rgTags);
+                            int markMismatches, int softMasked, char* rgTags);
 void  print_sam_align      (FILE* f,
                             seq* seq1, unspos beg1, unspos end1,
                             seq* seq2, unspos beg2, unspos end2,
                             editscript* script, score s,
-                            int softMasked, char* rgTags);
+                            int markMismatches, int softMasked, char* rgTags);
 void  print_sam_match      (FILE* f,
                             seq* seq1, unspos pos1,
                             seq* seq2, unspos pos2, unspos length,
-                            score s, int softMasked, char* rgTags);
+                            score s,
+                            int markMismatches, int softMasked, char* rgTags);
 
 #endif // sam_H

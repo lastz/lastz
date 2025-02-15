@@ -420,7 +420,7 @@ static const control defaultParams =
 	0,									// bandWidth (zero => no band restriction)
 #endif // not forbidBandWidth
 	NULL,NULL,							// outputFilename, outputFile
-	fmtLav,NULL,NULL,NULL,				// outputFormat, outputInfo, readGroup, samRGTags
+	fmtLav,NULL,false,false,NULL,NULL,	// outputFormat, outputInfo, userSetMarkMismatches, samMarkMismatches, readGroup, samRGTags
 	false,								// endComment
 	false,								// needTrueLengths
 	false,								// deGapifyOutput
@@ -7037,6 +7037,8 @@ static void parse_options_loop
 			goto next_arg;
 			}
 
+		// --format=maf and variants
+
 		if ((strcmp (arg, "--format=maf") == 0)
 		 || (strcmp (arg, "--format=MAF") == 0)
 		 || (strcmp (arg, "--maf")        == 0)
@@ -7127,12 +7129,43 @@ static void parse_options_loop
 			goto next_arg;
 			}
 
+		// --format=sam and variants
+		//
+		// that the intended behavior of --mark:mismatches (a.k.a. --eqx) is
+		// that the user can specify it separately from format=sam, either
+		// before or after on the command line; OR she can add "+eqx" to the
+		// format=sam arg; after parsing, when we sanity check the options, we
+		// will set lzParams->samMarkMismatches to true if she used
+		// --mark:mismatches; nb: the abbreviation "--eqx" was chosen to match
+		// the corresponding option in minimap2
+
+		if ((strcmp (arg, "--mark:mismatches") == 0)	// (only valid is SAM format is specified)
+		 || (strcmp (arg, "--mark:eqx")        == 0)
+		 || (strcmp (arg, "--mark:EQX")        == 0)
+		 || (strcmp (arg, "--eqx")             == 0)
+		 || (strcmp (arg, "--EQX")             == 0))
+			{
+			lzParams->userSetMarkMismatches = true;
+			goto next_arg;
+			}
+
 		if ((strcmp (arg, "--format=softsam") == 0)
 		 || (strcmp (arg, "--format=SOFTSAM") == 0)
 		 || (strcmp (arg, "--softsam")        == 0)
 		 || (strcmp (arg, "--SOFTSAM")        == 0))
 			{
-			lzParams->outputFormat = fmtSoftSam;
+			lzParams->outputFormat      = fmtSoftSam;
+			lzParams->samMarkMismatches = false;
+			goto next_arg;
+			}
+
+		if ((strcmp (arg, "--format=softsam+eqx") == 0)
+		 || (strcmp (arg, "--format=SOFTSAM+EQX") == 0)
+		 || (strcmp (arg, "--softsam+eqx")        == 0)
+		 || (strcmp (arg, "--SOFTSAM+EQX")        == 0))
+			{
+			lzParams->outputFormat      = fmtSoftSam;
+			lzParams->samMarkMismatches = true;
 			goto next_arg;
 			}
 
@@ -7141,7 +7174,18 @@ static void parse_options_loop
 		 || (strcmp (arg, "--softsam-")        == 0)
 		 || (strcmp (arg, "--SOFTSAM-")        == 0))
 			{
-			lzParams->outputFormat = fmtSoftSamNoHeader;
+			lzParams->outputFormat      = fmtSoftSamNoHeader;
+			lzParams->samMarkMismatches = false;
+			goto next_arg;
+			}
+
+		if ((strcmp (arg, "--format=softsam+eqx-") == 0)
+		 || (strcmp (arg, "--format=SOFTSAM+EQX-") == 0)
+		 || (strcmp (arg, "--softsam+eqx-")        == 0)
+		 || (strcmp (arg, "--SOFTSAM+EQX-")        == 0))
+			{
+			lzParams->outputFormat      = fmtSoftSamNoHeader;
+			lzParams->samMarkMismatches = true;
 			goto next_arg;
 			}
 
@@ -7150,7 +7194,18 @@ static void parse_options_loop
 		 || (strcmp (arg, "--sam")        == 0)
 		 || (strcmp (arg, "--SAM")        == 0))
 			{
-			lzParams->outputFormat = fmtHardSam;
+			lzParams->outputFormat      = fmtHardSam;
+			lzParams->samMarkMismatches = false;
+			goto next_arg;
+			}
+
+		if ((strcmp (arg, "--format=sam+eqx") == 0)
+		 || (strcmp (arg, "--format=SAM+EQX") == 0)
+		 || (strcmp (arg, "--sam+eqx")        == 0)
+		 || (strcmp (arg, "--SAM+EQX")        == 0))
+			{
+			lzParams->outputFormat      = fmtHardSam;
+			lzParams->samMarkMismatches = true;
 			goto next_arg;
 			}
 
@@ -7159,7 +7214,18 @@ static void parse_options_loop
 		 || (strcmp (arg, "--sam-")        == 0)
 		 || (strcmp (arg, "--SAM-")        == 0))
 			{
-			lzParams->outputFormat = fmtHardSamNoHeader;
+			lzParams->outputFormat      = fmtHardSamNoHeader;
+			lzParams->samMarkMismatches = false;
+			goto next_arg;
+			}
+
+		if ((strcmp (arg, "--format=sam+eqx-") == 0)
+		 || (strcmp (arg, "--format=SAM+EQX-") == 0)
+		 || (strcmp (arg, "--sam+eqx-")        == 0)
+		 || (strcmp (arg, "--SAM+EQX-")        == 0))
+			{
+			lzParams->outputFormat      = fmtHardSamNoHeader;
+			lzParams->samMarkMismatches = true;
 			goto next_arg;
 			}
 
@@ -8473,6 +8539,17 @@ static void parse_options
 
 	if (lzParams->mafFilename != NULL)
 		lzParams->mafFile = fopen_or_die (lzParams->mafFilename, "wt");
+
+	if (lzParams->userSetMarkMismatches)
+		{
+		if ((lzParams->outputFormat != fmtSoftSam)
+		 && (lzParams->outputFormat != fmtSoftSamNoHeader)
+		 && (lzParams->outputFormat != fmtHardSam)
+		 && (lzParams->outputFormat != fmtHardSamNoHeader))
+			suicidef ("--mark:mismatches or --eqx requires one of the SAM formats (e.g. --format=sam)");
+
+		lzParams->samMarkMismatches = true;
+		}
 
 	if (lzParams->readGroup != NULL)
 		{

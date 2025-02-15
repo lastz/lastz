@@ -401,6 +401,8 @@ typedef struct control
 								//     .. of fmtXXX values (in output.h)
 	void*		outputInfo;		//     additional information for the particular
 								//     .. output format chosen
+	int			userSetMarkMismatches;//additional information for SAM format
+	int			samMarkMismatches;//   additional information for SAM format
 	char*		readGroup;		//     additional information for SAM format
 	char*		samRGTags;		//     additional information for SAM format
 	int			endComment;		//     true => write a comment at the end of the
