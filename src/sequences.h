@@ -190,13 +190,22 @@ typedef struct interval { unspos s;  unspos e; } interval;
 //		for all ix (even for 0 and len).  All partitions are bounded on both
 //		sides by a NUL, even the first partition.
 //
+//	(3)	For the lastz_40 build, we want to limit queries to something 'short'.
+//		This is because long-vs-long alignment is not likely to finish in any
+//		reasonable time (where 'long' is more than 4Gbp). So if the lastz_40
+//		build is being used, we'll issue a warning whenever a query exceeds
+//		lz40QueryLengthLimit. Note that the choice of lz40QueryLengthLimit is
+//		very arbitrary, and that nothing has been done to evaluate whether it
+//		is an appropriate limit.
+//
 //----------
 
-#define maxSequenceName     255	// has to be at least this big to accomodate 2bit files
-#define maxSequenceHeader   992
-#define seqBufferSize       (maxSequenceHeader+32)
-#define maxFastqSequenceLen 10000
-#define maxChoreTagLen      15
+#define maxSequenceName      255	// has to be at least this big to accomodate 2bit files
+#define maxSequenceHeader    992
+#define seqBufferSize        (maxSequenceHeader+32)
+#define maxFastqSequenceLen  10000
+#define maxChoreTagLen       15
+#define lz40QueryLengthLimit 100000	// see note 3 above
 
 typedef struct chore
 	{

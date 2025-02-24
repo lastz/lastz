@@ -4,6 +4,8 @@ default: build_lastz
 
 lastz_32: build_lastz_32
 
+lastz_40: build_lastz_40
+
 #---------
 # builds/installation
 #---------
@@ -16,6 +18,9 @@ build_lastz:
 build_lastz_32:
 	cd src && ${MAKE} lastz_32
 
+build_lastz_40:
+	cd src && ${MAKE} lastz_40
+
 build_test_version:
 	cd src && ${MAKE} lastz-test lastz_D-test
 
@@ -26,6 +31,9 @@ install_lastz:
 
 install_32:
 	cd src && ${MAKE} install_32
+
+install_40:
+	cd src && ${MAKE} install_40
 
 install_test_version:
 	cd src && ${MAKE} install_test_version

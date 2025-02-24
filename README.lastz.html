@@ -79,8 +79,8 @@
 <body>
 
 <p class=vvlarge>
-<h1>LASTZ &nbsp; Release 1.04.43,
-                 built February 15, 2025</h1>
+<h1>LASTZ &nbsp; Release 1.04.45,
+                 built February 24, 2025</h1>
 
 TABLE OF CONTENTS
 
@@ -322,6 +322,11 @@ output of your build, plus a line that looks like this:
 <p>
 An additional executable (<code>lastz_32</code>) can be built, to handle
 genomes larger than 2 gigabases. For details, see the section on
+<a href="#adv_whole_genome">aligning to whole genomes</a>.
+
+<p>
+An <b>experimental</b> executable (<code>lastz_40</code>) can be built, to
+handle genomes larger than 4 gigabases. For details, see the section on
 <a href="#adv_whole_genome">aligning to whole genomes</a>.
 
 <p>
@@ -5456,6 +5461,12 @@ in any command line, e.g.
       --format=maf > hg18_vs_galGal3.maf
 </pre>
 
+<p>
+Similarly, an <b>experimental</b> executable (<code>lastz_40</code>) can be
+built. This is provided solely on an experimental basis &#8212; the intended
+use case is aligning relatively small queries to a genome larger than 4
+gigabases. Users should not expect reasonable runtimes for other uses, and
+queries larger than 100 kilobases trigger a warning.
 
 <!-- Adjacent Indels -->
 <div><a name="adv_adjacent_indels"></a></div>
@@ -7998,14 +8009,21 @@ build systems.
 
 <tr class=newsect>
 <td>
-<a name="history_recent"></a>1.04.43</td><td>Feb/15/2025</td><td>
+</a>1.04.43</td><td>Feb/15/2025</td><td>
 Added options to support the use of the operators "=" and "X" in CIGAR strings
 for the <a href="#fmt_sam">SAM</a> file format. See
 <code><a href="#option_eqx">&#8209;&#8209;eqx</a></code>,
 <code><a href="#option_format">&#8209;&#8209;format=sam+eqx</a></code>,
 or <code><a href="#option_format">&#8209;&#8209;format=softsam+eqx</a></code>.
+</td></tr>
 
+<!-- 1.04.43 -->
 
+<tr class=newsect>
+<td>
+<a name="history_recent"></a>1.04.45</td><td>Feb/24/2025</td><td>
+Added the lastz_40 build, to address a narrow use case of aligning relatively
+small queries to a genome larger than 4 gigabases.
 </td></tr>
 
 </tbody></table>

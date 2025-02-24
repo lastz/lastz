@@ -7,9 +7,9 @@ CC=gcc
 
 default: lastz lastz_D
 
-special: lastz_32
+special: lastz_32 lastz_40
 
-builds = lastz lastz_D lastz_32
+builds = lastz lastz_D lastz_32 lastz_40
 
 #---------
 # program build
@@ -18,8 +18,9 @@ builds = lastz lastz_D lastz_32
 #	lastz:    standard lastz (integer scoring)
 #	lastz_D:  lastz with double-float scoring
 #
-# and can also create this special version:
-#	lastz_32: standard lastz with 32-bit sequence indexing
+# and can also create these special versions:
+#	lastz_32: standard lastz with 32-bit sequence indexing (allows targets <= (allows targets up to about 4.3Gbp)
+#	lastz_40: standard lastz with 40-bit sequence indexing (allows targets <= (allows targets up to about 1.1Tbp)
 #
 #---------
 # build-time options (presently only one)
@@ -56,6 +57,7 @@ builds = lastz lastz_D lastz_32
 
 definedForAll = -Wall -Wextra -Werror -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 flagsFor32    = -Dmax_sequence_index=32 -Dmax_malloc_index=40 -Ddiag_hash_size=4194304
+flagsFor40    = -Dmax_sequence_index=63 -Dmax_malloc_index=40 -Ddiag_hash_size=4194304
 
 allowBackToBackGaps ?= 0                       # by default allowBackToBackGaps
 ifeq ($(allowBackToBackGaps), ON)              # .. is off;  see note above for
@@ -99,6 +101,9 @@ incFiles = lastz.h infer_scores.h \
 %_32.o: %.c version.mak ${incFiles}
 	${CC} -c ${CFLAGS} ${flagsFor32} $< -o $@
 
+%_40.o: %.c version.mak ${incFiles}
+	${CC} -c ${CFLAGS} ${flagsFor40} $< -o $@
+
 
 lastz: $(foreach part,${srcFiles},${part}.o)
 	${CC} $(foreach part,${srcFiles},${part}.o) -lm -o $@
@@ -108,6 +113,9 @@ lastz_D: $(foreach part,${srcFiles},${part}_D.o)
 
 lastz_32: $(foreach part,${srcFiles},${part}_32.o)
 	${CC} $(foreach part,${srcFiles},${part}_32.o) -lm -o $@
+
+lastz_40: $(foreach part,${srcFiles},${part}_40.o)
+	${CC} $(foreach part,${srcFiles},${part}_40.o) -lm -o $@
 
 # cleanup
 
@@ -120,6 +128,7 @@ clean_builds:
 	rm -f lastz
 	rm -f lastz_D
 	rm -f lastz_32
+	rm -f lastz_40
 
 # installation;  change installDir to suit your needs (in ../make-include.mak)
 
@@ -139,6 +148,10 @@ install_D: lastz_D
 install_32: lastz_32
 	${INSTALL} -d       ${installDir}
 	${INSTALL} lastz_32 ${installDir}
+
+install_40: lastz_40
+	${INSTALL} -d       ${installDir}
+	${INSTALL} lastz_40 ${installDir}
 
 #---------
 # testing

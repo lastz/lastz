@@ -766,6 +766,13 @@ int main
 	// of processing time.
 	//////////
 
+	if (maxSequenceIndex > 32)   // (this is a proxy for any build for more than 2^32)
+		{
+		fprintf (stderr, "WARNING. vvvvvvvvvv\n");
+		fprintf (stderr, "WARNING. lastz_40 is an experimental build, and has NOT been rigorously tested\n");
+		fprintf (stderr, "WARNING. ^^^^^^^^^^\n");
+		}
+
 	startClock = clock();
 
 	// open and load target
@@ -1456,6 +1463,17 @@ next_target:
 		if      (!applyChore)           numQueries++;
 		else if (query->chore.num == 1) numQueries++;
 		numChores++;
+
+		// the following warning is for users that are using lastz_40 outisde
+		// its intended use case; that use case is to align many short queries,
+		// such as genes, to a larger-than-4G genome
+		if ((maxSequenceIndex > 32)   // (this is a proxy for any build for more than 2^32)
+		 && (query->len > lz40QueryLengthLimit))
+			{
+			fprintf (stderr, "WARNING. %s exceeds the longest query expected for lastz_40 (%s > %s)\n",
+			                 query->shortHeader, commatize(query->len), commatize(lz40QueryLengthLimit));
+			fprintf (stderr, "........ performance (w.r.t. runtime or memory use) might be poor.\n");
+			}
 
 		if (query->len == 0)
 			{
