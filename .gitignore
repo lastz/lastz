@@ -4,6 +4,7 @@
 src/lastz
 src/lastz_D
 src/lastz_32
+src/lastz_40
 
 # Makefile variants #
 ###################
