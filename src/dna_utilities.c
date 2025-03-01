@@ -2095,7 +2095,7 @@ void dump_score_set
 	u8*			r, *c;
 
 	if (rowChars == NULL) rowChars = ss->rowChars;
-	if (colChars == NULL) rowChars = ss->colChars;
+	if (colChars == NULL) colChars = ss->colChars;
 
 	if ((dna_utilities_scoreType == 'F') || (dna_utilities_scoreType == 'D'))
 		width = 13;
