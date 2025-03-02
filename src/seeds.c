@@ -753,9 +753,10 @@ seed* reconstruct_seed
 
 	// copy arrays
 
-	for (ix=0 ; ix<numParts  ; ix++) s->shift[ix]      = shift[ix];
-	for (ix=0 ; ix<numParts  ; ix++) s->mask[ix]       = mask[ix];
-	for (ix=0 ; ix<=numFlips ; ix++) s->transFlips[ix] = transFlips[ix];
+	for (ix=0 ; ix<numParts ; ix++) s->shift[ix] = shift[ix];
+	for (ix=0 ; ix<numParts ; ix++) s->mask[ix]  = mask[ix];
+	if (s->transFlips != NULL)
+		for (ix=0 ; ix<=numFlips ; ix++) s->transFlips[ix] = transFlips[ix];
 
 	return s;
 	}

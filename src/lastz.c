@@ -9705,9 +9705,8 @@ static void create_seed_structure
 			suicide ("bad capsule file (missing seed)");
 
 		numParts = (int) seedCapsule->numParts;
-		if (numParts > (int) (sizeof(shift)/sizeof(shift[0])))
-			suicidef ("internal error handling capsule file (numParts = %d)",
-			          numParts);
+		if ((numParts < 1) || (numParts > (int) (sizeof(shift)/sizeof(shift[0]))))
+			suicidef ("internal error handling capsule file (numParts = %d), is file corrupt?", numParts);
 
 		scan       = &seedCapsule->shift0;
 		mask       = &scan[numParts];

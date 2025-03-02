@@ -37,7 +37,7 @@
 //	endianess of the magic number.  Similarly, 64-bit fields must match the
 //	order indicated by the 64-bit magic number.  If the data blocks containing
 //	multi-byte numeric fields are directly mapped by the program (e.g. with
-//	mmap), the program will reject a file fi the magic number doesn't match
+//	mmap), the program will reject a file if the magic number doesn't match
 //	what is expected on the running-on platfrom.
 //
 //	Version 1
