@@ -1412,13 +1412,10 @@ static void write_scores
 
 	if (withExtras)
 		{
-		// the following seemingly useless comments are to convince some
-		// versions of the compiler that the unusual indentation is not a
-		// mistake
-		/* */              fprintf (f, "\n");
-		/* */              fprintf (f, "# hsp_threshold    = %s\n", score_thresh_to_string (&params->hspThreshold));
+		fprintf                    (f, "\n");
+		fprintf                    (f, "# hsp_threshold    = %s\n", score_thresh_to_string (&params->hspThreshold));
 		if (withGapScores) fprintf (f, "# gapped_threshold = %s\n", score_thresh_to_string (&params->gappedThreshold));
-		/* */              fprintf (f, "# x_drop           = " scoreFmtSimple "\n", params->xDrop);
+		fprintf                    (f, "# x_drop           = " scoreFmtSimple "\n", params->xDrop);
 		if (withGapScores) fprintf (f, "# y_drop           = " scoreFmtSimple "\n", params->yDrop);
 		}
 
