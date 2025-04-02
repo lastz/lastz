@@ -79,8 +79,8 @@
 <body>
 
 <p class=vvlarge>
-<h1>LASTZ &nbsp; Release 1.04.45,
-                 built February 24, 2025</h1>
+<h1>LASTZ &nbsp; Release 1.04.52,
+                 built April 2, 2025</h1>
 
 TABLE OF CONTENTS
 
@@ -7938,7 +7938,7 @@ changes have no affect on the executable.
 
 <tr class=newsect>
 <td>
-</a>1.04.22</td><td>Aug/7/2022</td><td>
+1.04.22</td><td>Aug/7/2022</td><td>
 Fixed a serious bug in the <a href="#fmt_blastn">blastn format</a>.
 <p class=small>
 In previous versions query positions were misreported for alignments on
@@ -7957,7 +7957,7 @@ github repository.
 
 <tr class=newsect>
 <td>
-</a>1.04.41</td><td>Dec/18/2024</td><td>
+1.04.41</td><td>Dec/18/2024</td><td>
 <a href="#option_alloc_traceback"><code>--allocate:traceback=&lt;bytes&gt;</code></a>
 is now limited to a maximum of 2G. In earlier versions, setting this to more
 that 2G caused a bug in the gapped alignment stage. This is now prevented by
@@ -8009,7 +8009,7 @@ build systems.
 
 <tr class=newsect>
 <td>
-</a>1.04.43</td><td>Feb/15/2025</td><td>
+1.04.43</td><td>Feb/15/2025</td><td>
 Added options to support the use of the operators "=" and "X" in CIGAR strings
 for the <a href="#fmt_sam">SAM</a> file format. See
 <code><a href="#option_eqx">&#8209;&#8209;eqx</a></code>,
@@ -8017,13 +8017,24 @@ for the <a href="#fmt_sam">SAM</a> file format. See
 or <code><a href="#option_format">&#8209;&#8209;format=softsam+eqx</a></code>.
 </td></tr>
 
-<!-- 1.04.43 -->
+<!-- 1.04.45 -->
 
 <tr class=newsect>
 <td>
 <a name="history_recent"></a>1.04.45</td><td>Feb/24/2025</td><td>
 Added the lastz_40 build, to address a narrow use case of aligning relatively
 small queries to a genome larger than 4 gigabases.
+</td></tr>
+
+<!-- 1.04.52 -->
+
+<tr class=newsect>
+<td>
+1.04.52</td><td>Apr/2/2025</td><td>
+Several minor source code changes that should have no effect on operation.
+These are mostly to prevent newer compilers complaining about source code
+layout, and a couple related to errors in code intended to detect numeric
+overflow when parsing command line options.
 </td></tr>
 
 </tbody></table>
