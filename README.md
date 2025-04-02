@@ -25,5 +25,5 @@ Two GPU accelerated versions, KegAlign and SegAlign, can be found at
 https://github.com/galaxyproject/KegAlign
 and https://github.com/gsneha26/SegAlign.
 
-Updated Dec/18/2024 by Bob Harris (the LASTZ guy)
+Updated Apr/2/2025 by Bob Harris (the LASTZ guy)
 
