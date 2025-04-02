@@ -729,9 +729,9 @@ int string_to_unitized_int
 	if (isFloat)
 		{
 		// nota bene: this test is not correct when vf=2.0 and mult=2^30
-		if ((vf > 0) && ( vf*mult > INT_MAX)) goto overflow;
-		if ((vf < 0) && (-vf*mult > INT_MAX)) goto overflow;
-		v = (vf * mult) + .5;
+		if ((vf > 0) && (((double) ( vf*mult)) > INT_MAX)) goto overflow;
+		if ((vf < 0) && (((double) (-vf*mult)) > INT_MAX)) goto overflow;
+		v = (int) ((vf * mult) + .5);
 		}
 	else if (mult != 1)
 		{
@@ -803,8 +803,14 @@ int64 string_to_unitized_int64
 
 	if (isFloat)
 		{
-		if ((vf > 0) && ( vf*mult > s64max)) goto overflow;
-		if ((vf < 0) && (-vf*mult > s64max)) goto overflow;
+		// this is a previous version of the overflow test; some compilers
+		// (rightfully) don't like this test because s64max has more digits than
+		// a float supports; and because of that, the test could fail
+		//   if ((vf > 0) && ( vf*mult > s64max)) goto overflow;
+		//   if ((vf < 0) && (-vf*mult > s64max)) goto overflow;
+
+		if ((vf > 0) && ( vf > s64max / mult)) goto overflow;
+		if ((vf < 0) && (-vf > s64max / mult)) goto overflow;
 		v = (vf * mult) + .5;
 		}
 	else if (mult != 1)
