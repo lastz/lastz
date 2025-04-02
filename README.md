@@ -10,7 +10,7 @@ be stable.
 For information about installation and use, see https://lastz.github.io/lastz
 (equivalent to README.lastz.html in this repository).
 
-As of this writing, the latest official release is version 1.04.45.
+As of this writing, the latest official release is version 1.04.52.
 Legacy releases — those prior to September 2021 — can be found at
 http://www.bx.psu.edu/~rsharris/lastz (in the form of tarballs).
 
