@@ -79,8 +79,8 @@
 <body>
 
 <p class=vvlarge>
-<h1>LASTZ &nbsp; Release 1.04.52,
-                 built April 2, 2025</h1>
+<h1>LASTZ &nbsp; some Release after 1.04.52,
+                 built on date unknown</h1>
 
 TABLE OF CONTENTS
 
@@ -1683,6 +1683,26 @@ and report (to <code>stderr</code>) any HSPs that are discarded as a result.
 <td><code>P=0</code></td>
 <td>
 Don't adjust for entropy when qualifying HSPs.
+</td>
+</tr>
+
+<tr>
+<td><a name="option_force_report_filtered_hsps"></a><code>--force:reportfilteredhsps</code></td>
+<td></td>
+<td>
+Force lastz to report HSPs to stdout, rather than collect them in memory. Any
+back-end filtering options are applied before reporting
+(e.g. <code><a href="#option_identity">&#8209;&#8209;filter=identity</a></code>),
+and only those HSPs that pass all the filters are reported.
+<p class=small>
+Note that this option is only allowed if
+<code><a href="#option_nogapped">&#8209;&#8209;nogapped</a></code> is also
+used. And it is disallowed if an
+<a href="#adaptive_thresh">adaptive score threshold</a> is used.
+<p class=small>
+This option can be useful for scenarios in which the number of HSPs would
+overflow the allotted table size but there is no reason to keep the HSPs in
+memory instead of reporting them.
 </td>
 </tr>
 
@@ -8003,6 +8023,14 @@ to provide better feedback on the state of the search.
 A change has been made to the way the score type is defined in the Makefile.
 The previous implementation was reported to have caused problems in some
 build systems.
+</td></tr>
+
+<tr><td></td><td></td><td>
+<em>(Note: this change inadvertently went unreported at the time.)</em>
+<p class=small>
+Added <a href="#option_force_report_filtered_hsps"><code>--force:reportfilteredhsps</code></a>
+to force lastz to report HSPs, possibly filtered, directly to stdout, rather
+than collecting them in memory.
 </td></tr>
 
 <!-- 1.04.43 -->
