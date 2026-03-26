@@ -170,6 +170,8 @@ score    score_alignment      (scoreset* scoring,
                                u8* seq2, unspos pos2,
                                editscript* script);
 
+void report_gapped_extend_types (FILE* f);
+
 #ifdef dbgTimingGappedExtend
 void gapped_extend_timing_report (FILE* f);
 #endif // dbgTimingGappedExtend

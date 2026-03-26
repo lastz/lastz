@@ -1916,3 +1916,38 @@ void suicidef_with_perror
 	exit (EXIT_FAILURE);
 	}
 
+//----------
+//
+// report_basic_types--
+//	Report the sizes (in bytes) of basic data types.
+//
+//----------
+//
+// Arguments:
+//	FILE*	f:			The file to write to.
+//
+// Returns:
+//	(nothing)
+//
+//----------
+
+void report_basic_types
+   (FILE*	f)
+	{
+	long*	a, b;
+
+	fprintf (f,"size of long        is %d\n",  (int) sizeof(long));
+	fprintf (f,"size of int         is %d\n",  (int) sizeof(int));
+	fprintf (f,"size of short       is %d\n",  (int) sizeof(short));
+	fprintf (f,"size of u32         is %d\n",  (int) sizeof(u32));
+	fprintf (f,"size of s32         is %d\n",  (int) sizeof(s32));
+	fprintf (f,"size of u64         is %d\n",  (int) sizeof(u64));
+	fprintf (f,"size of s64         is %d\n",  (int) sizeof(s64));
+	fprintf (f,"size of size_t      is %d\n",  (int) sizeof(size_t));
+	fprintf (f,"\n");
+	fprintf (f,"size of float       is %d\n",  (int) sizeof(float));
+	fprintf (f,"size of double      is %d\n",  (int) sizeof(double));
+	fprintf (f,"size of long double is %d\n",  (int) sizeof(long double));
+	fprintf (f,"size of ptr         is %d\n",  (int) sizeof(long*));
+	fprintf (f,"size of ptr-ptr     is %d\n",  (int) sizeof(a-b));
+	}

@@ -726,6 +726,7 @@ void  dump_aligned_nucleotides      (FILE* f,
                                      seq* seq2, unspos pos2, unspos length);
 void  dump_sequence                 (FILE* f, seq* _seq);
 void  dump_sequence_state           (FILE* f, seq* _seq);
+void  report_sequence_types         (FILE* f);
 
 #undef global
 #endif // sequences_H

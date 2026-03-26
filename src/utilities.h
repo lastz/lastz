@@ -293,6 +293,7 @@ void   suicide                   (const char* message);
 void   suicidef                  (const char* format, ...);
 void   suicide_with_perror       (const char* message);
 void   suicidef_with_perror      (const char* format, ...);
+void   report_basic_types        (FILE* f);
 
 #undef global
 #endif // utilities_H

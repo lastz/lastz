@@ -7945,6 +7945,26 @@ static void parse_options_loop
 		 || (strcmp (arg, "--help=yasra") == 0))
 			{ expander_options ("yasra-specific options", "--yasra"); }
 
+		// --help=sizes and --help=sizes:noerror (unadvertised)
+
+		if (strcmp (arg, "--help=sizes:noerror") == 0)
+			{
+			exitVal = EXIT_SUCCESS;
+			goto report_sizes;
+			}
+
+		if (strcmp (arg, "--help=sizes") == 0)
+			{
+			exitVal = EXIT_FAILURE;
+		report_sizes:
+			report_basic_types         (stderr);
+			fprintf                    (stderr,"\n");
+			report_sequence_types      (stderr);
+			fprintf                    (stderr,"\n");
+			report_gapped_extend_types (stderr);
+			exit (exitVal);
+			}
+
 		// --force:<what> (unadvertised)
 
 		if ((strcmp (arg, "--force:reportfilteredhsps") == 0)

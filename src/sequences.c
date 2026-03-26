@@ -10118,3 +10118,27 @@ void sequence_show_stats
 
 #endif // collect_stats
 	}
+
+//----------
+//
+// report_sequence_types--
+//	Report the sizes (in bytes) of data types relevant to this module.
+//
+//----------
+//
+// Arguments:
+//	FILE*	f:			The file to write to.
+//
+// Returns:
+//	(nothing)
+//
+//----------
+
+void report_sequence_types
+   (FILE*	f)
+	{
+	fprintf (f,"size of unspos      is %d\n",  (int) sizeof(unspos));
+	fprintf (f,"size of sgnpos      is %d\n",  (int) sizeof(sgnpos));
+	fprintf (f,"size of possum      is %d\n",  (int) sizeof(possum));
+	}
+

@@ -5847,3 +5847,25 @@ void gapped_extend_generic_stats
 #endif // collect_stats
 	}
 
+//----------
+//
+// report_gapped_extend_types--
+//	Report the sizes (in bytes) of data types relevant to this module.
+//
+//----------
+//
+// Arguments:
+//	FILE*	f:			The file to write to.
+//
+// Returns:
+//	(nothing)
+//
+//----------
+
+void report_gapped_extend_types
+   (FILE*	f)
+	{
+	fprintf (f,"size of galign      is %d\n",  (int) sizeof(galign));
+	fprintf (f,"size of alignio     is %d\n",  (int) sizeof(alignio));
+	}
+
