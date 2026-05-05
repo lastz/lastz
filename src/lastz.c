@@ -5023,7 +5023,7 @@ static void format_options (void)
 	fprintf (helpout, "there may be a question as to whether or not lastz completed successfully.  The\n");
 	fprintf (helpout, "line \"# lastz end-of-file\" is written to output as the last line.  Note that\n");
 	fprintf (helpout, "in some formats this is *not* a legal line;  the user must remove it before any\n");
-	fprintf (helpout, "downstream processsing.\n");
+	fprintf (helpout, "downstream processing.\n");
 
 	exit (EXIT_FAILURE);
 	}
@@ -9161,7 +9161,7 @@ static void parse_options
 
 		if ((haveGapOpen) && (gapOpen + gapExtend <= 0))
 			chastise ("%s is not a valid gap open penalty with extension penalty %s\n"
-			          "(open can be negative but the sum has to be postive)\n",
+			          "(open can be negative but the sum has to be positive)\n",
 			          gapOpenStr, gapExtendStr);
 		if ((haveGapExtend) && (gapExtend < 0))
 			chastise ("%s is not a valid gap extension penalty\n", gapExtendStr);

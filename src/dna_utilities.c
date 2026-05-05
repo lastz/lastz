@@ -1147,7 +1147,7 @@ exscoreset* read_score_set
 
 	if ((xss->ss.gapOpenSet) && (xss->ss.gapOpen + xss->ss.gapExtend <= 0))
 		suicidef (" (in %s) "scoreFmt " is not a valid gap open penalty with extension penalty " scoreFmt "\n"
-		          "(open can be negative but the sum has to be postive)\n",
+		          "(open can be negative but the sum has to be positive)\n",
 		          name, xss->ss.gapOpen, xss->ss.gapExtend);
 	if ((xss->ss.gapExtendSet) && (xss->ss.gapExtend < 0))
 		suicidef (scoreFmt " is not a valid gap extension penalty (in %s)\n",
