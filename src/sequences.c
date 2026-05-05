@@ -643,7 +643,7 @@ static const u32 nibMagicLittle  = 0x3A3DE96B;	// in little endian format
 // For (alleged) efficiency's sake, we use separate lookup tables for the left
 // and right nybble mapping.
 
-static const unsigned char nibTo1stChar[256] = 
+static const unsigned char nibTo1stChar[257] = 
 	"TTTTTTTTTTTTTTTT"
 	"CCCCCCCCCCCCCCCC"
 	"AAAAAAAAAAAAAAAA"
@@ -661,7 +661,7 @@ static const unsigned char nibTo1stChar[256] =
 	"xxxxxxxxxxxxxxxx"
 	"xxxxxxxxxxxxxxxx";
 
-static const unsigned char nibTo2ndChar[256] = 
+static const unsigned char nibTo2ndChar[257] = 
 	"TCAGNXXXtcagnxxx"
 	"TCAGNXXXtcagnxxx"
 	"TCAGNXXXtcagnxxx"
@@ -679,7 +679,7 @@ static const unsigned char nibTo2ndChar[256] =
 	"TCAGNXXXtcagnxxx"
 	"TCAGNXXXtcagnxxx";
 
-static const unsigned char nibTo1stCharUnmasked[256] = 
+static const unsigned char nibTo1stCharUnmasked[257] = 
 	"TTTTTTTTTTTTTTTT"
 	"CCCCCCCCCCCCCCCC"
 	"AAAAAAAAAAAAAAAA"
@@ -697,7 +697,7 @@ static const unsigned char nibTo1stCharUnmasked[256] =
 	"XXXXXXXXXXXXXXXX"
 	"XXXXXXXXXXXXXXXX";
 
-static const unsigned char nibTo2ndCharUnmasked[256] = 
+static const unsigned char nibTo2ndCharUnmasked[257] = 
 	"TCAGNXXXTCAGNXXX"
 	"TCAGNXXXTCAGNXXX"
 	"TCAGNXXXTCAGNXXX"
@@ -726,7 +726,7 @@ static const unsigned char nibTo2ndCharUnmasked[256] =
 static const u32 twobitMagicBig    = 0x1A412743;	// in big endian format
 static const u32 twobitMagicLittle = 0x4327411A;	// in little endian format
 
-static const char* twobitToChars[256] =
+static const char* twobitToChars[257] =
 	{
 	"TTTT","TTTC","TTTA","TTTG","TTCT","TTCC","TTCA","TTCG",
 	"TTAT","TTAC","TTAA","TTAG","TTGT","TTGC","TTGA","TTGG",
