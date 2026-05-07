@@ -73,7 +73,7 @@ VERSION_FLAGS= \
 	-DSUBVERSION_REV="\"${SUBVERSION_REV}"\"
 
 
-CFLAGS = -O3 ${definedForAll} ${VERSION_FLAGS}
+CFLAGS += -O3 ${definedForAll} ${VERSION_FLAGS}
 
 
 srcFiles = lastz infer_scores \
@@ -93,29 +93,29 @@ incFiles = lastz.h infer_scores.h \
            utilities.h dna_utilities.h sequences.h capsule.h
 
 %.o: %.c version.mak ${incFiles}
-	${CC} -c ${CFLAGS} -Dscore_type=I $< -o $@
+	${CC} ${CPPFLAGS} -c ${CFLAGS} -Dscore_type=I $< -o $@
 
 %_D.o: %.c version.mak ${incFiles}
-	${CC} -c ${CFLAGS} -Dscore_type=D $< -o $@
+	${CC} ${CPPFLAGS} -c ${CFLAGS} -Dscore_type=D $< -o $@
 
 %_32.o: %.c version.mak ${incFiles}
-	${CC} -c ${CFLAGS} ${flagsFor32} $< -o $@
+	${CC} ${CPPFLAGS} -c ${CFLAGS} ${flagsFor32} $< -o $@
 
 %_40.o: %.c version.mak ${incFiles}
-	${CC} -c ${CFLAGS} ${flagsFor40} $< -o $@
+	${CC} ${CPPFLAGS} -c ${CFLAGS} ${flagsFor40} $< -o $@
 
 
 lastz: $(foreach part,${srcFiles},${part}.o)
-	${CC} $(foreach part,${srcFiles},${part}.o) -lm -o $@
+	${CC} ${LDFLAGS} $(foreach part,${srcFiles},${part}.o) -lm -o $@
 
 lastz_D: $(foreach part,${srcFiles},${part}_D.o)
-	${CC} $(foreach part,${srcFiles},${part}_D.o) -lm -o $@
+	${CC} ${LDFLAGS} $(foreach part,${srcFiles},${part}_D.o) -lm -o $@
 
 lastz_32: $(foreach part,${srcFiles},${part}_32.o)
-	${CC} $(foreach part,${srcFiles},${part}_32.o) -lm -o $@
+	${CC} ${LDFLAGS} $(foreach part,${srcFiles},${part}_32.o) -lm -o $@
 
 lastz_40: $(foreach part,${srcFiles},${part}_40.o)
-	${CC} $(foreach part,${srcFiles},${part}_40.o) -lm -o $@
+	${CC} ${LDFLAGS} $(foreach part,${srcFiles},${part}_40.o) -lm -o $@
 
 # cleanup
 
