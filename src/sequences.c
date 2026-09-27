@@ -8057,6 +8057,7 @@ static void parse_sequence_name
 	int			len;
 	char*		fname, *bracket, *mask, *actions, *action, *actionName;
 	char*		parse, *slashParse, *extParse;
+	const char*	nickParse, *nickActions;
 	int			numItems, charsUsed;
 	unspos		start, end, pendingStart, temp, length, mid;
 	int			tempInt;
@@ -8087,19 +8088,22 @@ static void parse_sequence_name
 
 	if (name == NULL) suicide ("parse_sequence_name(NULL)");
 
-	parse   = strstr (name, "::");
-	actions = strchr (name, '[');
-	if ((parse == NULL)								// no "::"
-	 || ((actions != NULL) && (parse > actions)))	// "::" is after "["
+	// nb: name is const, so these scans use const pointers;  parse and actions
+	//     are reused below on fname, which is our own writable copy
+
+	nickParse   = strstr (name, "::");
+	nickActions = strchr (name, '[');
+	if ((nickParse == NULL)									// no "::"
+	 || ((nickActions != NULL) && (nickParse > nickActions)))	// "::" is after "["
 		{
 		*nickname = NULL;
 		*filename = fname = copy_string (name);
 		}
 	else
 		{
-		if (parse-name == 0) goto empty_species_name;
-		*nickname = copy_prefix (name, parse-name);
-		*filename = fname = copy_string (parse+2);
+		if (nickParse-name == 0) goto empty_species_name;
+		*nickname = copy_prefix (name, nickParse-name);
+		*filename = fname = copy_string (nickParse+2);
 		}
 
 	len = strlen (fname);
@@ -8869,7 +8873,7 @@ empty_file_name:
 	return; // (can't reach here)
 
 empty_species_name:
-	suicidef ("(for %s) empty nickname", parse+2);
+	suicidef ("(for %s) empty nickname", nickParse+2);
 	return; // (can't reach here)
 
 bad_mask:
