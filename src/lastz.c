@@ -3787,10 +3787,21 @@ static score chain_connect_penalty
 static void remove_interval_seeds (unspos b, unspos e, void* info)
 	{
 	postable*	pt = (postable*) info;
-	seq*		target  = currParams->seq1;
-	seed*		hitSeed = currParams->hitSeed;
-	u32			seedLen = (unsigned) hitSeed->length;
-	const s8*	upperCharToBits = currParams->upperCharToBits;
+	seq*		target;
+	seed*		hitSeed;
+	u32			seedLen;
+	const s8*	upperCharToBits;
+
+	// if there is no position table there are no seeds to remove;  this
+	// happens when anchors come from --segments, since no seeding is done;
+	// the interval itself has already been masked by our caller
+
+	if (pt == NULL) return;
+
+	target          = currParams->seq1;
+	hitSeed         = currParams->hitSeed;
+	seedLen         = (unsigned) hitSeed->length;
+	upperCharToBits = currParams->upperCharToBits;
 
 	// adjust the interval endpoints to account for the seed length
 
