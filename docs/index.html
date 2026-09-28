@@ -79,8 +79,8 @@
 <body>
 
 <p class=vvlarge>
-<h1>LASTZ &nbsp; some Release after 1.04.55,
-                 built on date unknown</h1>
+<h1>LASTZ &nbsp; Release 1.04.60
+                 built September 28, 2026</h1>
 
 TABLE OF CONTENTS
 
@@ -8049,7 +8049,7 @@ or <code><a href="#option_format">--format=softsam+eqx</a></code>.
 
 <tr class=newsect>
 <td>
-<a name="history_recent"></a>1.04.45</td><td>Feb/24/2025</td><td>
+1.04.45</td><td>Feb/24/2025</td><td>
 Added the lastz_40 build, to address a narrow use case of aligning relatively
 small queries to a genome larger than 4 gigabases.
 </td></tr>
@@ -8063,6 +8063,36 @@ Several minor source code changes that should have no effect on operation.
 These are mostly to prevent newer compilers complaining about source code
 layout, and a couple related to errors in code intended to detect numeric
 overflow when parsing command line options.
+</td></tr>
+
+<!-- 1.04.51 -->
+
+<tr class=newsect>
+<td>
+1.04.60</td><td>Sep/28/2026</td><td>
+<a name="history_recent"></a>Several changes have been made to the Makefile so
+that is more in line with builds on debian. Users building on other systems are
+unlikely to notice any difference. For more information, see 
+<a href="https://github.com/lastz/lastz/pull/75">pull request 75</a> at the
+lastz github repository.
+
+<tr><td></td><td></td><td>
+There was potential for a segfault when the
+<code><a href="#option_masking">--masking</a></code> option was used in
+conjunction with the
+<a href="#option_segments"><code>--segments=&lt;file&gt;</code></a> option.
+This has been fixed. For more information, see 
+<a href="https://github.com/lastz/lastz/issues/77">issue 77</a> at the
+lastz github repository.
+</td></tr>
+
+<tr><td></td><td></td><td>
+A few minor source code changes were made to prevent newer compilers
+complaining about nuances between mutable and immutable character strings.
+These will have no effect on operation. For more information, see 
+<a href="https://github.com/lastz/lastz/pull/75">pull request 75</a> and
+<a href="https://github.com/lastz/lastz/issues/79">issue 79</a> at the
+lastz github repository.
 </td></tr>
 
 </tbody></table>
