@@ -10,7 +10,7 @@ be stable.
 For information about installation and use, see https://lastz.github.io/lastz
 (equivalent to README.lastz.html in this repository).
 
-As of this writing, the latest official release is version 1.04.52.
+As of this writing, the latest official release is version 1.04.60.
 Legacy releases — those prior to September 2021 — can be found at
 http://www.bx.psu.edu/~rsharris/lastz (in the form of tarballs).
 
@@ -25,5 +25,5 @@ Two GPU accelerated versions, KegAlign and SegAlign, can be found at
 https://github.com/galaxyproject/KegAlign
 and https://github.com/gsneha26/SegAlign.
 
-Updated Apr/2/2025 by Bob Harris (the LASTZ guy)
+Updated Sep/28/2026 by Bob Harris (the LASTZ guy)
 
